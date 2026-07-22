@@ -1,0 +1,19 @@
+{
+  "name": "babyiel-store-inventory",
+  "version": "1.0.0",
+  "description": "Digital Stock SaaS & Inventory Management System for Babyiel Store",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "serve": "npx serve -l 3000 ."
+  },
+  "keywords": [
+    "inventory",
+    "saas",
+    "digital-stock",
+    "dashboard"
+  ],
+  "author": "Babyiel Store",
+  "license": "ISC"
+}
