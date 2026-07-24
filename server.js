@@ -258,9 +258,9 @@ const server = http.createServer(async (req, res) => {
     const price = pkg.price || 0;
 
     // Check available stock (match package_label first, then any available for product)
-    let availableStock = db.stocks.find(s => s.product_id === product_id && s.package_label === package_label && s.status === 'AVAILABLE');
+    let availableStock = db.stocks.find(s => s.product_id === product_id && s.package_label === package_label && (s.status === 'AVAILABLE' || s.status === 'READY'));
     if (!availableStock) {
-      availableStock = db.stocks.find(s => s.product_id === product_id && s.status === 'AVAILABLE');
+      availableStock = db.stocks.find(s => s.product_id === product_id && (s.status === 'AVAILABLE' || s.status === 'READY'));
     }
 
     // Auto-replenish stock if empty for smooth demo/production testing

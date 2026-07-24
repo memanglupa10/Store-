@@ -739,7 +739,13 @@ const App = {
       if (data.success && Array.isArray(data.stocks)) {
         let localStocks = JSON.parse(localStorage.getItem('babyiel_stocks') || '[]');
 
-        data.stocks.forEach(serverStock => {
+        // Sort data.stocks so BERLANGGANAN / SOLD items are processed FIRST before READY items!
+        const sortedServerStocks = [...data.stocks].sort((a, b) => {
+          const statusOrder = { 'BERLANGGANAN': 1, 'SOLD': 1, 'RESERVED': 2, 'READY': 3, 'AVAILABLE': 3 };
+          return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
+        });
+
+        sortedServerStocks.forEach(serverStock => {
           const isSoldOrSub = (serverStock.status === 'SOLD' || serverStock.status === 'BERLANGGANAN');
           const finalStatus = isSoldOrSub ? 'SEDANG BERLANGGANAN' : (serverStock.status === 'RESERVED' ? 'ASSIGNED' : 'READY');
 
@@ -762,7 +768,8 @@ const App = {
               profile: serverStock.profile || 'Profil 1',
               pin: serverStock.pin || '1234',
               note: serverStock.note || 'Full Garansi',
-              assigned_to: 'admin',
+              assigned_to: serverStock.assigned_to || 'admin',
+              sold_by: serverStock.sold_by || 'admin',
               status: finalStatus,
               order_id: serverStock.order_id,
               customer_name: serverStock.customer_name,
@@ -778,17 +785,23 @@ const App = {
             };
             localStocks.unshift(localItem);
           } else {
+            // Protect against overwriting SEDANG BERLANGGANAN with READY!
+            if (localItem.status === 'SEDANG BERLANGGANAN' && finalStatus === 'READY') {
+              return; // Keep as SEDANG BERLANGGANAN
+            }
+
             localItem.status = finalStatus;
             localItem.order_id = serverStock.order_id || localItem.order_id;
             localItem.customer_name = serverStock.customer_name || localItem.customer_name;
             localItem.customer_wa = serverStock.customer_wa || localItem.customer_wa;
-            localItem.buyer_name = serverStock.customer_name || localItem.buyer_name;
-            localItem.buyer_wa = serverStock.customer_wa || localItem.buyer_wa;
+            localItem.buyer_name = serverStock.customer_name || localItem.buyer_name || localItem.customer_name;
+            localItem.buyer_wa = serverStock.customer_wa || localItem.buyer_wa || localItem.customer_wa;
+            localItem.sold_by = serverStock.sold_by || localItem.sold_by || 'admin';
             localItem.purchased_at = serverStock.purchased_at || localItem.purchased_at;
             localItem.activated_at = serverStock.activated_at || localItem.activated_at;
             localItem.expires_at = serverStock.expires_at || localItem.expires_at;
-            localItem.expired_date = serverStock.expires_at || localItem.expired_date;
-            localItem.sold_at = serverStock.sold_at || localItem.sold_at;
+            localItem.expired_date = serverStock.expires_at || localItem.expired_date || localItem.expires_at;
+            localItem.sold_at = serverStock.sold_at || localItem.sold_at || serverStock.purchased_at;
           }
         });
 
