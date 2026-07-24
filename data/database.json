@@ -314,9 +314,15 @@
       "pin": "1001",
       "note": "Garansi Resmi Full 100%",
       "assigned_to": "member1",
-      "status": "RESERVED",
+      "status": "BERLANGGANAN",
       "created_at": "2026-07-23T11:58:00.713Z",
-      "updated_at": "2026-07-23T11:58:00.713Z"
+      "updated_at": "2026-07-23T11:58:00.713Z",
+      "order_id": "BYL-20260724-0R5S",
+      "customer_name": "ilham",
+      "customer_wa": "082424241313",
+      "purchased_at": "2026-07-24T12:57:37.438Z",
+      "activated_at": "2026-07-24T12:57:37.438Z",
+      "expires_at": "2026-07-31T12:57:37.438Z"
     },
     {
       "id": "STK-1002",
@@ -458,9 +464,15 @@
       "pin": "1010",
       "note": "Garansi Resmi Full 100%",
       "assigned_to": "member2",
-      "status": "RESERVED",
+      "status": "BERLANGGANAN",
       "created_at": "2026-07-24T11:58:00.713Z",
-      "updated_at": "2026-07-24T11:58:00.713Z"
+      "updated_at": "2026-07-24T11:58:00.713Z",
+      "order_id": "BYL-20260724-1PMW",
+      "customer_name": "Security Test Buyer",
+      "customer_wa": "081234567890",
+      "purchased_at": "2026-07-24T13:17:47.248Z",
+      "activated_at": "2026-07-24T13:17:47.248Z",
+      "expires_at": "2026-07-31T13:17:47.248Z"
     },
     {
       "id": "STK-1011",
@@ -602,9 +614,11 @@
       "pin": "1019",
       "note": "Garansi Resmi Full 100%",
       "assigned_to": "admin",
-      "status": "READY",
+      "status": "RESERVED",
       "created_at": "2026-07-15T11:58:00.713Z",
-      "updated_at": "2026-07-15T11:58:00.713Z"
+      "updated_at": "2026-07-15T11:58:00.713Z",
+      "order_id": "BYL-20260724-0R5S",
+      "reserved_until": "2026-07-24T13:12:33.596Z"
     },
     {
       "id": "STK-1020",
@@ -620,7 +634,7 @@
       "assigned_to": "admin",
       "status": "READY",
       "created_at": "2026-07-24T11:58:00.713Z",
-      "updated_at": "2026-07-24T11:58:00.713Z"
+      "updated_at": "2026-07-24T12:56:44.247Z"
     },
     {
       "id": "STK-1021",
@@ -746,9 +760,11 @@
       "pin": "1028",
       "note": "Garansi Resmi Full 100%",
       "assigned_to": "admin",
-      "status": "READY",
+      "status": "RESERVED",
       "created_at": "2026-07-16T11:58:00.713Z",
-      "updated_at": "2026-07-16T11:58:00.713Z"
+      "updated_at": "2026-07-16T11:58:00.713Z",
+      "order_id": "BYL-20260724-1PMW",
+      "reserved_until": "2026-07-24T13:32:47.229Z"
     },
     {
       "id": "STK-1029",
@@ -2353,9 +2369,92 @@
       "sold_at": "2026-07-19T11:58:00.713Z"
     }
   ],
-  "orders": [],
-  "notifications": [],
-  "logs": [],
+  "orders": [
+    {
+      "id": "BYL-20260724-1PMW",
+      "product_id": "prod-netflix",
+      "product_name": "Netflix Premium",
+      "package_name": "7 Hari (💎 Sharing 1P1U)",
+      "price": 14000,
+      "customer_name": "Security Test Buyer",
+      "customer_wa": "081234567890",
+      "customer_email": "",
+      "payment_status": "PAID",
+      "order_status": "COMPLETED",
+      "payment_reference": "REF-BYL-20260724-1PMW",
+      "qris_string": "00020101021226670016COM.BABYIEL.WWW01189360091430000000000215ID10293847560303UMI5204581253033605802ID5920BABYIEL STORE OFFICIAL6013JAKARTA SELATAN61051211062070703A016304",
+      "qris_url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0yMCAyMGg1MHY1MEgyMHpNMzAgMzB2MzBoMzBWMzB6TTQwIDQwaDEwdjEwSDQwek0xMzAgMjBoNTB2NTBoLTUwek0xNDAgMzB2MzBoMzBWMzB6TTE1MCA0MGgxMHYxMGgtMTB6TTIwIDEzMGg1MHY1MEgyMHpNMzAgMTQwdjMwaDMwdi0zMHpNNDAgMTUwaDEwdjEwSDQwek04MCAyMGgyMHYyMEg4MHpNMTAwIDQwaDIwdjIwaC0yMHpNODAgNzBoMzB2MjBIODB6TTEzMCA4MGgyMHYzMGgtMjB6TTgwIDExMGg0MHYyMEg4MHpNMTQwIDEyMGgzMHYyMGgtMzB6TTkwIDE0MGgzMHY0MEg5MHpNMTQwIDE1MGg0MHYzMGgtNDB6IiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iMTAwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzdjM2FlZCI+UVJJUyBCWUw8L3RleHQ+PC9zdmc+",
+      "merchant_name": "BABYIEL STORE OFFICIAL",
+      "stock_id": "STK-1010",
+      "created_at": "2026-07-24T13:17:47.229Z",
+      "expires_at": "2026-07-24T13:32:47.229Z",
+      "paid_at": "2026-07-24T13:17:47.248Z",
+      "completed_at": "2026-07-24T13:17:47.248Z"
+    },
+    {
+      "id": "BYL-20260724-0R5S",
+      "product_id": "prod-netflix",
+      "product_name": "Netflix Premium",
+      "package_name": "7 Hari (💎 Sharing 1P1U)",
+      "price": 14000,
+      "customer_name": "ilham",
+      "customer_wa": "082424241313",
+      "customer_email": "",
+      "payment_status": "PAID",
+      "order_status": "COMPLETED",
+      "payment_reference": "REF-BYL-20260724-0R5S",
+      "qris_string": "00020101021226670016COM.BABYIEL.WWW01189360091430000000000215ID10293847560303UMI5204581253033605802ID5920BABYIEL STORE OFFICIAL6013JAKARTA SELATAN61051211062070703A016304",
+      "qris_url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0yMCAyMGg1MHY1MEgyMHpNMzAgMzB2MzBoMzBWMzB6TTQwIDQwaDEwdjEwSDQwek0xMzAgMjBoNTB2NTBoLTUwek0xNDAgMzB2MzBoMzBWMzB6TTE1MCA0MGgxMHYxMGgtMTB6TTIwIDEzMGg1MHY1MEgyMHpNMzAgMTQwdjMwaDMwdi0zMHpNNDAgMTUwaDEwdjEwSDQwek04MCAyMGgyMHYyMEg4MHpNMTAwIDQwaDIwdjIwaC0yMHpNODAgNzBoMzB2MjBIODB6TTEzMCA4MGgyMHYzMGgtMjB6TTgwIDExMGg0MHYyMEg4MHpNMTQwIDEyMGgzMHYyMGgtMzB6TTkwIDE0MGgzMHY0MEg5MHpNMTQwIDE1MGg0MHYzMGgtNDB6IiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iMTAwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzdjM2FlZCI+UVJJUyBCWUw8L3RleHQ+PC9zdmc+",
+      "merchant_name": "BABYIEL STORE OFFICIAL",
+      "stock_id": "STK-1001",
+      "created_at": "2026-07-24T12:57:33.596Z",
+      "expires_at": "2026-07-24T13:12:33.596Z",
+      "paid_at": "2026-07-24T12:57:37.438Z",
+      "completed_at": "2026-07-24T12:57:37.438Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1784899067248",
+      "title": "🛒 Pembelian Website Berhasil",
+      "message": "Order BYL-20260724-1PMW: Netflix Premium (7 Hari (💎 Sharing 1P1U)) dibeli oleh Security Test Buyer (081234567890). Stok terpotong!",
+      "type": "SALE",
+      "order_id": "BYL-20260724-1PMW",
+      "customer_name": "Security Test Buyer",
+      "customer_wa": "081234567890",
+      "product_name": "Netflix Premium",
+      "price": 14000,
+      "created_at": "2026-07-24T13:17:47.248Z",
+      "read": false
+    },
+    {
+      "id": "notif-1784897857439",
+      "title": "🛒 Pembelian Website Berhasil",
+      "message": "Order BYL-20260724-0R5S: Netflix Premium (7 Hari (💎 Sharing 1P1U)) dibeli oleh ilham (082424241313). Stok terpotong!",
+      "type": "SALE",
+      "order_id": "BYL-20260724-0R5S",
+      "customer_name": "ilham",
+      "customer_wa": "082424241313",
+      "product_name": "Netflix Premium",
+      "price": 14000,
+      "created_at": "2026-07-24T12:57:37.438Z",
+      "read": false
+    }
+  ],
+  "logs": [
+    {
+      "id": "log-1784899067248",
+      "type": "sale",
+      "activity": "Penjualan Otomatis Website: Netflix Premium (7 Hari (💎 Sharing 1P1U)) dibeli oleh Security Test Buyer (081234567890) [Stok ID: STK-1010]",
+      "created_at": "2026-07-24T13:17:47.248Z"
+    },
+    {
+      "id": "log-1784897857439",
+      "type": "sale",
+      "activity": "Penjualan Otomatis Website: Netflix Premium (7 Hari (💎 Sharing 1P1U)) dibeli oleh ilham (082424241313) [Stok ID: STK-1001]",
+      "created_at": "2026-07-24T12:57:37.438Z"
+    }
+  ],
   "webhook_logs": [],
   "settings": {
     "store_title": "Babyiel Store",

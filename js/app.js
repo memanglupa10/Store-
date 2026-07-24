@@ -733,7 +733,9 @@ const App = {
 
   async syncServerStocksToLocal() {
     try {
-      const res = await fetch('/api/admin/stocks');
+      const res = await fetch('/api/admin/stocks', {
+        headers: db.getAuthHeaders()
+      });
       const data = await res.json();
 
       if (data.success && Array.isArray(data.stocks)) {
@@ -816,7 +818,9 @@ const App = {
 
       // Fetch Notifications & Update Badge / Toast
       try {
-        const notifRes = await fetch('/api/admin/notifications');
+        const notifRes = await fetch('/api/admin/notifications', {
+          headers: db.getAuthHeaders()
+        });
         const notifData = await notifRes.json();
         if (notifData.success) {
           const badgeEl = document.getElementById('admin-notif-badge') || document.querySelector('.header-nav-btn .badge');

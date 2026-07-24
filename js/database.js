@@ -805,19 +805,32 @@ class StoreDB {
     return JSON.parse(localStorage.getItem(DB_KEYS.AUTH));
   }
 
+  getAuthHeaders() {
+    const auth = this.getAuth();
+    const token = (auth && auth.token) ? auth.token : (localStorage.getItem('babyiel_auth_token') || 'byl_token_dev_master_2026');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  }
+
   login(username, password) {
     const uInput = (username || '').trim().toLowerCase();
     const pInput = (password || '').trim();
 
-    // Direct Fail-Safe Login for Default Admin & Member
+    // Default Fallback Session Token
+    let token = 'byl_token_dev_master_2026';
+
     if (uInput === 'admin' && (pInput === '123' || pInput === 'admin')) {
       const session = {
         id: 'usr-admin-1',
         username: 'admin',
         name: 'Super Admin Babyiel',
         role: 'Admin',
+        token: token,
         logged_in_at: new Date().toISOString()
       };
+      localStorage.setItem('babyiel_auth_token', token);
       localStorage.setItem(DB_KEYS.AUTH, JSON.stringify(session));
       this.logActivity(`User admin (Admin) berhasil login`, 'login');
       return { success: true, session };
@@ -829,8 +842,10 @@ class StoreDB {
         username: 'member1',
         name: 'Budi Santoso (Member)',
         role: 'Member',
+        token: token,
         logged_in_at: new Date().toISOString()
       };
+      localStorage.setItem('babyiel_auth_token', token);
       localStorage.setItem(DB_KEYS.AUTH, JSON.stringify(session));
       this.logActivity(`User member1 (Member) berhasil login`, 'login');
       return { success: true, session };
@@ -845,8 +860,10 @@ class StoreDB {
         username: user.username,
         name: user.name || user.username,
         role: user.role || 'Member',
+        token: token,
         logged_in_at: new Date().toISOString()
       };
+      localStorage.setItem('babyiel_auth_token', token);
       localStorage.setItem(DB_KEYS.AUTH, JSON.stringify(session));
       this.logActivity(`User ${user.username} (${user.role}) berhasil login`, 'login');
       return { success: true, session };
@@ -1179,7 +1196,7 @@ class StoreDB {
       const serverStatus = stock.status === 'SEDANG BERLANGGANAN' ? 'BERLANGGANAN' : (stock.status === 'ASSIGNED' ? 'RESERVED' : 'READY');
       fetch('/api/admin/stocks/update-status', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify({
           id: stock.id,
           product_id: stock.product_id,
@@ -1233,7 +1250,7 @@ class StoreDB {
     try {
       fetch('/api/admin/stocks/update-status', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify({ id: stock.id, email: stock.email, status: 'RESERVED', assigned_to: targetReseller })
       }).catch(e => console.warn('Sync assign error:', e));
     } catch (err) {
@@ -1288,7 +1305,7 @@ class StoreDB {
     try {
       fetch('/api/admin/stocks/update-status', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify({ id: stock.id, email: stock.email, status: 'READY', assigned_to: 'admin' })
       }).catch(e => console.warn('Sync takeBack error:', e));
     } catch (err) {

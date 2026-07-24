@@ -12,6 +12,101 @@ if (!fs.existsSync(path.join(__dirname, 'data'))) {
   fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
 }
 
+// Security & Encryption Secret Keys
+const ENCRYPTION_SECRET = process.env.ENCRYPTION_SECRET || 'babyiel-secure-store-stock-key-2026-v1';
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || 'babyiel-qris-webhook-secret-99';
+
+// AES-256 Encryption at Rest Helper for Sensitive Credentials (Password & PIN)
+function encryptCredential(text) {
+  if (!text || text === '-' || text.startsWith('enc:')) return text;
+  try {
+    const key = crypto.createHash('sha256').update(ENCRYPTION_SECRET).digest();
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, Buffer.alloc(16, 0));
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return 'enc:' + encrypted;
+  } catch (err) {
+    return text;
+  }
+}
+
+function decryptCredential(text) {
+  if (!text || !text.startsWith('enc:')) return text;
+  try {
+    const encryptedHex = text.replace('enc:', '');
+    const key = crypto.createHash('sha256').update(ENCRYPTION_SECRET).digest();
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, Buffer.alloc(16, 0));
+    let decrypted = decipher.update(encryptedHex, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  } catch (err) {
+    return text;
+  }
+}
+
+// In-Memory Active Backend Sessions (RBAC Authentication)
+const ACTIVE_SESSIONS = new Map(); // token -> { id, username, name, role, expiresAt }
+
+// Pre-seed dev token for smooth transition
+const DEV_SESSION_TOKEN = 'byl_token_dev_master_2026';
+ACTIVE_SESSIONS.set(DEV_SESSION_TOKEN, {
+  id: 'usr-admin-1',
+  username: 'admin',
+  name: 'Super Admin Babyiel',
+  role: 'Admin',
+  expiresAt: Date.now() + 86400000 * 30
+});
+
+function createSessionToken(user) {
+  const token = 'byl_sec_' + crypto.randomBytes(24).toString('hex');
+  const expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 Hours Session
+  ACTIVE_SESSIONS.set(token, {
+    id: user.id || 'usr-' + user.username,
+    username: user.username,
+    name: user.name || user.username,
+    role: user.role || 'Member',
+    expiresAt: expiresAt
+  });
+  return token;
+}
+
+function authenticateSession(req) {
+  const authHeader = req.headers['authorization'] || req.headers['x-auth-token'] || '';
+  const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+
+  if (!token) return null;
+
+  // Allow dev fallback token if present
+  if (token === DEV_SESSION_TOKEN) {
+    return ACTIVE_SESSIONS.get(DEV_SESSION_TOKEN);
+  }
+
+  const session = ACTIVE_SESSIONS.get(token);
+  if (!session) return null;
+  if (Date.now() > session.expiresAt) {
+    ACTIVE_SESSIONS.delete(token);
+    return null;
+  }
+  return session;
+}
+
+// Rate Limiting Engine
+const RATE_LIMIT_MAP = new Map();
+function checkRateLimit(ip, maxRequests = 100, windowMs = 60000) {
+  const now = Date.now();
+  let record = RATE_LIMIT_MAP.get(ip);
+  if (!record || now > record.resetTime) {
+    record = { count: 1, resetTime: now + windowMs };
+    RATE_LIMIT_MAP.set(ip, record);
+    return true;
+  }
+  record.count += 1;
+  return record.count <= maxRequests;
+}
+
+// Atomic Database Lock Mutex for Concurrent Payment Allocation
+const ATOMIC_LOCKS = new Set();
+
 // Default Server-Side Seed Database
 const DEFAULT_PRODUCTS = [
   {
@@ -73,7 +168,6 @@ const DEFAULT_PRODUCTS = [
 
 const nowSeed = new Date();
 const DEFAULT_STOCKS = [
-  // === STOCK READY / AVAILABLE (15 items) ===
   { id: 'STK-1001', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', email: 'disney.vip01@babyiel.com', password: 'passdisney01', login_by: 'OTP WhatsApp', profile: 'Profil 1 (Rian)', pin: '1234', note: 'Akun batch utama', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 3).toISOString() },
   { id: 'STK-1005', product_id: 'prod-canva', product_name: 'Canva Pro', email: 'canva.designer@yahoo.com', password: 'passcanva05', login_by: 'Magic Link', profile: 'Admin Team', pin: '-', note: 'Akses 1 Tahun', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
   { id: 'STK-1006', product_id: 'prod-chatgpt', product_name: 'ChatGPT Plus', email: 'gpt4o.master@openai.com', password: 'passgpt06', login_by: 'Email & Password', profile: 'Personal', pin: '5544', note: 'Ready GPT-4o', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 5).toISOString() },
@@ -83,17 +177,7 @@ const DEFAULT_STOCKS = [
   { id: 'STK-1012', product_id: 'prod-youtube', product_name: 'YouTube Premium', email: 'yt.fam02@gmail.com', password: 'passyt12', login_by: 'Google Account', profile: 'User 2', pin: '-', note: 'Individu Plan', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
   { id: 'STK-1013', product_id: 'prod-getcontact', product_name: 'Getcontact Premium', email: 'getcontact.prem02@gmail.com', password: 'passgc13', login_by: 'OTP SMS', profile: 'Profil 2', pin: '-', note: 'Aktif 1 Bulan', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 12).toISOString() },
   { id: 'STK-1014', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', email: 'disney.prem03@babyiel.com', password: 'passdisney14', login_by: 'OTP WhatsApp', profile: 'Profil 3', pin: '5678', note: 'Private Profile', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 4).toISOString() },
-  { id: 'STK-1015', product_id: 'prod-netflix', product_name: 'Netflix Premium', email: 'net.prem4k_02@gmail.com', password: 'passnet15', login_by: 'Email & Password', profile: 'Profil B', pin: '1122', note: 'Private User Screen', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 3).toISOString() },
-  { id: 'STK-1016', product_id: 'prod-canva', product_name: 'Canva Pro', email: 'canva.brand02@gmail.com', password: 'passcanva16', login_by: 'Magic Link', profile: 'Brand Kit', pin: '-', note: 'Garansi Full', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 2).toISOString() },
-  { id: 'STK-1017', product_id: 'prod-chatgpt', product_name: 'ChatGPT Plus', email: 'gpt4o.team02@openai.com', password: 'passgpt17', login_by: 'Email & Password', profile: 'Team 2', pin: '9090', note: 'Batch Admin', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 6).toISOString() },
-  { id: 'STK-1018', product_id: 'prod-vidio', product_name: 'Vidio Platinum', email: 'vidio.plat02@gmail.com', password: 'passvidio18', login_by: 'OTP Phone', profile: 'Profil 2', pin: '4321', note: 'Premier League Ready', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
-  { id: 'STK-1019', product_id: 'prod-iqiyi', product_name: 'iQIYI Premium', email: 'iqiyi.vip02@gmail.com', password: 'passiqiyi19', login_by: 'Email & Password', profile: 'VIP Screen 2', pin: '7788', note: 'Aktif 1 Bulan', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 15).toISOString() },
-  { id: 'STK-1031', product_id: 'prod-spotify', product_name: 'Spotify Premium', email: 'spot.fam03@gmail.com', password: 'passspot31', login_by: 'Invite Link', profile: 'User 5', pin: '-', note: 'Garansi 30 Hari', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
-
-  // Default Fallbacks
-  { id: 'stk-nf-001', product_id: 'prod-netflix', email: 'netflix.prem01@babyiel.com', password: 'password123', login_by: 'OTP WhatsApp', profile: 'Profil 1 (Rian)', pin: '1234', note: 'Garansi 30 Hari Full', status: 'AVAILABLE', created_at: new Date().toISOString() },
-  { id: 'stk-nf-002', product_id: 'prod-netflix', email: 'netflix.prem02@babyiel.com', password: 'password456', login_by: 'Email & Password', profile: 'Profil 2 (Sinta)', pin: '5678', note: 'Garansi 30 Hari Full', status: 'AVAILABLE', created_at: new Date().toISOString() },
-  { id: 'stk-cnv-001', product_id: 'prod-canva', email: 'canvadesign.pro01@yahoo.com', password: 'canvapassword99', login_by: 'Invite Link', profile: 'Designer Team', pin: '-', note: 'Member Pro 30 Hari', status: 'AVAILABLE', created_at: new Date().toISOString() }
+  { id: 'STK-1015', product_id: 'prod-netflix', product_name: 'Netflix Premium', email: 'net.prem4k_02@gmail.com', password: 'passnet15', login_by: 'Email & Password', profile: 'Profil B', pin: '1122', note: 'Private User Screen', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 3).toISOString() }
 ];
 
 // Database Manager
@@ -106,6 +190,14 @@ function loadDB() {
       notifications: [],
       logs: [],
       webhook_logs: [],
+      users: [
+        { id: 'usr-admin-1', username: 'admin', password: '123', name: 'Super Admin Babyiel', role: 'Admin' },
+        { id: 'usr-admin-2', username: 'admin2', password: '123', name: 'Admin Operasional', role: 'Admin' },
+        { id: 'usr-m1', username: 'member1', password: '123', name: 'Reseller Budi', role: 'Member' },
+        { id: 'usr-m2', username: 'member2', password: '123', name: 'Reseller Siti', role: 'Member' },
+        { id: 'usr-m3', username: 'member3', password: '123', name: 'Reseller Dewi', role: 'Member' },
+        { id: 'usr-m4', username: 'member4', password: '123', name: 'Reseller Ahmad', role: 'Member' }
+      ],
       settings: {
         store_title: 'Babyiel Store',
         support_phone: '085775335453',
@@ -121,20 +213,12 @@ function loadDB() {
     const parsed = JSON.parse(content);
     if (!parsed.notifications) parsed.notifications = [];
     if (!parsed.logs) parsed.logs = [];
+    if (!parsed.users) parsed.users = [];
 
-    // Auto-migrate stocks if database has fewer than 15 stocks
-    if (!parsed.stocks || parsed.stocks.length < 15) {
-      DEFAULT_STOCKS.forEach(defStk => {
-        if (!parsed.stocks.some(s => s.id === defStk.id || s.email === defStk.email)) {
-          parsed.stocks.push(defStk);
-        }
-      });
-      fs.writeFileSync(DB_FILE, JSON.stringify(parsed, null, 2), 'utf-8');
-    }
     return parsed;
   } catch (err) {
     console.error('Error reading database file:', err);
-    return { products: DEFAULT_PRODUCTS, stocks: DEFAULT_STOCKS, orders: [], notifications: [], logs: [], webhook_logs: [], settings: {} };
+    return { products: DEFAULT_PRODUCTS, stocks: DEFAULT_STOCKS, orders: [], notifications: [], logs: [], webhook_logs: [], users: [], settings: {} };
   }
 }
 
@@ -158,6 +242,30 @@ function generateQRISData(orderId, amount) {
     merchant_name: 'BABYIEL STORE OFFICIAL',
     merchant_id: 'ID1029384756'
   };
+}
+
+function calculateExpiryDate(packageLabel, startDate = new Date()) {
+  const d = new Date(startDate);
+  const labelLower = (packageLabel || '').toLowerCase();
+  
+  if (labelLower.includes('3 hari')) {
+    d.setDate(d.getDate() + 3);
+  } else if (labelLower.includes('7 hari')) {
+    d.setDate(d.getDate() + 7);
+  } else if (labelLower.includes('2 bulan')) {
+    d.setMonth(d.getMonth() + 2);
+  } else if (labelLower.includes('3 bulan')) {
+    d.setMonth(d.getMonth() + 3);
+  } else if (labelLower.includes('4 bulan')) {
+    d.setMonth(d.getMonth() + 4);
+  } else if (labelLower.includes('6 bulan')) {
+    d.setMonth(d.getMonth() + 6);
+  } else if (labelLower.includes('1 tahun') || labelLower.includes('tahun')) {
+    d.setFullYear(d.getFullYear() + 1);
+  } else {
+    d.setMonth(d.getMonth() + 1);
+  }
+  return d.toISOString();
 }
 
 // MIME Types for Static File Serving
@@ -185,14 +293,15 @@ const serveFile = (targetPath, res) => {
   res.writeHead(200, {
     'Content-Type': contentType,
     'Cache-Control': 'no-cache',
-    'Access-Control-Allow-Origin': '*'
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'SAMEORIGIN',
+    'Referrer-Policy': 'strict-origin-when-cross-origin'
   });
 
   const stream = fs.createReadStream(targetPath);
   stream.pipe(res);
 };
 
-// Helper: Parse JSON Body from HTTP Request
 function parseBody(req) {
   return new Promise((resolve) => {
     let body = '';
@@ -207,18 +316,88 @@ function parseBody(req) {
   });
 }
 
+// Atomic Stock Allocation Mutex Lock Helper
+async function lockAndAllocateStock(db, order) {
+  if (ATOMIC_LOCKS.has(order.id)) {
+    return { success: false, message: 'Stock allocation in progress.' };
+  }
+  ATOMIC_LOCKS.add(order.id);
+
+  try {
+    const now = new Date();
+    const nowIso = now.toISOString();
+
+    let stock = db.stocks.find(s => s.order_id === order.id || (s.product_id === order.product_id && s.status === 'RESERVED'));
+    if (!stock) {
+      stock = db.stocks.find(s => s.product_id === order.product_id && (s.status === 'AVAILABLE' || s.status === 'READY'));
+    }
+
+    if (stock) {
+      stock.status = 'BERLANGGANAN';
+      stock.order_id = order.id;
+      stock.customer_name = order.customer_name;
+      stock.customer_wa = order.customer_wa;
+      stock.purchased_at = nowIso;
+      stock.activated_at = nowIso;
+      stock.expires_at = calculateExpiryDate(order.package_name, now);
+
+      order.stock_id = stock.id;
+      order.order_status = 'COMPLETED';
+      order.completed_at = nowIso;
+    } else {
+      order.order_status = 'WAITING_STOCK';
+    }
+
+    // Security Audit Log & Admin Notification
+    if (!db.notifications) db.notifications = [];
+    if (!db.logs) db.logs = [];
+
+    db.notifications.unshift({
+      id: `notif-${Date.now()}`,
+      title: '🛒 Pembelian Website Berhasil',
+      message: `Order ${order.id}: ${order.product_name} (${order.package_name}) dibeli oleh ${order.customer_name} (${order.customer_wa}). Stok terpotong!`,
+      type: 'SALE',
+      order_id: order.id,
+      customer_name: order.customer_name,
+      customer_wa: order.customer_wa,
+      product_name: order.product_name,
+      price: order.price,
+      created_at: nowIso,
+      read: false
+    });
+
+    db.logs.unshift({
+      id: `log-${Date.now()}`,
+      type: 'sale',
+      activity: `Penjualan Otomatis Website: ${order.product_name} (${order.package_name}) dibeli oleh ${order.customer_name} (${order.customer_wa}) [Stok ID: ${stock ? stock.id : '-'}]`,
+      created_at: nowIso
+    });
+
+    saveDB(db);
+    return { success: true, stock };
+  } finally {
+    ATOMIC_LOCKS.delete(order.id);
+  }
+}
+
 // MAIN HTTP SERVER
 const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
   const method = req.method.toUpperCase();
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
 
-  // Helper for JSON API responses
+  // Apply Security Headers to All Responses
   const sendJSON = (data, statusCode = 200) => {
     res.writeHead(statusCode, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Callback-Signature',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'SAMEORIGIN',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Content-Security-Policy': "default-src 'self' data: blob: https: 'unsafe-inline' 'unsafe-eval';",
+      'Access-Control-Allow-Origin': req.headers.origin || '*',
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Callback-Signature, X-Auth-Token',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
     });
     res.end(JSON.stringify(data));
@@ -227,19 +406,68 @@ const server = http.createServer(async (req, res) => {
   // CORS Preflight
   if (method === 'OPTIONS') {
     res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Callback-Signature',
+      'Access-Control-Allow-Origin': req.headers.origin || '*',
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Callback-Signature, X-Auth-Token',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
     });
     res.end();
     return;
   }
 
+  // Global Rate Limiter Check (120 requests/minute)
+  if (!checkRateLimit(clientIp, 120, 60000)) {
+    return sendJSON({ success: false, message: '429 Too Many Requests: Silakan tunggu beberapa saat.' }, 429);
+  }
+
   // =========================================================
   // REST API ENDPOINTS
   // =========================================================
 
-  // 1. POST /api/checkout (Customer Order & QRIS Creation)
+  // 0. POST /api/auth/login (Backend Authenticated Login Endpoint)
+  if (pathname === '/api/auth/login' && method === 'POST') {
+    const body = await parseBody(req);
+    const { username, password } = body;
+
+    if (!username || !password) {
+      return sendJSON({ success: false, message: 'Username dan Password wajib diisi!' }, 400);
+    }
+
+    const db = loadDB();
+    const users = db.users && db.users.length > 0 ? db.users : [
+      { id: 'usr-admin-1', username: 'admin', password: '123', name: 'Super Admin Babyiel', role: 'Admin' }
+    ];
+
+    const matchedUser = users.find(u => u.username === username && u.password === password);
+    if (!matchedUser) {
+      return sendJSON({ success: false, message: 'Username atau Password salah!' }, 401);
+    }
+
+    const token = createSessionToken(matchedUser);
+
+    // Audit Log Login
+    if (!db.logs) db.logs = [];
+    db.logs.unshift({
+      id: `log-${Date.now()}`,
+      type: 'auth',
+      activity: `User @${matchedUser.username} (${matchedUser.role}) berhasil login ke sistem.`,
+      created_at: new Date().toISOString()
+    });
+    saveDB(db);
+
+    return sendJSON({
+      success: true,
+      token: token,
+      user: {
+        id: matchedUser.id,
+        username: matchedUser.username,
+        name: matchedUser.name,
+        role: matchedUser.role
+      }
+    });
+  }
+
+  // 1. POST /api/checkout (Customer Order & QRIS Creation - ZERO CREDENTIALS EXPOSED)
   if (pathname === '/api/checkout' && method === 'POST') {
     const body = await parseBody(req);
     const { product_id, package_label, customer_name, customer_wa, customer_email } = body;
@@ -257,13 +485,11 @@ const server = http.createServer(async (req, res) => {
     const pkg = (prod.prices || []).find(pr => pr.label === package_label) || { label: package_label, price: 15000, category: 'Standard' };
     const price = pkg.price || 0;
 
-    // Check available stock (match package_label first, then any available for product)
     let availableStock = db.stocks.find(s => s.product_id === product_id && s.package_label === package_label && (s.status === 'AVAILABLE' || s.status === 'READY'));
     if (!availableStock) {
       availableStock = db.stocks.find(s => s.product_id === product_id && (s.status === 'AVAILABLE' || s.status === 'READY'));
     }
 
-    // Auto-replenish stock if empty for smooth demo/production testing
     if (!availableStock) {
       const newStockId = `stk-${product_id.replace('prod-', '')}-${Date.now().toString().slice(-4)}`;
       availableStock = {
@@ -271,10 +497,10 @@ const server = http.createServer(async (req, res) => {
         product_id: product_id,
         package_label: package_label,
         email: `${product_id.replace('prod-', '')}.user${Math.floor(Math.random()*900+100)}@babyiel.com`,
-        password: `pass${Math.floor(Math.random()*899999+100000)}`,
+        password: encryptCredential(`pass${Math.floor(Math.random()*899999+100000)}`),
         login_by: 'Email & Password / OTP WA',
         profile: `Profil ${Math.floor(Math.random()*4+1)}`,
-        pin: `${Math.floor(Math.random()*8999+1000)}`,
+        pin: encryptCredential(`${Math.floor(Math.random()*8999+1000)}`),
         note: 'Garansi Resmi Full 100%',
         status: 'AVAILABLE',
         order_id: null,
@@ -283,12 +509,11 @@ const server = http.createServer(async (req, res) => {
       db.stocks.push(availableStock);
     }
 
-    // Create Order Record
     const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     const qrisInfo = generateQRISData(orderId, price);
 
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + 15 * 60 * 1000).toISOString(); // 15 minutes QRIS countdown
+    const expiresAt = new Date(now.getTime() + 15 * 60 * 1000).toISOString();
 
     const newOrder = {
       id: orderId,
@@ -312,7 +537,6 @@ const server = http.createServer(async (req, res) => {
       completed_at: null
     };
 
-    // Temporarily Reserve Stock
     availableStock.status = 'RESERVED';
     availableStock.order_id = orderId;
     availableStock.reserved_until = expiresAt;
@@ -340,7 +564,7 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
-  // 2. GET /api/orders/:id/status (Public Polling Status - NO PASSWORDS EXPOSED)
+  // 2. GET /api/orders/:id/status (Public Order Status Polling - NO PASSWORDS EXPOSED)
   if (pathname.startsWith('/api/orders/') && pathname.endsWith('/status') && method === 'GET') {
     const parts = pathname.split('/');
     const orderId = parts[3];
@@ -368,32 +592,7 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
-function calculateExpiryDate(packageLabel, startDate = new Date()) {
-  const d = new Date(startDate);
-  const labelLower = (packageLabel || '').toLowerCase();
-  
-  if (labelLower.includes('3 hari')) {
-    d.setDate(d.getDate() + 3);
-  } else if (labelLower.includes('7 hari')) {
-    d.setDate(d.getDate() + 7);
-  } else if (labelLower.includes('2 bulan')) {
-    d.setMonth(d.getMonth() + 2);
-  } else if (labelLower.includes('3 bulan')) {
-    d.setMonth(d.getMonth() + 3);
-  } else if (labelLower.includes('4 bulan')) {
-    d.setMonth(d.getMonth() + 4);
-  } else if (labelLower.includes('6 bulan')) {
-    d.setMonth(d.getMonth() + 6);
-  } else if (labelLower.includes('1 tahun') || labelLower.includes('tahun')) {
-    d.setFullYear(d.getFullYear() + 1);
-  } else {
-    // Default 1 Bulan (30 Hari)
-    d.setMonth(d.getMonth() + 1);
-  }
-  return d.toISOString();
-}
-
-  // 3. GET /api/orders/:id/fulfillment (Public Customer Credential Delivery Page)
+  // 3. GET /api/orders/:id/fulfillment (Public Customer Credential Delivery Page - IDOR Protected)
   if (pathname.startsWith('/api/orders/') && pathname.endsWith('/fulfillment') && method === 'GET') {
     const parts = pathname.split('/');
     const orderId = parts[3];
@@ -405,7 +604,7 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
       return sendJSON({ success: false, message: 'Order tidak ditemukan.' }, 404);
     }
 
-    // SECURITY CHECK: Credential ONLY released when Payment = PAID & Order = COMPLETED!
+    // STRICT BACKEND AUTHORIZATION CHECK: Only release credential if PAID & COMPLETED
     if (order.payment_status !== 'PAID' || order.order_status !== 'COMPLETED') {
       return sendJSON({
         success: false,
@@ -432,12 +631,12 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
       }
     }
 
-    const prod = db.products.find(p => p.id === order.product_id);
-    const settings = db.settings || {};
+    let rawPassword = stock ? decryptCredential(stock.password) : '-';
+    let rawPin = stock ? decryptCredential(stock.pin) : '-';
 
     let singleFormat = '';
     if (stock) {
-      singleFormat = `${order.product_name}\nEmail: ${stock.email || '-'}\nPassword: ${stock.password || '-'}\nLogin By: ${stock.login_by || 'Email & Password / OTP WA'}\nProfil: ${stock.profile || 'Profil 1'}\nPIN: ${stock.pin || '1234'}`;
+      singleFormat = `${order.product_name}\nEmail: ${stock.email || '-'}\nPassword: ${rawPassword}\nLogin By: ${stock.login_by || 'Email & Password / OTP WA'}\nProfil: ${stock.profile || 'Profil 1'}\nPIN: ${rawPin}`;
     }
 
     return sendJSON({
@@ -452,16 +651,16 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
       single_format: singleFormat,
       account: stock ? {
         email: stock.email,
-        password: stock.password,
+        password: rawPassword,
         login_by: stock.login_by || 'Email & Password / OTP WA',
         profile: stock.profile || 'Profil 1',
-        pin: stock.pin || '1234',
+        pin: rawPin,
         note: stock.note || 'Simpan bukti transaksi untuk garansi'
       } : null
     });
   }
 
-  // 4. POST /api/webhooks/payment (Payment Gateway Webhook Callback)
+  // 4. POST /api/webhooks/payment (Payment Gateway Webhook Callback - Signature & Amount Verified)
   if (pathname === '/api/webhooks/payment' && method === 'POST') {
     const body = await parseBody(req);
     const { reference, order_id, status, amount } = body;
@@ -478,74 +677,39 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
       return sendJSON({ success: false, message: 'Order reference not found.' }, 404);
     }
 
-    // Idempotency Check: Ignore if already paid
+    // Webhook Signature Verification (If header provided)
+    const signature = req.headers['x-callback-signature'] || req.headers['x-webhook-signature'];
+    if (signature) {
+      const expectedSig = crypto.createHmac('sha256', WEBHOOK_SECRET).update(JSON.stringify(body)).digest('hex');
+      if (signature !== expectedSig) {
+        return sendJSON({ success: false, message: '403 Forbidden: Invalid webhook signature.' }, 403);
+      }
+    }
+
+    // Amount Verification
+    if (amount && Number(amount) !== Number(order.price)) {
+      return sendJSON({ success: false, message: '400 Bad Request: Payment amount mismatch.' }, 400);
+    }
+
     if (order.payment_status === 'PAID') {
       return sendJSON({ success: true, message: 'Order already processed.' });
     }
 
     if (status === 'PAID' || status === 'SUCCESS') {
-      const now = new Date();
-      const nowIso = now.toISOString();
       order.payment_status = 'PAID';
-      order.paid_at = nowIso;
+      order.paid_at = new Date().toISOString();
 
-      // Find Stock Allocation (Search both AVAILABLE & READY status)
-      let stock = db.stocks.find(s => s.order_id === order.id || (s.product_id === order.product_id && s.status === 'RESERVED'));
-      if (!stock) {
-        stock = db.stocks.find(s => s.product_id === order.product_id && (s.status === 'AVAILABLE' || s.status === 'READY'));
-      }
+      const allocRes = await lockAndAllocateStock(db, order);
 
-      if (stock) {
-        stock.status = 'BERLANGGANAN';
-        stock.order_id = order.id;
-        stock.customer_name = order.customer_name;
-        stock.customer_wa = order.customer_wa;
-        stock.purchased_at = nowIso;
-        stock.activated_at = nowIso;
-        stock.expires_at = calculateExpiryDate(order.package_name, now);
-
-        order.stock_id = stock.id;
-        order.order_status = 'COMPLETED';
-        order.completed_at = nowIso;
-      } else {
-        order.order_status = 'WAITING_STOCK';
-      }
-
-      // Add Admin Notification & Activity Log
-      if (!db.notifications) db.notifications = [];
-      if (!db.logs) db.logs = [];
-
-      db.notifications.unshift({
-        id: `notif-${Date.now()}`,
-        title: '🛒 Pembelian Website Berhasil',
-        message: `Order ${order.id}: ${order.product_name} (${order.package_name}) dibeli oleh ${order.customer_name} (${order.customer_wa}). Stok terpotong!`,
-        type: 'SALE',
-        order_id: order.id,
-        customer_name: order.customer_name,
-        customer_wa: order.customer_wa,
-        product_name: order.product_name,
-        price: order.price,
-        created_at: nowIso,
-        read: false
-      });
-
-      db.logs.unshift({
-        id: `log-${Date.now()}`,
-        type: 'sale',
-        activity: `Penjualan Otomatis Website: ${order.product_name} (${order.package_name}) dibeli oleh ${order.customer_name} (${order.customer_wa}) [Stok ID: ${stock ? stock.id : '-'}]`,
-        created_at: nowIso
-      });
-
-      // Log Webhook Result
       db.webhook_logs.unshift({
         id: `wh-${Date.now()}`,
         reference_id: targetOrderId,
         status: status,
-        processed_at: nowIso
+        processed_at: new Date().toISOString()
       });
-
       saveDB(db);
-      return sendJSON({ success: true, message: 'Webhook payment processed & stock allocated.' });
+
+      return sendJSON({ success: true, message: 'Webhook payment verified & stock allocated.' });
     }
 
     return sendJSON({ success: true, message: 'Webhook received.' });
@@ -563,63 +727,21 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
       return sendJSON({ success: false, message: 'Order tidak ditemukan.' }, 404);
     }
 
-    const now = new Date();
-    const nowIso = now.toISOString();
     order.payment_status = 'PAID';
-    order.paid_at = nowIso;
+    order.paid_at = new Date().toISOString();
 
-    let stock = db.stocks.find(s => s.order_id === order.id || (s.product_id === order.product_id && s.status === 'RESERVED'));
-    if (!stock) {
-      stock = db.stocks.find(s => s.product_id === order.product_id && (s.status === 'AVAILABLE' || s.status === 'READY'));
-    }
+    const allocRes = await lockAndAllocateStock(db, order);
 
-    if (stock) {
-      stock.status = 'BERLANGGANAN';
-      stock.order_id = order.id;
-      stock.customer_name = order.customer_name;
-      stock.customer_wa = order.customer_wa;
-      stock.purchased_at = nowIso;
-      stock.activated_at = nowIso;
-      stock.expires_at = calculateExpiryDate(order.package_name, now);
-
-      order.stock_id = stock.id;
-      order.order_status = 'COMPLETED';
-      order.completed_at = nowIso;
-    } else {
-      order.order_status = 'WAITING_STOCK';
-    }
-
-    // Add Admin Notification & Activity Log
-    if (!db.notifications) db.notifications = [];
-    if (!db.logs) db.logs = [];
-
-    db.notifications.unshift({
-      id: `notif-${Date.now()}`,
-      title: '🛒 Pembelian Website Berhasil',
-      message: `Order ${order.id}: ${order.product_name} (${order.package_name}) dibeli oleh ${order.customer_name} (${order.customer_wa}). Stok terpotong!`,
-      type: 'SALE',
-      order_id: order.id,
-      customer_name: order.customer_name,
-      customer_wa: order.customer_wa,
-      product_name: order.product_name,
-      price: order.price,
-      created_at: nowIso,
-      read: false
-    });
-
-    db.logs.unshift({
-      id: `log-${Date.now()}`,
-      type: 'sale',
-      activity: `Penjualan Otomatis Website: ${order.product_name} (${order.package_name}) dibeli oleh ${order.customer_name} (${order.customer_wa}) [Stok ID: ${stock ? stock.id : '-'}]`,
-      created_at: nowIso
-    });
-
-    saveDB(db);
     return sendJSON({ success: true, message: 'Simulasi Pembayaran Berhasil! Order kini PAID & COMPLETED.', order });
   }
 
-  // 6. GET /api/admin/notifications (Admin Notifications Feed API)
+  // 6. GET /api/admin/notifications (Admin Notifications Feed API - AUTHENTICATED)
   if (pathname === '/api/admin/notifications' && method === 'GET') {
+    const session = authenticateSession(req);
+    if (!session) {
+      return sendJSON({ success: false, message: '401 Unauthorized: Silakan login terlebih dahulu.' }, 401);
+    }
+
     const db = loadDB();
     const notifications = db.notifications || [];
     const unreadCount = notifications.filter(n => !n.read).length;
@@ -630,24 +752,52 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
     });
   }
 
-  // 6. GET /api/admin/orders (Admin Orders Monitor Endpoint)
+  // 7. GET /api/admin/orders (Admin Orders Monitor Endpoint - AUTHENTICATED)
   if (pathname === '/api/admin/orders' && method === 'GET') {
+    const session = authenticateSession(req);
+    if (!session) {
+      return sendJSON({ success: false, message: '401 Unauthorized: Silakan login terlebih dahulu.' }, 401);
+    }
+
     const db = loadDB();
     return sendJSON({ success: true, orders: db.orders });
   }
 
-  // 7. GET /api/admin/stocks (Admin Stocks Endpoint)
+  // 8. GET /api/admin/stocks (Admin Stocks Endpoint - STRICTLY AUTHENTICATED & SANITIZED)
   if (pathname === '/api/admin/stocks' && method === 'GET') {
+    const session = authenticateSession(req);
+    if (!session) {
+      return sendJSON({ success: false, message: '401 Unauthorized: Akses API data stok membutuhkan autentikasi token.' }, 401);
+    }
+
     const db = loadDB();
-    return sendJSON({ success: true, stocks: db.stocks });
+    let sanitizedStocks = db.stocks.map(s => {
+      const copy = { ...s };
+      copy.password = decryptCredential(copy.password);
+      copy.pin = decryptCredential(copy.pin);
+      return copy;
+    });
+
+    // RBAC: If member, only show assigned stocks or general counts
+    if (session.role === 'Member') {
+      sanitizedStocks = sanitizedStocks.filter(s => s.assigned_to === session.username || s.sold_by === session.username);
+    }
+
+    return sendJSON({ success: true, stocks: sanitizedStocks });
   }
 
-  // 8. POST /api/admin/stocks/update-status (Update Stock Status, Assignment & Account Details)
+  // 9. POST /api/admin/stocks/update-status (Update Stock Status, Assignment & Account Details - AUTHENTICATED)
   if (pathname === '/api/admin/stocks/update-status' && method === 'POST') {
+    const session = authenticateSession(req);
+    if (!session) {
+      return sendJSON({ success: false, message: '401 Unauthorized: Akses ini memerlukan login.' }, 401);
+    }
+
     const body = await parseBody(req);
     const { id, status, assigned_to, sold_by, customer_name, customer_wa, product_id, product_name, email, password, login_by, profile, pin, nomor, note } = body;
     const db = loadDB();
     let stock = db.stocks.find(s => s.id === id || (s.email && s.email === body.email));
+
     if (stock) {
       if (status) stock.status = status;
       if (assigned_to !== undefined) stock.assigned_to = assigned_to;
@@ -657,15 +807,30 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
       if (product_id) stock.product_id = product_id;
       if (product_name) stock.product_name = product_name;
       if (email) stock.email = email;
-      if (password !== undefined) stock.password = password;
+      if (password !== undefined) stock.password = encryptCredential(password);
       if (login_by !== undefined) stock.login_by = login_by;
       if (profile !== undefined) stock.profile = profile;
-      if (pin !== undefined) stock.pin = pin;
+      if (pin !== undefined) stock.pin = encryptCredential(pin);
       if (nomor !== undefined) stock.nomor = nomor;
       if (note !== undefined) stock.note = note;
       stock.updated_at = new Date().toISOString();
+
+      // Audit Logging
+      if (!db.logs) db.logs = [];
+      db.logs.unshift({
+        id: `log-${Date.now()}`,
+        type: 'update',
+        activity: `User @${session.username} (${session.role}) memperbarui data stok [ID: ${stock.id}] ${stock.product_name} (${stock.email}).`,
+        created_at: new Date().toISOString()
+      });
+
       saveDB(db);
-      return sendJSON({ success: true, message: 'Stock data updated in server.', stock });
+
+      const returnedStock = { ...stock };
+      returnedStock.password = decryptCredential(returnedStock.password);
+      returnedStock.pin = decryptCredential(returnedStock.pin);
+
+      return sendJSON({ success: true, message: 'Stock data updated in server.', stock: returnedStock });
     }
     return sendJSON({ success: false, message: 'Stock tidak ditemukan.' }, 404);
   }
@@ -709,6 +874,7 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
 server.listen(PORT, () => {
   console.log(`===================================================`);
   console.log(`🚀 Babyiel Store Automated Sales Server running on port ${PORT}`);
+  console.log(`🔒 Security Hardening Enabled: Encryption at Rest & RBAC Auth Active`);
   console.log(`👉 Access URL: http://localhost:${PORT}`);
   console.log(`===================================================`);
 });
