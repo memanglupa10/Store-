@@ -642,6 +642,24 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
     return sendJSON({ success: true, stocks: db.stocks });
   }
 
+  // 8. POST /api/admin/stocks/update-status (Update Stock Status & Assignment)
+  if (pathname === '/api/admin/stocks/update-status' && method === 'POST') {
+    const body = await parseBody(req);
+    const { id, status, assigned_to, sold_by, customer_name, customer_wa } = body;
+    const db = loadDB();
+    let stock = db.stocks.find(s => s.id === id || (s.email && s.email === body.email));
+    if (stock) {
+      if (status) stock.status = status;
+      if (assigned_to !== undefined) stock.assigned_to = assigned_to;
+      if (sold_by !== undefined) stock.sold_by = sold_by;
+      if (customer_name) stock.customer_name = customer_name;
+      if (customer_wa) stock.customer_wa = customer_wa;
+      saveDB(db);
+      return sendJSON({ success: true, message: 'Stock status updated in server.', stock });
+    }
+    return sendJSON({ success: false, message: 'Stock tidak ditemukan.' }, 404);
+  }
+
   // =========================================================
   // STATIC FILE SERVER & SPA FALLBACK
   // =========================================================

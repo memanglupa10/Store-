@@ -1162,6 +1162,17 @@ class StoreDB {
     localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify(stocks));
     this.syncSupabaseTable('stocks', stock, 'upsert');
 
+    // Sync status change to backend server
+    try {
+      fetch('/api/admin/stocks/update-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: stock.id, email: stock.email, status: 'RESERVED', assigned_to: targetReseller })
+      }).catch(e => console.warn('Sync assign error:', e));
+    } catch (err) {
+      console.warn('Sync assign error:', err);
+    }
+
     if (targetReseller && targetReseller !== 'admin') {
       this.addNotification({
         recipient: targetReseller,
@@ -1205,6 +1216,17 @@ class StoreDB {
 
     localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify(stocks));
     this.syncSupabaseTable('stocks', stock, 'upsert');
+
+    // Sync status change to backend server
+    try {
+      fetch('/api/admin/stocks/update-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: stock.id, email: stock.email, status: 'READY', assigned_to: 'admin' })
+      }).catch(e => console.warn('Sync takeBack error:', e));
+    } catch (err) {
+      console.warn('Sync takeBack error:', err);
+    }
 
     if (prevReseller && prevReseller !== 'admin') {
       this.addNotification({

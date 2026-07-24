@@ -790,7 +790,13 @@ const App = {
               return; // Keep as SEDANG BERLANGGANAN
             }
 
+            // Protect against overwriting local ASSIGNED reseller stock with server READY!
+            if (localItem.status === 'ASSIGNED' && localItem.assigned_to && localItem.assigned_to !== 'admin' && finalStatus === 'READY') {
+              return; // Keep as ASSIGNED to reseller
+            }
+
             localItem.status = finalStatus;
+            localItem.assigned_to = (serverStock.assigned_to && serverStock.assigned_to !== 'admin') ? serverStock.assigned_to : localItem.assigned_to;
             localItem.order_id = serverStock.order_id || localItem.order_id;
             localItem.customer_name = serverStock.customer_name || localItem.customer_name;
             localItem.customer_wa = serverStock.customer_wa || localItem.customer_wa;
