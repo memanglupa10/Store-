@@ -648,6 +648,63 @@ const App = {
   },
 
   currentFulfillmentData: null,
+  fulfillmentLockSeconds: 300,
+  fulfillmentLockInterval: null,
+
+  playSuccessSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.5);
+    } catch (err) {
+      console.warn('Audio play error:', err);
+    }
+  },
+
+  startFulfillmentLockTimer() {
+    this.stopFulfillmentLockTimer();
+    this.fulfillmentLockSeconds = 300; // 5 minutes
+
+    const badge = document.getElementById('fulfillment-lock-timer-badge');
+    const updateBadge = () => {
+      const mins = Math.floor(this.fulfillmentLockSeconds / 60);
+      const secs = this.fulfillmentLockSeconds % 60;
+      if (badge) {
+        if (this.fulfillmentLockSeconds > 0) {
+          badge.innerHTML = `🔒 Terkunci: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} (Cegah Halaman Terclose)`;
+          badge.style.background = '#feefc3';
+          badge.style.color = '#b45309';
+        } else {
+          badge.innerHTML = `🔓 Kunci Terbuka (Sudah 5 Menit)`;
+          badge.style.background = '#dcfce7';
+          badge.style.color = '#15803d';
+        }
+      }
+      if (this.fulfillmentLockSeconds <= 0) {
+        this.stopFulfillmentLockTimer();
+      }
+      this.fulfillmentLockSeconds--;
+    };
+
+    updateBadge();
+    this.fulfillmentLockInterval = setInterval(updateBadge, 1000);
+  },
+
+  stopFulfillmentLockTimer() {
+    if (this.fulfillmentLockInterval) {
+      clearInterval(this.fulfillmentLockInterval);
+      this.fulfillmentLockInterval = null;
+    }
+  },
 
   saveOrderToLocalHistory(data) {
     if (!data || !data.order_id) return;
@@ -686,6 +743,7 @@ const App = {
 
       this.currentFulfillmentData = data;
       this.saveOrderToLocalHistory(data);
+      this.playSuccessSound();
 
       const modal = document.getElementById('modal-order-fulfillment');
       document.getElementById('fulfillment-order-id').textContent = `Order ID: ${data.order_id}`;
@@ -704,7 +762,9 @@ const App = {
       document.getElementById('fulfillment-pin').textContent = data.account.pin || '1234';
 
       if (modal) modal.classList.add('active');
-      this.showToast('Pesanan Berhasil!', `Akun ${data.product_name} Anda telah siap!`, 'success');
+      this.startFulfillmentLockTimer();
+
+      this.showToast('🎉 Pembayaran Diterima!', `Akun ${data.product_name} Anda telah diserahkan!`, 'success');
 
     } catch (err) {
       console.error('Fetch fulfillment error:', err);
@@ -715,13 +775,28 @@ const App = {
     if (!this.currentFulfillmentData || !this.currentFulfillmentData.formatted_text) {
       const formattedEl = document.getElementById('fulfillment-formatted-display');
       if (formattedEl && formattedEl.textContent) {
-        this.copyTextToClipboard(formattedEl.textContent, 'Template Akun');
+        this.copyTextToClipboard(formattedEl.textContent, 'Template Akun Customer');
       } else {
         this.showToast('Gagal Salin', 'Teks template tidak tersedia.', 'warning');
       }
       return;
     }
-    this.copyTextToClipboard(this.currentFulfillmentData.formatted_text, 'Template Akun Rapi');
+    this.copyTextToClipboard(this.currentFulfillmentData.formatted_text, 'Template Akun Customer Rapi');
+  },
+
+  copyResellerTemplate() {
+    if (!this.currentFulfillmentData) return;
+    const resellerText = this.currentFulfillmentData.reseller_text || `📦 RAW STOCK\nEmail: ${this.currentFulfillmentData.account.email}\nPass: ${this.currentFulfillmentData.account.password}`;
+    this.copyTextToClipboard(resellerText, 'Template Format Reseller / Admin');
+  },
+
+  confirmCloseFulfillmentModal() {
+    if (this.fulfillmentLockSeconds > 0) {
+      const confirmClose = confirm('⚠️ HIMBAUAN PEMBELI:\nApakah Anda yakin sudah SALIN (COPY) atau SCREENSHOT data akun Anda?\n\nKlik OK jika Anda sudah menyalin data akun dan ingin menutup modal ini.');
+      if (!confirmClose) return;
+    }
+    this.stopFulfillmentLockTimer();
+    this.closeFulfillmentModal();
   },
 
   sendFulfillmentToWA() {

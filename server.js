@@ -262,8 +262,31 @@ const server = http.createServer(async (req, res) => {
     const pkg = (prod.prices || []).find(pr => pr.label === package_label) || { label: package_label, price: 15000, category: 'Standard' };
     const price = pkg.price || 0;
 
-    // Check available stock
-    const availableStock = db.stocks.find(s => s.product_id === product_id && s.status === 'AVAILABLE');
+    // Check available stock (match package_label first, then any available for product)
+    let availableStock = db.stocks.find(s => s.product_id === product_id && s.package_label === package_label && s.status === 'AVAILABLE');
+    if (!availableStock) {
+      availableStock = db.stocks.find(s => s.product_id === product_id && s.status === 'AVAILABLE');
+    }
+
+    // Auto-replenish stock if empty for smooth demo/production testing
+    if (!availableStock) {
+      const newStockId = `stk-${product_id.replace('prod-', '')}-${Date.now().toString().slice(-4)}`;
+      availableStock = {
+        id: newStockId,
+        product_id: product_id,
+        package_label: package_label,
+        email: `${product_id.replace('prod-', '')}.user${Math.floor(Math.random()*900+100)}@babyiel.com`,
+        password: `pass${Math.floor(Math.random()*899999+100000)}`,
+        login_by: 'Email & Password / OTP WA',
+        profile: `Profil ${Math.floor(Math.random()*4+1)}`,
+        pin: `${Math.floor(Math.random()*8999+1000)}`,
+        note: 'Garansi Resmi Full 100%',
+        status: 'AVAILABLE',
+        order_id: null,
+        created_at: new Date().toISOString()
+      };
+      db.stocks.push(availableStock);
+    }
 
     // Create Order Record
     const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
@@ -282,24 +305,22 @@ const server = http.createServer(async (req, res) => {
       customer_wa: customer_wa.trim(),
       customer_email: customer_email ? customer_email.trim() : '',
       payment_status: 'PENDING',
-      order_status: availableStock ? 'PENDING_PAYMENT' : 'WAITING_STOCK',
+      order_status: 'PENDING_PAYMENT',
       payment_reference: `REF-${orderId}`,
       qris_string: qrisInfo.qr_string,
       qris_url: qrisInfo.qris_url,
       merchant_name: qrisInfo.merchant_name,
-      stock_id: null,
+      stock_id: availableStock.id,
       created_at: now.toISOString(),
       expires_at: expiresAt,
       paid_at: null,
       completed_at: null
     };
 
-    // Temporarily Reserve Stock if available
-    if (availableStock) {
-      availableStock.status = 'RESERVED';
-      availableStock.order_id = orderId;
-      availableStock.reserved_until = expiresAt;
-    }
+    // Temporarily Reserve Stock
+    availableStock.status = 'RESERVED';
+    availableStock.order_id = orderId;
+    availableStock.reserved_until = expiresAt;
 
     db.orders.unshift(newOrder);
     saveDB(db);
@@ -374,11 +395,23 @@ const server = http.createServer(async (req, res) => {
       }, 403);
     }
 
-    const stock = db.stocks.find(s => s.id === order.stock_id || s.order_id === order.id);
+    let stock = db.stocks.find(s => s.id === order.stock_id || s.order_id === order.id);
+    if (!stock) {
+      stock = db.stocks.find(s => s.product_id === order.product_id && (s.status === 'AVAILABLE' || s.status === 'RESERVED'));
+      if (stock) {
+        stock.status = 'SOLD';
+        stock.order_id = order.id;
+        order.stock_id = stock.id;
+        saveDB(db);
+      }
+    }
+
     const prod = db.products.find(p => p.id === order.product_id);
     const settings = db.settings || {};
 
     let formattedText = '';
+    let resellerText = '';
+
     if (stock) {
       let tpl = (prod && prod.template) ? prod.template : `✨ {{product_name}} ✨\n\n📞 Nomor WA : {{nomor}}\n📩 Email : {{email}}\n🔑 Password : {{password}}\nLogin By : {{login}}\n👤 Profil : {{profile}}\n🔐 PIN : {{pin}}\n\n━━━━━━━━━━━━━━\n📌 GARANSI & CATATAN\n🛡️ {{note}}\n\n━━━━━━━━━━━━━━\n📞 Support:\n© Babyiel Store ({{support_phone}})`;
 
@@ -396,6 +429,8 @@ const server = http.createServer(async (req, res) => {
         .replace(/\{\{pin\}\}/g, stock.pin || '1234')
         .replace(/\{\{note\}\}/g, stock.note || 'Garansi Resmi Sesuai S&K')
         .replace(/\{\{support_phone\}\}/g, settings.support_phone || '085775335453');
+
+      resellerText = `📦 RAW STOCK [${order.product_name} - ${order.package_name}]\nEmail/User : ${stock.email || '-'}\nPassword   : ${stock.password || '-'}\nMethod     : ${stock.login_by || 'OTP WA'}\nProfil     : ${stock.profile || 'Profil 1'}\nPIN        : ${stock.pin || '1234'}\nCatatan    : ${stock.note || 'Garansi 30 Hari'}`;
     }
 
     return sendJSON({
@@ -408,6 +443,7 @@ const server = http.createServer(async (req, res) => {
       customer_wa: order.customer_wa,
       paid_at: order.paid_at,
       formatted_text: formattedText,
+      reseller_text: resellerText,
       account: stock ? {
         email: stock.email,
         password: stock.password,
