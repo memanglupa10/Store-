@@ -373,6 +373,31 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
+function calculateExpiryDate(packageLabel, startDate = new Date()) {
+  const d = new Date(startDate);
+  const labelLower = (packageLabel || '').toLowerCase();
+  
+  if (labelLower.includes('3 hari')) {
+    d.setDate(d.getDate() + 3);
+  } else if (labelLower.includes('7 hari')) {
+    d.setDate(d.getDate() + 7);
+  } else if (labelLower.includes('2 bulan')) {
+    d.setMonth(d.getMonth() + 2);
+  } else if (labelLower.includes('3 bulan')) {
+    d.setMonth(d.getMonth() + 3);
+  } else if (labelLower.includes('4 bulan')) {
+    d.setMonth(d.getMonth() + 4);
+  } else if (labelLower.includes('6 bulan')) {
+    d.setMonth(d.getMonth() + 6);
+  } else if (labelLower.includes('1 tahun') || labelLower.includes('tahun')) {
+    d.setFullYear(d.getFullYear() + 1);
+  } else {
+    // Default 1 Bulan (30 Hari)
+    d.setMonth(d.getMonth() + 1);
+  }
+  return d.toISOString();
+}
+
   // 3. GET /api/orders/:id/fulfillment (Public Customer Credential Delivery Page)
   if (pathname.startsWith('/api/orders/') && pathname.endsWith('/fulfillment') && method === 'GET') {
     const parts = pathname.split('/');
@@ -399,8 +424,14 @@ const server = http.createServer(async (req, res) => {
     if (!stock) {
       stock = db.stocks.find(s => s.product_id === order.product_id && (s.status === 'AVAILABLE' || s.status === 'RESERVED'));
       if (stock) {
-        stock.status = 'SOLD';
+        const now = new Date();
+        stock.status = 'BERLANGGANAN';
         stock.order_id = order.id;
+        stock.customer_name = order.customer_name;
+        stock.customer_wa = order.customer_wa;
+        stock.purchased_at = now.toISOString();
+        stock.activated_at = now.toISOString();
+        stock.expires_at = calculateExpiryDate(order.package_name, now);
         order.stock_id = stock.id;
         saveDB(db);
       }
@@ -409,28 +440,9 @@ const server = http.createServer(async (req, res) => {
     const prod = db.products.find(p => p.id === order.product_id);
     const settings = db.settings || {};
 
-    let formattedText = '';
-    let resellerText = '';
-
+    let singleFormat = '';
     if (stock) {
-      let tpl = (prod && prod.template) ? prod.template : `✨ {{product_name}} ✨\n\n📞 Nomor WA : {{nomor}}\n📩 Email : {{email}}\n🔑 Password : {{password}}\nLogin By : {{login}}\n👤 Profil : {{profile}}\n🔐 PIN : {{pin}}\n\n━━━━━━━━━━━━━━\n📌 GARANSI & CATATAN\n🛡️ {{note}}\n\n━━━━━━━━━━━━━━\n📞 Support:\n© Babyiel Store ({{support_phone}})`;
-
-      if (!tpl.includes('{{password}}')) {
-        tpl = tpl.replace('{{email}}', '{{email}}\n🔑 Password : {{password}}');
-      }
-
-      formattedText = tpl
-        .replace(/\{\{product_name\}\}/g, order.product_name || (prod ? prod.name : 'Digital Account'))
-        .replace(/\{\{nomor\}\}/g, order.customer_wa || '-')
-        .replace(/\{\{email\}\}/g, stock.email || '-')
-        .replace(/\{\{password\}\}/g, stock.password || '-')
-        .replace(/\{\{login\}\}/g, stock.login_by || 'Email & Password')
-        .replace(/\{\{profile\}\}/g, stock.profile || 'Profil 1')
-        .replace(/\{\{pin\}\}/g, stock.pin || '1234')
-        .replace(/\{\{note\}\}/g, stock.note || 'Garansi Resmi Sesuai S&K')
-        .replace(/\{\{support_phone\}\}/g, settings.support_phone || '085775335453');
-
-      resellerText = `📦 RAW STOCK [${order.product_name} - ${order.package_name}]\nEmail/User : ${stock.email || '-'}\nPassword   : ${stock.password || '-'}\nMethod     : ${stock.login_by || 'OTP WA'}\nProfil     : ${stock.profile || 'Profil 1'}\nPIN        : ${stock.pin || '1234'}\nCatatan    : ${stock.note || 'Garansi 30 Hari'}`;
+      singleFormat = `${order.product_name}\nEmail: ${stock.email || '-'}\nPassword: ${stock.password || '-'}\nLogin By: ${stock.login_by || 'Email & Password / OTP WA'}\nProfil: ${stock.profile || 'Profil 1'}\nPIN: ${stock.pin || '1234'}`;
     }
 
     return sendJSON({
@@ -442,8 +454,7 @@ const server = http.createServer(async (req, res) => {
       customer_name: order.customer_name,
       customer_wa: order.customer_wa,
       paid_at: order.paid_at,
-      formatted_text: formattedText,
-      reseller_text: resellerText,
+      single_format: singleFormat,
       account: stock ? {
         email: stock.email,
         password: stock.password,
@@ -478,7 +489,8 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (status === 'PAID' || status === 'SUCCESS') {
-      const nowIso = new Date().toISOString();
+      const now = new Date();
+      const nowIso = now.toISOString();
       order.payment_status = 'PAID';
       order.paid_at = nowIso;
 
@@ -489,9 +501,13 @@ const server = http.createServer(async (req, res) => {
       }
 
       if (stock) {
-        stock.status = 'SOLD';
+        stock.status = 'BERLANGGANAN';
         stock.order_id = order.id;
-        stock.sold_at = nowIso;
+        stock.customer_name = order.customer_name;
+        stock.customer_wa = order.customer_wa;
+        stock.purchased_at = nowIso;
+        stock.activated_at = nowIso;
+        stock.expires_at = calculateExpiryDate(order.package_name, now);
 
         order.stock_id = stock.id;
         order.order_status = 'COMPLETED';
@@ -527,7 +543,8 @@ const server = http.createServer(async (req, res) => {
       return sendJSON({ success: false, message: 'Order tidak ditemukan.' }, 404);
     }
 
-    const nowIso = new Date().toISOString();
+    const now = new Date();
+    const nowIso = now.toISOString();
     order.payment_status = 'PAID';
     order.paid_at = nowIso;
 
@@ -537,9 +554,13 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (stock) {
-      stock.status = 'SOLD';
+      stock.status = 'BERLANGGANAN';
       stock.order_id = order.id;
-      stock.sold_at = nowIso;
+      stock.customer_name = order.customer_name;
+      stock.customer_wa = order.customer_wa;
+      stock.purchased_at = nowIso;
+      stock.activated_at = nowIso;
+      stock.expires_at = calculateExpiryDate(order.package_name, now);
 
       order.stock_id = stock.id;
       order.order_status = 'COMPLETED';

@@ -741,34 +741,47 @@ const App = {
 
         data.stocks.forEach(serverStock => {
           let localItem = localStocks.find(s => s.id === serverStock.id || s.email === serverStock.email);
+          const isSoldOrSub = (serverStock.status === 'SOLD' || serverStock.status === 'BERLANGGANAN');
+          const finalStatus = isSoldOrSub ? 'SEDANG BERLANGGANAN' : (serverStock.status === 'RESERVED' ? 'ASSIGNED' : 'READY');
+
           if (!localItem) {
             localItem = {
               id: serverStock.id,
               product_id: serverStock.product_id,
               product_name: serverStock.product_id ? (db.getProductById(serverStock.product_id)?.name || 'Digital Product') : 'Digital Product',
-              nomor: '085775335453',
+              nomor: serverStock.customer_wa || '085775335453',
               email: serverStock.email,
               login_by: serverStock.login_by || 'OTP WhatsApp',
               profile: serverStock.profile || 'Profil 1',
               pin: serverStock.pin || '1234',
               note: serverStock.note || 'Full Garansi',
               assigned_to: 'admin',
-              status: serverStock.status === 'SOLD' ? 'SEDANG BERLANGGANAN' : (serverStock.status === 'RESERVED' ? 'ASSIGNED' : 'READY'),
+              status: finalStatus,
               order_id: serverStock.order_id,
+              customer_name: serverStock.customer_name,
+              customer_wa: serverStock.customer_wa,
+              buyer_name: serverStock.customer_name,
+              buyer_wa: serverStock.customer_wa,
+              purchased_at: serverStock.purchased_at || serverStock.sold_at || new Date().toISOString(),
+              activated_at: serverStock.activated_at || serverStock.sold_at || new Date().toISOString(),
+              expires_at: serverStock.expires_at,
+              expired_date: serverStock.expires_at,
               created_at: serverStock.created_at || new Date().toISOString(),
-              sold_at: serverStock.sold_at
+              sold_at: serverStock.sold_at || serverStock.purchased_at
             };
             localStocks.unshift(localItem);
           } else {
-            if (serverStock.status === 'SOLD') {
-              localItem.status = 'SEDANG BERLANGGANAN';
-              localItem.order_id = serverStock.order_id;
-              localItem.sold_at = serverStock.sold_at;
-            } else if (serverStock.status === 'RESERVED') {
-              localItem.status = 'ASSIGNED';
-            } else if (serverStock.status === 'AVAILABLE') {
-              localItem.status = 'READY';
-            }
+            localItem.status = finalStatus;
+            localItem.order_id = serverStock.order_id || localItem.order_id;
+            localItem.customer_name = serverStock.customer_name || localItem.customer_name;
+            localItem.customer_wa = serverStock.customer_wa || localItem.customer_wa;
+            localItem.buyer_name = serverStock.customer_name || localItem.buyer_name;
+            localItem.buyer_wa = serverStock.customer_wa || localItem.buyer_wa;
+            localItem.purchased_at = serverStock.purchased_at || localItem.purchased_at;
+            localItem.activated_at = serverStock.activated_at || localItem.activated_at;
+            localItem.expires_at = serverStock.expires_at || localItem.expires_at;
+            localItem.expired_date = serverStock.expires_at || localItem.expired_date;
+            localItem.sold_at = serverStock.sold_at || localItem.sold_at;
           }
         });
 
@@ -795,20 +808,20 @@ const App = {
       this.playSuccessSound();
 
       const modal = document.getElementById('modal-order-fulfillment');
-      document.getElementById('fulfillment-order-id').textContent = `Order ID: ${data.order_id}`;
-      document.getElementById('fulfillment-cust-name').textContent = data.customer_name;
-      document.getElementById('fulfillment-prod-title').textContent = `${data.product_name} — ${data.package_name}`;
+      if (document.getElementById('fulfillment-order-id')) {
+        document.getElementById('fulfillment-order-id').textContent = `Order ID: ${data.order_id}`;
+      }
+      if (document.getElementById('fulfillment-cust-name')) {
+        document.getElementById('fulfillment-cust-name').textContent = data.customer_name;
+      }
+      if (document.getElementById('fulfillment-prod-title')) {
+        document.getElementById('fulfillment-prod-title').textContent = `${data.product_name} — ${data.package_name}`;
+      }
 
       const formattedEl = document.getElementById('fulfillment-formatted-display');
       if (formattedEl) {
-        formattedEl.textContent = data.formatted_text || `✨ ${data.product_name} ✨\n📩 Email : ${data.account.email}\n🔑 Password : ${data.account.password}`;
+        formattedEl.textContent = data.single_format || `${data.product_name}\nEmail: ${data.account.email}\nPassword: ${data.account.password}\nLogin By: ${data.account.login_by || 'Email & Password / OTP WA'}\nProfil: ${data.account.profile || 'Profil 1'}\nPIN: ${data.account.pin || '1234'}`;
       }
-
-      document.getElementById('fulfillment-email').textContent = data.account.email || '-';
-      document.getElementById('fulfillment-password').textContent = data.account.password || '-';
-      document.getElementById('fulfillment-loginby').textContent = data.account.login_by || 'OTP WhatsApp';
-      document.getElementById('fulfillment-profile').textContent = data.account.profile || 'Profil 1';
-      document.getElementById('fulfillment-pin').textContent = data.account.pin || '1234';
 
       if (modal) modal.classList.add('active');
       this.startFulfillmentLockTimer();
@@ -820,44 +833,27 @@ const App = {
     }
   },
 
-  copyFormattedTemplate() {
-    if (!this.currentFulfillmentData || !this.currentFulfillmentData.formatted_text) {
+  copySingleAccountInfo() {
+    let copyText = '';
+    if (this.currentFulfillmentData && this.currentFulfillmentData.single_format) {
+      copyText = this.currentFulfillmentData.single_format;
+    } else {
       const formattedEl = document.getElementById('fulfillment-formatted-display');
-      if (formattedEl && formattedEl.textContent) {
-        this.copyTextToClipboard(formattedEl.textContent, 'Template Akun Customer');
-      } else {
-        this.showToast('Gagal Salin', 'Teks template tidak tersedia.', 'warning');
+      if (formattedEl) copyText = formattedEl.textContent;
+    }
+
+    if (copyText) {
+      this.copyTextToClipboard(copyText, 'Informasi Akun');
+      const btn = document.getElementById('btn-copy-single');
+      if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> ✅ Berhasil Disalin!';
+        btn.style.background = '#16a34a';
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.style.background = '#7c3aed';
+        }, 2000);
       }
-      return;
-    }
-    this.copyTextToClipboard(this.currentFulfillmentData.formatted_text, 'Template Akun Customer Rapi');
-
-    const btn = document.getElementById('btn-copy-cust-tpl');
-    if (btn) {
-      const orig = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> ✅ Berhasil Disalin!';
-      btn.style.background = '#16a34a';
-      setTimeout(() => {
-        btn.innerHTML = orig;
-        btn.style.background = '#7c3aed';
-      }, 2000);
-    }
-  },
-
-  copyResellerTemplate() {
-    if (!this.currentFulfillmentData) return;
-    const resellerText = this.currentFulfillmentData.reseller_text || `📦 RAW STOCK\nEmail: ${this.currentFulfillmentData.account.email}\nPass: ${this.currentFulfillmentData.account.password}`;
-    this.copyTextToClipboard(resellerText, 'Template Format Reseller / Admin');
-
-    const btn = document.getElementById('btn-copy-resell-tpl');
-    if (btn) {
-      const orig = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> ✅ Berhasil Disalin!';
-      btn.style.background = '#16a34a';
-      setTimeout(() => {
-        btn.innerHTML = orig;
-        btn.style.background = '#0284c7';
-      }, 2000);
     }
   },
 
