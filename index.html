@@ -1327,6 +1327,85 @@
     </div>
   </div>
 
+  <!-- MODAL: EDIT DATA AKUN STOK (ADMIN ONLY) -->
+  <div id="modal-edit-stock" class="modal-backdrop">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-header">
+        <div class="modal-title" id="edit-stock-modal-title"><i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> Edit Data Akun Stok</div>
+        <button class="modal-close" onclick="App.closeEditStockModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="edit-stock-form" onsubmit="App.handleEditStock(event)">
+        <input type="hidden" id="edit-stock-id">
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="edit-stock-product">Produk / Aplikasi Digital</label>
+            <select id="edit-stock-product" class="form-select no-icon" required></select>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="edit-stock-email">Email / Account ID</label>
+              <input type="text" id="edit-stock-email" class="form-input no-icon" placeholder="Email akun digital" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="edit-stock-password">Password Akun</label>
+              <input type="text" id="edit-stock-password" class="form-input no-icon" placeholder="Password akun" required>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="edit-stock-login">Metode Login</label>
+              <input type="text" id="edit-stock-login" class="form-input no-icon" placeholder="e.g. Email & Password / OTP WA">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="edit-stock-profile">Nama Profil</label>
+              <input type="text" id="edit-stock-profile" class="form-input no-icon" placeholder="e.g. Profil 1">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="edit-stock-pin">PIN Akun</label>
+              <input type="text" id="edit-stock-pin" class="form-input no-icon" placeholder="e.g. 1234">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="edit-stock-nomor">Nomor WA / Kontak</label>
+              <input type="text" id="edit-stock-nomor" class="form-input no-icon" placeholder="e.g. 085775335453">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="edit-stock-status">Status Stok</label>
+              <select id="edit-stock-status" class="form-select no-icon" required>
+                <option value="READY">READY (Stok Siap Jual)</option>
+                <option value="ASSIGNED">ASSIGNED (Ter-assign ke Reseller)</option>
+                <option value="SEDANG BERLANGGANAN">SEDANG BERLANGGANAN (Aktif Dibeli)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="edit-stock-assigned">Assigned Ke (Reseller/Admin)</label>
+              <select id="edit-stock-assigned" class="form-select no-icon" required></select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="edit-stock-note">Catatan Internal / Garansi</label>
+            <textarea id="edit-stock-note" class="form-textarea no-icon" rows="2" placeholder="Catatan tambahan"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="App.closeEditStockModal()">Batal</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan Stok</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL: TRANSFER STOCK TO MEMBER -->
   <div id="modal-transfer" class="modal-backdrop">
     <div class="modal-container" style="max-width: 460px;">

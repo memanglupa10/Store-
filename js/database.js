@@ -1136,6 +1136,73 @@ class StoreDB {
     return newStock;
   }
 
+  updateStock(stockId, updateData) {
+    let stocks = JSON.parse(localStorage.getItem(DB_KEYS.STOCKS)) || [];
+    const index = stocks.findIndex(s => s.id === stockId);
+    if (index === -1) return { success: false, message: 'Stock tidak ditemukan!' };
+
+    const stock = stocks[index];
+    const auth = this.getAuth();
+    if (!auth || auth.role !== 'Admin') {
+      return { success: false, message: 'Hanya Admin yang diizinkan mengedit data akun stok!' };
+    }
+
+    if (updateData.product_id) {
+      stock.product_id = updateData.product_id;
+      const prod = this.getProductById(updateData.product_id);
+      if (prod) stock.product_name = prod.name;
+    }
+    if (updateData.email !== undefined) stock.email = updateData.email;
+    if (updateData.password !== undefined) stock.password = updateData.password;
+    if (updateData.login_by !== undefined) stock.login_by = updateData.login_by;
+    if (updateData.profile !== undefined) stock.profile = updateData.profile;
+    if (updateData.pin !== undefined) stock.pin = updateData.pin;
+    if (updateData.nomor !== undefined) stock.nomor = updateData.nomor;
+    if (updateData.note !== undefined) stock.note = updateData.note;
+    if (updateData.status) stock.status = updateData.status;
+    if (updateData.assigned_to) stock.assigned_to = updateData.assigned_to;
+    stock.updated_at = new Date().toISOString();
+
+    if (!stock.history) stock.history = [];
+    stock.history.push({
+      type: 'UPDATED',
+      date: new Date().toISOString(),
+      by: auth.username,
+      details: `Data akun stok diperbarui oleh Admin @${auth.username}`
+    });
+
+    localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify(stocks));
+    this.syncSupabaseTable('stocks', stock, 'upsert');
+
+    // Sync full stock edit to backend server
+    try {
+      const serverStatus = stock.status === 'SEDANG BERLANGGANAN' ? 'BERLANGGANAN' : (stock.status === 'ASSIGNED' ? 'RESERVED' : 'READY');
+      fetch('/api/admin/stocks/update-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: stock.id,
+          product_id: stock.product_id,
+          product_name: stock.product_name,
+          email: stock.email,
+          password: stock.password,
+          login_by: stock.login_by,
+          profile: stock.profile,
+          pin: stock.pin,
+          nomor: stock.nomor,
+          note: stock.note,
+          status: serverStatus,
+          assigned_to: stock.assigned_to
+        })
+      }).catch(e => console.warn('Sync stock edit error:', e));
+    } catch (err) {
+      console.warn('Sync stock edit error:', err);
+    }
+
+    this.logActivity(`Edit data stok ${stock.product_name} (${stock.email})`, 'copy');
+    return { success: true, stock };
+  }
+
   assignStock(stockId, targetReseller) {
     let stocks = JSON.parse(localStorage.getItem(DB_KEYS.STOCKS)) || [];
     const index = stocks.findIndex(s => s.id === stockId);

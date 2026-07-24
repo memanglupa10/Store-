@@ -1827,6 +1827,9 @@ const App = {
                   <button class="act-btn act-btn-transfer" onclick="App.openAssignStockModal('${item.id}')" title="Assign ke Reseller" style="background: rgba(124, 58, 237, 0.1); color: #7c3aed; border-color: rgba(124, 58, 237, 0.3);">
                     <i class="fa-solid fa-user-plus"></i> Assign
                   </button>
+                  <button class="act-btn act-btn-copy" onclick="App.openEditStockModal('${item.id}')" title="Edit Data Akun Stok" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-color: rgba(59, 130, 246, 0.3);">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                  </button>
                   <button class="act-btn act-btn-copy" onclick="App.copyTemplate('${item.id}')" title="Copy Template WA">
                     <i class="fa-solid fa-copy"></i>
                   </button>
@@ -1838,6 +1841,9 @@ const App = {
 
               ${item.status === 'ASSIGNED' ? `
                 ${isAdmin ? `
+                  <button class="act-btn act-btn-copy" onclick="App.openEditStockModal('${item.id}')" title="Edit Data Akun Stok" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-color: rgba(59, 130, 246, 0.3);">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                  </button>
                   <button class="act-btn act-btn-take" onclick="App.takeBackStock('${item.id}')" title="Ambil Kembali Stock dari Reseller" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
                     <i class="fa-solid fa-rotate-left"></i> Ambil Stock
                   </button>
@@ -1855,6 +1861,11 @@ const App = {
               ` : ''}
 
               ${item.status === 'SEDANG BERLANGGANAN' ? `
+                ${isAdmin ? `
+                  <button class="act-btn act-btn-copy" onclick="App.openEditStockModal('${item.id}')" title="Edit Data Akun Stok" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-color: rgba(59, 130, 246, 0.3);">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                  </button>
+                ` : ''}
                 <button class="act-btn act-btn-renew" onclick="App.openRenewModal('${item.id}')" title="Perpanjang Subscription">
                   <i class="fa-solid fa-clock-rotate-left"></i> Perpanjang
                 </button>
@@ -2070,6 +2081,90 @@ const App = {
       this.renderStockTable();
     } else if (this.currentPage === 'dashboard') {
       this.renderDashboardView();
+    }
+  },
+
+  // --- EDIT STOCK HANDLERS (ADMIN ONLY) ---
+  openEditStockModal(stockId) {
+    const auth = db.getAuth();
+    if (!auth || auth.role !== 'Admin') {
+      this.showToast('Akses Dibatasi', 'Hanya Admin yang diizinkan mengedit data akun stok!', 'warning');
+      return;
+    }
+
+    const stock = db.getStockById(stockId);
+    if (!stock) return;
+
+    const modal = document.getElementById('modal-edit-stock');
+    if (!modal) return;
+
+    document.getElementById('edit-stock-id').value = stock.id;
+
+    // Populate Products Select
+    const prodSelect = document.getElementById('edit-stock-product');
+    if (prodSelect) {
+      const products = db.getProducts();
+      let html = '';
+      products.forEach(p => {
+        html += `<option value="${p.id}" ${stock.product_id === p.id ? 'selected' : ''}>${p.name}</option>`;
+      });
+      prodSelect.innerHTML = html;
+    }
+
+    // Populate Assigned To Select
+    const assignedSelect = document.getElementById('edit-stock-assigned');
+    if (assignedSelect) {
+      const users = db.getUsers();
+      let html = '<option value="admin" ' + (stock.assigned_to === 'admin' || !stock.assigned_to ? 'selected' : '') + '>Admin (Pusat)</option>';
+      users.filter(u => u.role === 'Member').forEach(u => {
+        html += `<option value="${u.username}" ${stock.assigned_to === u.username ? 'selected' : ''}>Reseller: ${u.name} (@${u.username})</option>`;
+      });
+      assignedSelect.innerHTML = html;
+    }
+
+    document.getElementById('edit-stock-email').value = stock.email || '';
+    document.getElementById('edit-stock-password').value = stock.password || '';
+    document.getElementById('edit-stock-login').value = stock.login_by || '';
+    document.getElementById('edit-stock-profile').value = stock.profile || '';
+    document.getElementById('edit-stock-pin').value = stock.pin || '';
+    document.getElementById('edit-stock-nomor').value = stock.nomor || stock.buyer_wa || '';
+    document.getElementById('edit-stock-status').value = stock.status || 'READY';
+    document.getElementById('edit-stock-note').value = stock.note || '';
+
+    modal.classList.add('active');
+  },
+
+  closeEditStockModal() {
+    const modal = document.getElementById('modal-edit-stock');
+    if (modal) modal.classList.remove('active');
+  },
+
+  handleEditStock(e) {
+    if (e) e.preventDefault();
+    const stockId = document.getElementById('edit-stock-id').value;
+    if (!stockId) return;
+
+    const updateData = {
+      product_id: document.getElementById('edit-stock-product').value,
+      email: document.getElementById('edit-stock-email').value.trim(),
+      password: document.getElementById('edit-stock-password').value.trim(),
+      login_by: document.getElementById('edit-stock-login').value.trim(),
+      profile: document.getElementById('edit-stock-profile').value.trim(),
+      pin: document.getElementById('edit-stock-pin').value.trim(),
+      nomor: document.getElementById('edit-stock-nomor').value.trim(),
+      status: document.getElementById('edit-stock-status').value,
+      assigned_to: document.getElementById('edit-stock-assigned').value,
+      note: document.getElementById('edit-stock-note').value.trim()
+    };
+
+    const res = db.updateStock(stockId, updateData);
+    if (res.success) {
+      this.closeEditStockModal();
+      this.showToast('Stok Diperbarui', `Data akun ${res.stock.product_name} (${res.stock.email}) berhasil diperbarui!`, 'success');
+      this.renderStockTable();
+      if (this.currentPage === 'dashboard') this.renderDashboardView();
+    } else {
+      this.showToast('Gagal Perbarui', res.message, 'error');
     }
   },
 

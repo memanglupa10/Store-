@@ -323,16 +323,16 @@
       "product_id": "prod-canva",
       "product_name": "Canva Pro",
       "nomor": "085775300253",
-      "email": "canva.ready002@babyiel.com",
-      "password": "pass100002",
+      "email": "netflix.edited@babyiel.com",
+      "password": "newpassword123",
       "login_by": "Email & Password",
-      "profile": "Profil 3",
+      "profile": "Profil Edit",
       "pin": "1002",
       "note": "Garansi Resmi Full 100%",
       "assigned_to": "admin",
       "status": "READY",
       "created_at": "2026-07-22T11:58:00.713Z",
-      "updated_at": "2026-07-22T11:58:00.713Z"
+      "updated_at": "2026-07-24T12:53:32.181Z"
     },
     {
       "id": "STK-1003",
@@ -457,8 +457,8 @@
       "profile": "Profil 3",
       "pin": "1010",
       "note": "Garansi Resmi Full 100%",
-      "assigned_to": "admin",
-      "status": "READY",
+      "assigned_to": "member2",
+      "status": "RESERVED",
       "created_at": "2026-07-24T11:58:00.713Z",
       "updated_at": "2026-07-24T11:58:00.713Z"
     },

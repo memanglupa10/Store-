@@ -642,10 +642,10 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
     return sendJSON({ success: true, stocks: db.stocks });
   }
 
-  // 8. POST /api/admin/stocks/update-status (Update Stock Status & Assignment)
+  // 8. POST /api/admin/stocks/update-status (Update Stock Status, Assignment & Account Details)
   if (pathname === '/api/admin/stocks/update-status' && method === 'POST') {
     const body = await parseBody(req);
-    const { id, status, assigned_to, sold_by, customer_name, customer_wa } = body;
+    const { id, status, assigned_to, sold_by, customer_name, customer_wa, product_id, product_name, email, password, login_by, profile, pin, nomor, note } = body;
     const db = loadDB();
     let stock = db.stocks.find(s => s.id === id || (s.email && s.email === body.email));
     if (stock) {
@@ -654,8 +654,18 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
       if (sold_by !== undefined) stock.sold_by = sold_by;
       if (customer_name) stock.customer_name = customer_name;
       if (customer_wa) stock.customer_wa = customer_wa;
+      if (product_id) stock.product_id = product_id;
+      if (product_name) stock.product_name = product_name;
+      if (email) stock.email = email;
+      if (password !== undefined) stock.password = password;
+      if (login_by !== undefined) stock.login_by = login_by;
+      if (profile !== undefined) stock.profile = profile;
+      if (pin !== undefined) stock.pin = pin;
+      if (nomor !== undefined) stock.nomor = nomor;
+      if (note !== undefined) stock.note = note;
+      stock.updated_at = new Date().toISOString();
       saveDB(db);
-      return sendJSON({ success: true, message: 'Stock status updated in server.', stock });
+      return sendJSON({ success: true, message: 'Stock data updated in server.', stock });
     }
     return sendJSON({ success: false, message: 'Stock tidak ditemukan.' }, 404);
   }
