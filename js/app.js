@@ -442,10 +442,266 @@ const App = {
     const waUrl = `https://wa.me/${waBase}?text=${msg}`;
 
     footerEl.innerHTML = `
-      <a href="${waUrl}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 0.55rem; background: #25d366; color: #ffffff; font-size: 0.95rem; font-weight: 700; padding: 0.85rem 1.25rem; border-radius: 12px; box-shadow: 0 4px 16px rgba(37,211,102,0.35); text-decoration: none; transition: all 0.2s ease;">
-        <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> Pesan via WhatsApp${priceText}
-      </a>
+      <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+        <button type="button" onclick="App.openCheckoutModal()" style="display: flex; align-items: center; justify-content: center; gap: 0.55rem; background: #7c3aed; color: #ffffff; font-size: 0.95rem; font-weight: 800; padding: 0.85rem 1.25rem; border-radius: 12px; border: none; box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3); cursor: pointer; transition: all 0.2s ease;">
+          <i class="fa-solid fa-qrcode" style="font-size: 1.15rem;"></i> Bayar Otomatis QRIS${priceText}
+        </button>
+        <a href="${waUrl}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 0.4rem; background: #f1f5f9; color: #16a34a; font-size: 0.82rem; font-weight: 700; padding: 0.55rem; border-radius: 10px; border: 1px solid #cbd5e1; text-decoration: none; transition: all 0.2s ease;">
+          <i class="fa-brands fa-whatsapp"></i> Atau Pesan Manual via WhatsApp
+        </a>
+      </div>
     `;
+  },
+
+  // --- AUTOMATED CHECKOUT & QRIS ENGINE ---
+  openCheckoutModal() {
+    if (!this.selectedPackageData) return;
+
+    this.closeCatalogPackagesModal();
+
+    const { prod, label, price } = this.selectedPackageData;
+    const modal = document.getElementById('modal-checkout-form');
+
+    const summaryProd = document.getElementById('checkout-summary-prod');
+    const summaryPkg = document.getElementById('checkout-summary-pkg');
+    const summaryPrice = document.getElementById('checkout-summary-price');
+
+    if (summaryProd) summaryProd.textContent = prod.name;
+    if (summaryPkg) summaryPkg.textContent = `Paket ${label}`;
+    if (summaryPrice) summaryPrice.textContent = `Rp ${price.toLocaleString('id-ID')}`;
+
+    if (modal) modal.classList.add('active');
+  },
+
+  closeCheckoutModal() {
+    const modal = document.getElementById('modal-checkout-form');
+    if (modal) modal.classList.remove('active');
+  },
+
+  currentActiveOrder: null,
+  qrisPollTimer: null,
+  qrisCountdownTimer: null,
+
+  async handleProcessCheckout(e) {
+    if (e) e.preventDefault();
+
+    const name = document.getElementById('checkout-cust-name').value.trim();
+    const wa = document.getElementById('checkout-cust-wa').value.trim();
+    const email = document.getElementById('checkout-cust-email') ? document.getElementById('checkout-cust-email').value.trim() : '';
+
+    if (!name || !wa) {
+      this.showToast('Input Kurang', 'Nama dan Nomor WhatsApp wajib diisi!', 'warning');
+      return;
+    }
+
+    const { prod, label } = this.selectedPackageData;
+
+    try {
+      const btnSubmit = document.getElementById('btn-submit-checkout');
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses QRIS...';
+      }
+
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id: prod.id,
+          package_label: label,
+          customer_name: name,
+          customer_wa: wa,
+          customer_email: email
+        })
+      });
+
+      const res = await response.json();
+
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = 'Lanjutkan Pembayaran QRIS <i class="fa-solid fa-arrow-right"></i>';
+      }
+
+      if (!res.success) {
+        this.showToast('Gagal Checkout', res.message || 'Terjadi kesalahan pada server.', 'error');
+        return;
+      }
+
+      this.currentActiveOrder = res.order;
+      this.closeCheckoutModal();
+      this.openQRISModal(res.order);
+
+    } catch (err) {
+      console.error('Checkout API error:', err);
+      this.showToast('Error Server', 'Gagal terhubung ke backend server.', 'error');
+    }
+  },
+
+  openQRISModal(order) {
+    const modal = document.getElementById('modal-checkout-qris');
+    if (!modal || !order) return;
+
+    document.getElementById('qris-order-id').textContent = `Order ID: ${order.id}`;
+    document.getElementById('qris-total-amount').textContent = `Rp ${order.price.toLocaleString('id-ID')}`;
+
+    const qrisImg = document.getElementById('qris-image-display');
+    if (qrisImg) qrisImg.src = order.qris_url;
+
+    // Start 15-minute countdown
+    this.startQRISCountdown(15 * 60);
+
+    // Start Auto Polling every 3 seconds
+    this.startQRISPolling(order.id);
+
+    modal.classList.add('active');
+  },
+
+  closeQRISModal() {
+    const modal = document.getElementById('modal-checkout-qris');
+    if (modal) modal.classList.remove('active');
+    this.stopQRISPolling();
+    this.stopQRISCountdown();
+  },
+
+  startQRISCountdown(durationSeconds) {
+    this.stopQRISCountdown();
+    let remaining = durationSeconds;
+    const timerEl = document.getElementById('qris-countdown-timer');
+
+    const updateDisplay = () => {
+      const mins = Math.floor(remaining / 60);
+      const secs = remaining % 60;
+      if (timerEl) {
+        timerEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }
+      if (remaining <= 0) {
+        this.stopQRISCountdown();
+        this.showToast('QRIS Kadaluarsa', 'Waktu pembayaran QRIS telah habis. Silakan buat pesanan baru.', 'warning');
+        this.closeQRISModal();
+      }
+      remaining--;
+    };
+
+    updateDisplay();
+    this.qrisCountdownTimer = setInterval(updateDisplay, 1000);
+  },
+
+  stopQRISCountdown() {
+    if (this.qrisCountdownTimer) {
+      clearInterval(this.qrisCountdownTimer);
+      this.qrisCountdownTimer = null;
+    }
+  },
+
+  startQRISPolling(orderId) {
+    this.stopQRISPolling();
+
+    this.qrisPollTimer = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/orders/${orderId}/status`);
+        const data = await res.json();
+
+        if (data.success && data.payment_status === 'PAID') {
+          this.stopQRISPolling();
+          this.stopQRISCountdown();
+          this.closeQRISModal();
+
+          // Fetch full account credentials & show fulfillment modal
+          this.fetchAndDisplayFulfillment(orderId);
+        }
+      } catch (err) {
+        console.warn('Polling status error:', err);
+      }
+    }, 3000);
+  },
+
+  stopQRISPolling() {
+    if (this.qrisPollTimer) {
+      clearInterval(this.qrisPollTimer);
+      this.qrisPollTimer = null;
+    }
+  },
+
+  async simulateQRISPaymentSuccess() {
+    if (!this.currentActiveOrder) return;
+
+    try {
+      const res = await fetch('/api/simulations/pay-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: this.currentActiveOrder.id })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        this.showToast('Pembayaran Diterima', 'Simulasi bayar QRIS berhasil! Membuka data akun...', 'success');
+        this.stopQRISPolling();
+        this.stopQRISCountdown();
+        this.closeQRISModal();
+        this.fetchAndDisplayFulfillment(this.currentActiveOrder.id);
+      } else {
+        this.showToast('Gagal Simulasi', data.message || 'Error', 'error');
+      }
+    } catch (err) {
+      console.error('Simulate payment error:', err);
+    }
+  },
+
+  async fetchAndDisplayFulfillment(orderId) {
+    try {
+      const res = await fetch(`/api/orders/${orderId}/fulfillment`);
+      const data = await res.json();
+
+      if (!data.success || !data.account) {
+        this.showToast('Menunggu Stok', 'Pembayaran berhasil! Stok sedang diproses oleh admin.', 'info');
+        return;
+      }
+
+      const modal = document.getElementById('modal-order-fulfillment');
+      document.getElementById('fulfillment-order-id').textContent = `Order ID: ${data.order_id}`;
+      document.getElementById('fulfillment-cust-name').textContent = data.customer_name;
+      document.getElementById('fulfillment-prod-title').textContent = `${data.product_name} — ${data.package_name}`;
+
+      document.getElementById('fulfillment-email').textContent = data.account.email || '-';
+      document.getElementById('fulfillment-password').textContent = data.account.password || '-';
+      document.getElementById('fulfillment-loginby').textContent = data.account.login_by || 'OTP WhatsApp';
+      document.getElementById('fulfillment-profile').textContent = data.account.profile || 'Profil 1';
+      document.getElementById('fulfillment-pin').textContent = data.account.pin || '1234';
+
+      if (modal) modal.classList.add('active');
+      this.showToast('Pesanan Berhasil!', `Akun ${data.product_name} Anda telah siap!`, 'success');
+
+    } catch (err) {
+      console.error('Fetch fulfillment error:', err);
+    }
+  },
+
+  closeFulfillmentModal() {
+    const modal = document.getElementById('modal-order-fulfillment');
+    if (modal) modal.classList.remove('active');
+  },
+
+  copyFulfillmentField(elementId, labelName) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    const val = el.textContent.trim();
+    if (!val || val === '-') {
+      this.showToast('Gagal Salin', `Tidak ada data ${labelName} untuk disalin.`, 'warning');
+      return;
+    }
+
+    navigator.clipboard.writeText(val).then(() => {
+      this.showToast(`${labelName} Disalin!`, `${val} telah tersimpan di clipboard.`, 'success');
+    }).catch(() => {
+      const textarea = document.createElement('textarea');
+      textarea.value = val;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      this.showToast(`${labelName} Disalin!`, `${val} telah tersimpan di clipboard.`, 'success');
+    });
   },
 
   closeCatalogPackagesModal() {

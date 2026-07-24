@@ -1,0 +1,179 @@
+{
+  "products": [
+    {
+      "id": "prod-netflix",
+      "name": "Netflix Premium",
+      "icon": "fa-film",
+      "image_url": "assets/icons/netflix.svg",
+      "color": "#ef4444",
+      "duration": "1 Bulan",
+      "garansi": "✅ Full Garansi Sesuai S&K",
+      "prices": [
+        {
+          "label": "3 Hari",
+          "price": 7000,
+          "category": "💎 Sharing 1P1U"
+        },
+        {
+          "label": "7 Hari",
+          "price": 14000,
+          "category": "💎 Sharing 1P1U"
+        },
+        {
+          "label": "1 Bulan",
+          "price": 35000,
+          "category": "💎 Sharing 1P1U"
+        },
+        {
+          "label": "1 Bulan",
+          "price": 26000,
+          "category": "💎 Sharing 1P2U"
+        },
+        {
+          "label": "1 Bulan",
+          "price": 165000,
+          "category": "👑 Private"
+        }
+      ]
+    },
+    {
+      "id": "prod-canva",
+      "name": "Canva Pro",
+      "icon": "fa-palette",
+      "image_url": "assets/icons/canva.svg",
+      "color": "#06b6d4",
+      "duration": "1 Tahun",
+      "garansi": "✅ Full Garansi Sesuai S&K",
+      "prices": [
+        {
+          "label": "1 Bulan",
+          "price": 10000,
+          "category": "💎 Member"
+        },
+        {
+          "label": "1 Tahun",
+          "price": 27000,
+          "category": "💎 Member"
+        }
+      ]
+    },
+    {
+      "id": "prod-youtube",
+      "name": "YouTube Premium",
+      "icon": "fa-youtube",
+      "image_url": "assets/icons/youtube.svg",
+      "color": "#ff0000",
+      "duration": "1 Bulan",
+      "garansi": "✅ Full Garansi Sesuai S&K",
+      "prices": [
+        {
+          "label": "1 Bulan",
+          "price": 12000,
+          "category": "💎 Invite Family"
+        },
+        {
+          "label": "3 Bulan",
+          "price": 30000,
+          "category": "💎 Invite Family"
+        }
+      ]
+    },
+    {
+      "id": "prod-spotify",
+      "name": "Spotify Premium",
+      "icon": "fa-spotify",
+      "image_url": "assets/icons/spotify.svg",
+      "color": "#1db954",
+      "duration": "1 Bulan",
+      "garansi": "✅ Full Garansi Sesuai S&K",
+      "prices": [
+        {
+          "label": "1 Bulan",
+          "price": 15000,
+          "category": "💎 Individual"
+        },
+        {
+          "label": "3 Bulan",
+          "price": 40000,
+          "category": "💎 Individual"
+        }
+      ]
+    }
+  ],
+  "stocks": [
+    {
+      "id": "stk-nf-001",
+      "product_id": "prod-netflix",
+      "package_label": "1 Bulan",
+      "email": "netflix.prem01@babyiel.com",
+      "password": "password123",
+      "login_by": "OTP WhatsApp",
+      "profile": "Profil 1 (Rian)",
+      "pin": "1234",
+      "note": "Garansi 30 Hari Full",
+      "status": "SOLD",
+      "order_id": "BYL-20260724-E09I",
+      "created_at": "2026-07-24T08:03:23.846Z",
+      "reserved_until": "2026-07-24T08:20:03.432Z",
+      "sold_at": "2026-07-24T08:05:08.367Z"
+    },
+    {
+      "id": "stk-nf-002",
+      "product_id": "prod-netflix",
+      "package_label": "1 Bulan",
+      "email": "netflix.prem02@babyiel.com",
+      "password": "password456",
+      "login_by": "Email & Password",
+      "profile": "Profil 2 (Sinta)",
+      "pin": "5678",
+      "note": "Garansi 30 Hari Full",
+      "status": "AVAILABLE",
+      "order_id": null,
+      "created_at": "2026-07-24T08:03:23.848Z"
+    },
+    {
+      "id": "stk-cnv-001",
+      "product_id": "prod-canva",
+      "package_label": "1 Bulan",
+      "email": "canvadesign.pro01@yahoo.com",
+      "password": "canvapassword99",
+      "login_by": "Invite Link",
+      "profile": "Designer Team",
+      "pin": "-",
+      "note": "Member Pro 30 Hari",
+      "status": "AVAILABLE",
+      "order_id": null,
+      "created_at": "2026-07-24T08:03:23.848Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "BYL-20260724-E09I",
+      "product_id": "prod-netflix",
+      "product_name": "Netflix Premium",
+      "package_name": "1 Bulan (💎 Sharing 1P1U)",
+      "price": 35000,
+      "customer_name": "Budi Santoso",
+      "customer_wa": "081234567890",
+      "customer_email": "",
+      "payment_status": "PAID",
+      "order_status": "COMPLETED",
+      "payment_reference": "REF-BYL-20260724-E09I",
+      "qris_string": "00020101021226670016COM.BABYIEL.WWW01189360091430000000000215ID10293847560303UMI5204581253033605802ID5920BABYIEL STORE OFFICIAL6013JAKARTA SELATAN61051211062070703A016304",
+      "qris_url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0yMCAyMGg1MHY1MEgyMHpNMzAgMzB2MzBoMzBWMzB6TTQwIDQwaDEwdjEwSDQwek0xMzAgMjBoNTB2NTBoLTUwek0xNDAgMzB2MzBoMzBWMzB6TTE1MCA0MGgxMHYxMGgtMTB6TTIwIDEzMGg1MHY1MEgyMHpNMzAgMTQwdjMwaDMwdi0zMHpNNDAgMTUwaDEwdjEwSDQwek04MCAyMGgyMHYyMEg4MHpNMTAwIDQwaDIwdjIwaC0yMHpNODAgNzBoMzB2MjBIODB6TTEzMCA4MGgyMHYzMGgtMjB6TTgwIDExMGg0MHYyMEg4MHpNMTQwIDEyMGgzMHYyMGgtMzB6TTkwIDE0MGgzMHY0MEg5MHpNMTQwIDE1MGg0MHYzMGgtNDB6IiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iMTAwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzdjM2FlZCI+UVJJUyBCWUw8L3RleHQ+PC9zdmc+",
+      "merchant_name": "BABYIEL STORE OFFICIAL",
+      "stock_id": "stk-nf-001",
+      "created_at": "2026-07-24T08:05:03.432Z",
+      "expires_at": "2026-07-24T08:20:03.432Z",
+      "paid_at": "2026-07-24T08:05:08.367Z",
+      "completed_at": "2026-07-24T08:05:08.367Z"
+    }
+  ],
+  "webhook_logs": [],
+  "settings": {
+    "store_title": "Babyiel Store",
+    "support_phone": "085775335453",
+    "qris_merchant_name": "BABYIEL STORE OFFICIAL",
+    "qris_merchant_id": "ID1029384756"
+  }
+}
