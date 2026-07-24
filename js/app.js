@@ -731,6 +731,54 @@ const App = {
     }
   },
 
+  async syncServerStocksToLocal() {
+    try {
+      const res = await fetch('/api/admin/stocks');
+      const data = await res.json();
+
+      if (data.success && Array.isArray(data.stocks)) {
+        let localStocks = JSON.parse(localStorage.getItem('babyiel_stocks') || '[]');
+
+        data.stocks.forEach(serverStock => {
+          let localItem = localStocks.find(s => s.id === serverStock.id || s.email === serverStock.email);
+          if (!localItem) {
+            localItem = {
+              id: serverStock.id,
+              product_id: serverStock.product_id,
+              product_name: serverStock.product_id ? (db.getProductById(serverStock.product_id)?.name || 'Digital Product') : 'Digital Product',
+              nomor: '085775335453',
+              email: serverStock.email,
+              login_by: serverStock.login_by || 'OTP WhatsApp',
+              profile: serverStock.profile || 'Profil 1',
+              pin: serverStock.pin || '1234',
+              note: serverStock.note || 'Full Garansi',
+              assigned_to: 'admin',
+              status: serverStock.status === 'SOLD' ? 'SEDANG BERLANGGANAN' : (serverStock.status === 'RESERVED' ? 'ASSIGNED' : 'READY'),
+              order_id: serverStock.order_id,
+              created_at: serverStock.created_at || new Date().toISOString(),
+              sold_at: serverStock.sold_at
+            };
+            localStocks.unshift(localItem);
+          } else {
+            if (serverStock.status === 'SOLD') {
+              localItem.status = 'SEDANG BERLANGGANAN';
+              localItem.order_id = serverStock.order_id;
+              localItem.sold_at = serverStock.sold_at;
+            } else if (serverStock.status === 'RESERVED') {
+              localItem.status = 'ASSIGNED';
+            } else if (serverStock.status === 'AVAILABLE') {
+              localItem.status = 'READY';
+            }
+          }
+        });
+
+        localStorage.setItem('babyiel_stocks', JSON.stringify(localStocks));
+      }
+    } catch (err) {
+      console.warn('Sync server stocks error:', err);
+    }
+  },
+
   async fetchAndDisplayFulfillment(orderId) {
     try {
       const res = await fetch(`/api/orders/${orderId}/fulfillment`);
@@ -743,6 +791,7 @@ const App = {
 
       this.currentFulfillmentData = data;
       this.saveOrderToLocalHistory(data);
+      this.syncServerStocksToLocal();
       this.playSuccessSound();
 
       const modal = document.getElementById('modal-order-fulfillment');
@@ -782,12 +831,34 @@ const App = {
       return;
     }
     this.copyTextToClipboard(this.currentFulfillmentData.formatted_text, 'Template Akun Customer Rapi');
+
+    const btn = document.getElementById('btn-copy-cust-tpl');
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> ✅ Berhasil Disalin!';
+      btn.style.background = '#16a34a';
+      setTimeout(() => {
+        btn.innerHTML = orig;
+        btn.style.background = '#7c3aed';
+      }, 2000);
+    }
   },
 
   copyResellerTemplate() {
     if (!this.currentFulfillmentData) return;
     const resellerText = this.currentFulfillmentData.reseller_text || `📦 RAW STOCK\nEmail: ${this.currentFulfillmentData.account.email}\nPass: ${this.currentFulfillmentData.account.password}`;
     this.copyTextToClipboard(resellerText, 'Template Format Reseller / Admin');
+
+    const btn = document.getElementById('btn-copy-resell-tpl');
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> ✅ Berhasil Disalin!';
+      btn.style.background = '#16a34a';
+      setTimeout(() => {
+        btn.innerHTML = orig;
+        btn.style.background = '#0284c7';
+      }, 2000);
+    }
   },
 
   confirmCloseFulfillmentModal() {
@@ -1544,7 +1615,8 @@ const App = {
   // =========================================================
   // STOCK VIEW
   // =========================================================
-  renderStockView() {
+  async renderStockView() {
+    await this.syncServerStocksToLocal();
     this.updateStockTabCounts();
 
     // Populate Product Filter Dropdown
