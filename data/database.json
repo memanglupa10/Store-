@@ -127,9 +127,11 @@
       "profile": "Profil 2 (Sinta)",
       "pin": "5678",
       "note": "Garansi 30 Hari Full",
-      "status": "AVAILABLE",
-      "order_id": null,
-      "created_at": "2026-07-24T08:03:23.848Z"
+      "status": "SOLD",
+      "order_id": "BYL-20260724-V7VJ",
+      "created_at": "2026-07-24T08:03:23.848Z",
+      "reserved_until": "2026-07-24T08:27:03.289Z",
+      "sold_at": "2026-07-24T08:12:13.258Z"
     },
     {
       "id": "stk-cnv-001",
@@ -147,6 +149,27 @@
     }
   ],
   "orders": [
+    {
+      "id": "BYL-20260724-V7VJ",
+      "product_id": "prod-netflix",
+      "product_name": "Netflix Premium",
+      "package_name": "7 Hari (💎 Sharing 1P1U)",
+      "price": 14000,
+      "customer_name": "rian",
+      "customer_wa": "082121214141",
+      "customer_email": "",
+      "payment_status": "PAID",
+      "order_status": "COMPLETED",
+      "payment_reference": "REF-BYL-20260724-V7VJ",
+      "qris_string": "00020101021226670016COM.BABYIEL.WWW01189360091430000000000215ID10293847560303UMI5204581253033605802ID5920BABYIEL STORE OFFICIAL6013JAKARTA SELATAN61051211062070703A016304",
+      "qris_url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0yMCAyMGg1MHY1MEgyMHpNMzAgMzB2MzBoMzBWMzB6TTQwIDQwaDEwdjEwSDQwek0xMzAgMjBoNTB2NTBoLTUwek0xNDAgMzB2MzBoMzBWMzB6TTE1MCA0MGgxMHYxMGgtMTB6TTIwIDEzMGg1MHY1MEgyMHpNMzAgMTQwdjMwaDMwdi0zMHpNNDAgMTUwaDEwdjEwSDQwek04MCAyMGgyMHYyMEg4MHpNMTAwIDQwaDIwdjIwaC0yMHpNODAgNzBoMzB2MjBIODB6TTEzMCA4MGgyMHYzMGgtMjB6TTgwIDExMGg0MHYyMEg4MHpNMTQwIDEyMGgzMHYyMGgtMzB6TTkwIDE0MGgzMHY0MEg5MHpNMTQwIDE1MGg0MHYzMGgtNDB6IiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iMTAwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzdjM2FlZCI+UVJJUyBCWUw8L3RleHQ+PC9zdmc+",
+      "merchant_name": "BABYIEL STORE OFFICIAL",
+      "stock_id": "stk-nf-002",
+      "created_at": "2026-07-24T08:12:03.289Z",
+      "expires_at": "2026-07-24T08:27:03.289Z",
+      "paid_at": "2026-07-24T08:12:13.258Z",
+      "completed_at": "2026-07-24T08:12:13.258Z"
+    },
     {
       "id": "BYL-20260724-E09I",
       "product_id": "prod-netflix",

@@ -375,6 +375,28 @@ const server = http.createServer(async (req, res) => {
     }
 
     const stock = db.stocks.find(s => s.id === order.stock_id || s.order_id === order.id);
+    const prod = db.products.find(p => p.id === order.product_id);
+    const settings = db.settings || {};
+
+    let formattedText = '';
+    if (stock) {
+      let tpl = (prod && prod.template) ? prod.template : `✨ {{product_name}} ✨\n\n📞 Nomor WA : {{nomor}}\n📩 Email : {{email}}\n🔑 Password : {{password}}\nLogin By : {{login}}\n👤 Profil : {{profile}}\n🔐 PIN : {{pin}}\n\n━━━━━━━━━━━━━━\n📌 GARANSI & CATATAN\n🛡️ {{note}}\n\n━━━━━━━━━━━━━━\n📞 Support:\n© Babyiel Store ({{support_phone}})`;
+
+      if (!tpl.includes('{{password}}')) {
+        tpl = tpl.replace('{{email}}', '{{email}}\n🔑 Password : {{password}}');
+      }
+
+      formattedText = tpl
+        .replace(/\{\{product_name\}\}/g, order.product_name || (prod ? prod.name : 'Digital Account'))
+        .replace(/\{\{nomor\}\}/g, order.customer_wa || '-')
+        .replace(/\{\{email\}\}/g, stock.email || '-')
+        .replace(/\{\{password\}\}/g, stock.password || '-')
+        .replace(/\{\{login\}\}/g, stock.login_by || 'Email & Password')
+        .replace(/\{\{profile\}\}/g, stock.profile || 'Profil 1')
+        .replace(/\{\{pin\}\}/g, stock.pin || '1234')
+        .replace(/\{\{note\}\}/g, stock.note || 'Garansi Resmi Sesuai S&K')
+        .replace(/\{\{support_phone\}\}/g, settings.support_phone || '085775335453');
+    }
 
     return sendJSON({
       success: true,
@@ -385,6 +407,7 @@ const server = http.createServer(async (req, res) => {
       customer_name: order.customer_name,
       customer_wa: order.customer_wa,
       paid_at: order.paid_at,
+      formatted_text: formattedText,
       account: stock ? {
         email: stock.email,
         password: stock.password,

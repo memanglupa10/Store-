@@ -647,6 +647,33 @@ const App = {
     }
   },
 
+  currentFulfillmentData: null,
+
+  saveOrderToLocalHistory(data) {
+    if (!data || !data.order_id) return;
+    try {
+      let history = JSON.parse(localStorage.getItem('babyiel_my_orders') || '[]');
+      const existsIdx = history.findIndex(item => item.order_id === data.order_id);
+      const itemData = {
+        order_id: data.order_id,
+        product_name: data.product_name,
+        package_name: data.package_name,
+        price: data.price,
+        customer_name: data.customer_name,
+        customer_wa: data.customer_wa,
+        paid_at: data.paid_at || new Date().toISOString()
+      };
+      if (existsIdx >= 0) {
+        history[existsIdx] = itemData;
+      } else {
+        history.unshift(itemData);
+      }
+      localStorage.setItem('babyiel_my_orders', JSON.stringify(history.slice(0, 20)));
+    } catch (err) {
+      console.warn('Failed saving order history to localStorage:', err);
+    }
+  },
+
   async fetchAndDisplayFulfillment(orderId) {
     try {
       const res = await fetch(`/api/orders/${orderId}/fulfillment`);
@@ -657,10 +684,18 @@ const App = {
         return;
       }
 
+      this.currentFulfillmentData = data;
+      this.saveOrderToLocalHistory(data);
+
       const modal = document.getElementById('modal-order-fulfillment');
       document.getElementById('fulfillment-order-id').textContent = `Order ID: ${data.order_id}`;
       document.getElementById('fulfillment-cust-name').textContent = data.customer_name;
       document.getElementById('fulfillment-prod-title').textContent = `${data.product_name} — ${data.package_name}`;
+
+      const formattedEl = document.getElementById('fulfillment-formatted-display');
+      if (formattedEl) {
+        formattedEl.textContent = data.formatted_text || `✨ ${data.product_name} ✨\n📩 Email : ${data.account.email}\n🔑 Password : ${data.account.password}`;
+      }
 
       document.getElementById('fulfillment-email').textContent = data.account.email || '-';
       document.getElementById('fulfillment-password').textContent = data.account.password || '-';
@@ -673,6 +708,138 @@ const App = {
 
     } catch (err) {
       console.error('Fetch fulfillment error:', err);
+    }
+  },
+
+  copyFormattedTemplate() {
+    if (!this.currentFulfillmentData || !this.currentFulfillmentData.formatted_text) {
+      const formattedEl = document.getElementById('fulfillment-formatted-display');
+      if (formattedEl && formattedEl.textContent) {
+        this.copyTextToClipboard(formattedEl.textContent, 'Template Akun');
+      } else {
+        this.showToast('Gagal Salin', 'Teks template tidak tersedia.', 'warning');
+      }
+      return;
+    }
+    this.copyTextToClipboard(this.currentFulfillmentData.formatted_text, 'Template Akun Rapi');
+  },
+
+  sendFulfillmentToWA() {
+    if (!this.currentFulfillmentData) return;
+
+    const { customer_wa, formatted_text, product_name, order_id } = this.currentFulfillmentData;
+    const settings = db.getSettings();
+    const storeWA = settings.support_phone ? settings.support_phone.replace(/\D/g, '') : '085775335453';
+
+    let targetWA = customer_wa ? customer_wa.replace(/\D/g, '') : storeWA;
+    if (targetWA.startsWith('0')) targetWA = '62' + targetWA.slice(1);
+    if (!targetWA.startsWith('62')) targetWA = '62' + targetWA;
+
+    const msgText = formatted_text || `Halo, ini data akun ${product_name} (Order ID: ${order_id})`;
+    const waUrl = `https://wa.me/${targetWA}?text=${encodeURIComponent(msgText)}`;
+
+    window.open(waUrl, '_blank');
+    this.showToast('Membuka WhatsApp', 'Mengarahkan ke WhatsApp untuk menyimpan pesan...', 'info');
+  },
+
+  copyTextToClipboard(text, labelName) {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      this.showToast(`${labelName} Disalin!`, 'Teks berhasil tersimpan di clipboard.', 'success');
+    }).catch(() => {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      this.showToast(`${labelName} Disalin!`, 'Teks berhasil tersimpan di clipboard.', 'success');
+    });
+  },
+
+  openTrackOrderModal() {
+    const modal = document.getElementById('modal-track-order');
+    if (!modal) return;
+
+    this.renderTrackOrderHistory();
+    modal.classList.add('active');
+  },
+
+  closeTrackOrderModal() {
+    const modal = document.getElementById('modal-track-order');
+    if (modal) modal.classList.remove('active');
+  },
+
+  renderTrackOrderHistory() {
+    const container = document.getElementById('track-order-history-list');
+    if (!container) return;
+
+    try {
+      const history = JSON.parse(localStorage.getItem('babyiel_my_orders') || '[]');
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div style="font-size: 0.78rem; color: #94a3b8; text-align: center; padding: 0.75rem;">
+            Belum ada riwayat pesanan di browser ini.
+          </div>
+        `;
+        return;
+      }
+
+      let html = history.map(item => `
+        <div onclick="App.selectTrackOrderItem('${item.order_id}')" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.75rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s ease;">
+          <div>
+            <div style="font-family: monospace; font-size: 0.8rem; font-weight: 800; color: #7c3aed;">${item.order_id}</div>
+            <div style="font-size: 0.75rem; font-weight: 700; color: #0f172a;">${item.product_name} (${item.package_name || 'Standard'})</div>
+          </div>
+          <button type="button" class="btn btn-sm" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-size: 0.7rem; font-weight: 800; padding: 0.25rem 0.5rem; border-radius: 6px;">
+            Buka Akun <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      `).join('');
+
+      container.innerHTML = html;
+    } catch (err) {
+      console.warn('Error rendering order history:', err);
+    }
+  },
+
+  selectTrackOrderItem(orderId) {
+    this.closeTrackOrderModal();
+    this.fetchAndDisplayFulfillment(orderId);
+  },
+
+  async handleTrackOrder(e) {
+    if (e) e.preventDefault();
+
+    const orderIdInput = document.getElementById('input-track-order-id');
+    if (!orderIdInput) return;
+
+    const orderId = orderIdInput.value.trim().toUpperCase();
+    if (!orderId) {
+      this.showToast('Input Kurang', 'Masukkan Order ID terlebih dahulu!', 'warning');
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/orders/${orderId}/status`);
+      const data = await res.json();
+
+      if (!data.success) {
+        this.showToast('Order Tidak Ditemukan', 'Order ID tidak terdaftar di sistem.', 'error');
+        return;
+      }
+
+      if (data.payment_status !== 'PAID') {
+        this.showToast('Belum Dibayar', `Status order ${orderId} saat ini: ${data.payment_status}`, 'warning');
+        return;
+      }
+
+      this.closeTrackOrderModal();
+      this.fetchAndDisplayFulfillment(orderId);
+
+    } catch (err) {
+      console.error('Track order error:', err);
+      this.showToast('Error Server', 'Gagal memeriksa Order ID ke server.', 'error');
     }
   },
 
