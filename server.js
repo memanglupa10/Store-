@@ -71,49 +71,29 @@ const DEFAULT_PRODUCTS = [
   }
 ];
 
+const nowSeed = new Date();
 const DEFAULT_STOCKS = [
-  {
-    id: 'stk-nf-001',
-    product_id: 'prod-netflix',
-    package_label: '1 Bulan',
-    email: 'netflix.prem01@babyiel.com',
-    password: 'password123',
-    login_by: 'OTP WhatsApp',
-    profile: 'Profil 1 (Rian)',
-    pin: '1234',
-    note: 'Garansi 30 Hari Full',
-    status: 'AVAILABLE',
-    order_id: null,
-    created_at: new Date().toISOString()
-  },
-  {
-    id: 'stk-nf-002',
-    product_id: 'prod-netflix',
-    package_label: '1 Bulan',
-    email: 'netflix.prem02@babyiel.com',
-    password: 'password456',
-    login_by: 'Email & Password',
-    profile: 'Profil 2 (Sinta)',
-    pin: '5678',
-    note: 'Garansi 30 Hari Full',
-    status: 'AVAILABLE',
-    order_id: null,
-    created_at: new Date().toISOString()
-  },
-  {
-    id: 'stk-cnv-001',
-    product_id: 'prod-canva',
-    package_label: '1 Bulan',
-    email: 'canvadesign.pro01@yahoo.com',
-    password: 'canvapassword99',
-    login_by: 'Invite Link',
-    profile: 'Designer Team',
-    pin: '-',
-    note: 'Member Pro 30 Hari',
-    status: 'AVAILABLE',
-    order_id: null,
-    created_at: new Date().toISOString()
-  }
+  // === STOCK READY / AVAILABLE (15 items) ===
+  { id: 'STK-1001', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', email: 'disney.vip01@babyiel.com', password: 'passdisney01', login_by: 'OTP WhatsApp', profile: 'Profil 1 (Rian)', pin: '1234', note: 'Akun batch utama', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 3).toISOString() },
+  { id: 'STK-1005', product_id: 'prod-canva', product_name: 'Canva Pro', email: 'canva.designer@yahoo.com', password: 'passcanva05', login_by: 'Magic Link', profile: 'Admin Team', pin: '-', note: 'Akses 1 Tahun', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
+  { id: 'STK-1006', product_id: 'prod-chatgpt', product_name: 'ChatGPT Plus', email: 'gpt4o.master@openai.com', password: 'passgpt06', login_by: 'Email & Password', profile: 'Personal', pin: '5544', note: 'Ready GPT-4o', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 5).toISOString() },
+  { id: 'STK-1009', product_id: 'prod-vidio', product_name: 'Vidio Platinum', email: 'vidio.plat01@gmail.com', password: 'passvidio09', login_by: 'OTP Phone', profile: 'Profil 1', pin: '1234', note: 'Premier Platinum 1 Bulan', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
+  { id: 'STK-1010', product_id: 'prod-iqiyi', product_name: 'iQIYI Premium', email: 'iqiyi.vip01@outlook.com', password: 'passiqiyi10', login_by: 'Email & Password', profile: 'VIP Profile', pin: '8899', note: 'Standard VIP', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 8).toISOString() },
+  { id: 'STK-1011', product_id: 'prod-spotify', product_name: 'Spotify Premium', email: 'spot.fam02@gmail.com', password: 'passspot11', login_by: 'Invite Link', profile: 'Profil Member 11', pin: '-', note: 'Full Garansi 1 Bulan', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 2).toISOString() },
+  { id: 'STK-1012', product_id: 'prod-youtube', product_name: 'YouTube Premium', email: 'yt.fam02@gmail.com', password: 'passyt12', login_by: 'Google Account', profile: 'User 2', pin: '-', note: 'Individu Plan', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
+  { id: 'STK-1013', product_id: 'prod-getcontact', product_name: 'Getcontact Premium', email: 'getcontact.prem02@gmail.com', password: 'passgc13', login_by: 'OTP SMS', profile: 'Profil 2', pin: '-', note: 'Aktif 1 Bulan', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 12).toISOString() },
+  { id: 'STK-1014', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', email: 'disney.prem03@babyiel.com', password: 'passdisney14', login_by: 'OTP WhatsApp', profile: 'Profil 3', pin: '5678', note: 'Private Profile', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 4).toISOString() },
+  { id: 'STK-1015', product_id: 'prod-netflix', product_name: 'Netflix Premium', email: 'net.prem4k_02@gmail.com', password: 'passnet15', login_by: 'Email & Password', profile: 'Profil B', pin: '1122', note: 'Private User Screen', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 3).toISOString() },
+  { id: 'STK-1016', product_id: 'prod-canva', product_name: 'Canva Pro', email: 'canva.brand02@gmail.com', password: 'passcanva16', login_by: 'Magic Link', profile: 'Brand Kit', pin: '-', note: 'Garansi Full', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 2).toISOString() },
+  { id: 'STK-1017', product_id: 'prod-chatgpt', product_name: 'ChatGPT Plus', email: 'gpt4o.team02@openai.com', password: 'passgpt17', login_by: 'Email & Password', profile: 'Team 2', pin: '9090', note: 'Batch Admin', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 6).toISOString() },
+  { id: 'STK-1018', product_id: 'prod-vidio', product_name: 'Vidio Platinum', email: 'vidio.plat02@gmail.com', password: 'passvidio18', login_by: 'OTP Phone', profile: 'Profil 2', pin: '4321', note: 'Premier League Ready', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
+  { id: 'STK-1019', product_id: 'prod-iqiyi', product_name: 'iQIYI Premium', email: 'iqiyi.vip02@gmail.com', password: 'passiqiyi19', login_by: 'Email & Password', profile: 'VIP Screen 2', pin: '7788', note: 'Aktif 1 Bulan', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 15).toISOString() },
+  { id: 'STK-1031', product_id: 'prod-spotify', product_name: 'Spotify Premium', email: 'spot.fam03@gmail.com', password: 'passspot31', login_by: 'Invite Link', profile: 'User 5', pin: '-', note: 'Garansi 30 Hari', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
+
+  // Default Fallbacks
+  { id: 'stk-nf-001', product_id: 'prod-netflix', email: 'netflix.prem01@babyiel.com', password: 'password123', login_by: 'OTP WhatsApp', profile: 'Profil 1 (Rian)', pin: '1234', note: 'Garansi 30 Hari Full', status: 'AVAILABLE', created_at: new Date().toISOString() },
+  { id: 'stk-nf-002', product_id: 'prod-netflix', email: 'netflix.prem02@babyiel.com', password: 'password456', login_by: 'Email & Password', profile: 'Profil 2 (Sinta)', pin: '5678', note: 'Garansi 30 Hari Full', status: 'AVAILABLE', created_at: new Date().toISOString() },
+  { id: 'stk-cnv-001', product_id: 'prod-canva', email: 'canvadesign.pro01@yahoo.com', password: 'canvapassword99', login_by: 'Invite Link', profile: 'Designer Team', pin: '-', note: 'Member Pro 30 Hari', status: 'AVAILABLE', created_at: new Date().toISOString() }
 ];
 
 // Database Manager
@@ -123,6 +103,8 @@ function loadDB() {
       products: DEFAULT_PRODUCTS,
       stocks: DEFAULT_STOCKS,
       orders: [],
+      notifications: [],
+      logs: [],
       webhook_logs: [],
       settings: {
         store_title: 'Babyiel Store',
@@ -136,10 +118,23 @@ function loadDB() {
   }
   try {
     const content = fs.readFileSync(DB_FILE, 'utf-8');
-    return JSON.parse(content);
+    const parsed = JSON.parse(content);
+    if (!parsed.notifications) parsed.notifications = [];
+    if (!parsed.logs) parsed.logs = [];
+
+    // Auto-migrate stocks if database has fewer than 15 stocks
+    if (!parsed.stocks || parsed.stocks.length < 15) {
+      DEFAULT_STOCKS.forEach(defStk => {
+        if (!parsed.stocks.some(s => s.id === defStk.id || s.email === defStk.email)) {
+          parsed.stocks.push(defStk);
+        }
+      });
+      fs.writeFileSync(DB_FILE, JSON.stringify(parsed, null, 2), 'utf-8');
+    }
+    return parsed;
   } catch (err) {
     console.error('Error reading database file:', err);
-    return { products: DEFAULT_PRODUCTS, stocks: DEFAULT_STOCKS, orders: [], webhook_logs: [], settings: {} };
+    return { products: DEFAULT_PRODUCTS, stocks: DEFAULT_STOCKS, orders: [], notifications: [], logs: [], webhook_logs: [], settings: {} };
   }
 }
 
@@ -494,10 +489,10 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
       order.payment_status = 'PAID';
       order.paid_at = nowIso;
 
-      // Find Stock Allocation
+      // Find Stock Allocation (Search both AVAILABLE & READY status)
       let stock = db.stocks.find(s => s.order_id === order.id || (s.product_id === order.product_id && s.status === 'RESERVED'));
       if (!stock) {
-        stock = db.stocks.find(s => s.product_id === order.product_id && s.status === 'AVAILABLE');
+        stock = db.stocks.find(s => s.product_id === order.product_id && (s.status === 'AVAILABLE' || s.status === 'READY'));
       }
 
       if (stock) {
@@ -515,6 +510,31 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
       } else {
         order.order_status = 'WAITING_STOCK';
       }
+
+      // Add Admin Notification & Activity Log
+      if (!db.notifications) db.notifications = [];
+      if (!db.logs) db.logs = [];
+
+      db.notifications.unshift({
+        id: `notif-${Date.now()}`,
+        title: '🛒 Pembelian Website Berhasil',
+        message: `Order ${order.id}: ${order.product_name} (${order.package_name}) dibeli oleh ${order.customer_name} (${order.customer_wa}). Stok terpotong!`,
+        type: 'SALE',
+        order_id: order.id,
+        customer_name: order.customer_name,
+        customer_wa: order.customer_wa,
+        product_name: order.product_name,
+        price: order.price,
+        created_at: nowIso,
+        read: false
+      });
+
+      db.logs.unshift({
+        id: `log-${Date.now()}`,
+        type: 'sale',
+        activity: `Penjualan Otomatis Website: ${order.product_name} (${order.package_name}) dibeli oleh ${order.customer_name} (${order.customer_wa}) [Stok ID: ${stock ? stock.id : '-'}]`,
+        created_at: nowIso
+      });
 
       // Log Webhook Result
       db.webhook_logs.unshift({
@@ -550,7 +570,7 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
 
     let stock = db.stocks.find(s => s.order_id === order.id || (s.product_id === order.product_id && s.status === 'RESERVED'));
     if (!stock) {
-      stock = db.stocks.find(s => s.product_id === order.product_id && s.status === 'AVAILABLE');
+      stock = db.stocks.find(s => s.product_id === order.product_id && (s.status === 'AVAILABLE' || s.status === 'READY'));
     }
 
     if (stock) {
@@ -569,8 +589,45 @@ function calculateExpiryDate(packageLabel, startDate = new Date()) {
       order.order_status = 'WAITING_STOCK';
     }
 
+    // Add Admin Notification & Activity Log
+    if (!db.notifications) db.notifications = [];
+    if (!db.logs) db.logs = [];
+
+    db.notifications.unshift({
+      id: `notif-${Date.now()}`,
+      title: '🛒 Pembelian Website Berhasil',
+      message: `Order ${order.id}: ${order.product_name} (${order.package_name}) dibeli oleh ${order.customer_name} (${order.customer_wa}). Stok terpotong!`,
+      type: 'SALE',
+      order_id: order.id,
+      customer_name: order.customer_name,
+      customer_wa: order.customer_wa,
+      product_name: order.product_name,
+      price: order.price,
+      created_at: nowIso,
+      read: false
+    });
+
+    db.logs.unshift({
+      id: `log-${Date.now()}`,
+      type: 'sale',
+      activity: `Penjualan Otomatis Website: ${order.product_name} (${order.package_name}) dibeli oleh ${order.customer_name} (${order.customer_wa}) [Stok ID: ${stock ? stock.id : '-'}]`,
+      created_at: nowIso
+    });
+
     saveDB(db);
     return sendJSON({ success: true, message: 'Simulasi Pembayaran Berhasil! Order kini PAID & COMPLETED.', order });
+  }
+
+  // 6. GET /api/admin/notifications (Admin Notifications Feed API)
+  if (pathname === '/api/admin/notifications' && method === 'GET') {
+    const db = loadDB();
+    const notifications = db.notifications || [];
+    const unreadCount = notifications.filter(n => !n.read).length;
+    return sendJSON({
+      success: true,
+      unread_count: unreadCount,
+      notifications: notifications.slice(0, 20)
+    });
   }
 
   // 6. GET /api/admin/orders (Admin Orders Monitor Endpoint)

@@ -740,9 +740,16 @@ const App = {
         let localStocks = JSON.parse(localStorage.getItem('babyiel_stocks') || '[]');
 
         data.stocks.forEach(serverStock => {
-          let localItem = localStocks.find(s => s.id === serverStock.id || s.email === serverStock.email);
           const isSoldOrSub = (serverStock.status === 'SOLD' || serverStock.status === 'BERLANGGANAN');
           const finalStatus = isSoldOrSub ? 'SEDANG BERLANGGANAN' : (serverStock.status === 'RESERVED' ? 'ASSIGNED' : 'READY');
+
+          // 1. Direct match by ID, email, or order_id
+          let localItem = localStocks.find(s => s.id === serverStock.id || (serverStock.email && s.email === serverStock.email) || (serverStock.order_id && s.order_id === serverStock.order_id));
+
+          // 2. If sold/sub and not matched by ID/email, fallback to finding the first READY stock of the same product to convert!
+          if (!localItem && isSoldOrSub) {
+            localItem = localStocks.find(s => s.product_id === serverStock.product_id && s.status === 'READY');
+          }
 
           if (!localItem) {
             localItem = {
@@ -787,6 +794,21 @@ const App = {
 
         localStorage.setItem('babyiel_stocks', JSON.stringify(localStocks));
       }
+
+      // Fetch Notifications & Update Badge / Toast
+      try {
+        const notifRes = await fetch('/api/admin/notifications');
+        const notifData = await notifRes.json();
+        if (notifData.success) {
+          const badgeEl = document.getElementById('admin-notif-badge') || document.querySelector('.header-nav-btn .badge');
+          if (badgeEl && notifData.unread_count >= 0) {
+            badgeEl.textContent = notifData.unread_count;
+          }
+        }
+      } catch (ne) {
+        console.warn('Notification sync warning:', ne);
+      }
+
     } catch (err) {
       console.warn('Sync server stocks error:', err);
     }
