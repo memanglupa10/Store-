@@ -2657,23 +2657,11 @@ const App = {
               <div>${catalogBadgeHtml}</div>
             </div>
 
-            <!-- KATALOG PRICES & BENEFITS PREVIEW -->
-            <div style="background: var(--bg-body); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.65rem 0.85rem; margin-bottom: 0.85rem;">
-              <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem; display: flex; align-items: center; justify-content: space-between;">
-                <span><i class="fa-solid fa-tags"></i> Opsi Harga Katalog</span>
-                <span style="color: #10b981; font-weight: 700;">${p.garansi || 'Garansi Resmi ✓'}</span>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 0.15rem; max-height: 90px; overflow-y: auto;">
-                ${priceSummaryHtml}
-              </div>
-              ${p.note ? `<div style="margin-top: 0.4rem; font-size: 0.72rem; color: var(--brand-purple); font-weight: 700;">${p.note}</div>` : ''}
-            </div>
-
             <div style="margin-bottom: 1rem;">
               <span style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.3rem;">
                 ${isMember ? 'Template WA Khusus Saya:' : 'Preview Template WA:'}
               </span>
-              <pre class="product-template-preview" style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.65rem; font-family: monospace; font-size: 0.78rem; white-space: pre-wrap; word-break: break-word; color: var(--text-main); max-height: 110px; overflow-y: auto;">${displayTemplate}</pre>
+              <pre class="product-template-preview" style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.65rem; font-family: monospace; font-size: 0.78rem; white-space: pre-wrap; word-break: break-word; color: var(--text-main); max-height: 140px; overflow-y: auto;">${displayTemplate}</pre>
             </div>
           </div>
 

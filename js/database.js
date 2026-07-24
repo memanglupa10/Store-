@@ -384,28 +384,11 @@ Login By : {{login}}
 
 const DEFAULT_USERS = [
   { id: 'usr-admin-1', username: 'admin', password: '123', name: 'Super Admin Babyiel', role: 'Admin', created_at: new Date().toISOString() },
-  { id: 'usr-admin-2', username: 'admin2', password: '123', name: 'Rian Hidayat (Admin Op)', role: 'Admin', created_at: new Date().toISOString() },
-  { id: 'usr-m1', username: 'member1', password: '123', name: 'Budi Santoso', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m2', username: 'member2', password: '123', name: 'Siti Aminah', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m3', username: 'member3', password: '123', name: 'Dewi Lestari', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m4', username: 'member4', password: '123', name: 'Ahmad Fauzi', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m5', username: 'member5', password: '123', name: 'Eko Prasetyo', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m6', username: 'member6', password: '123', name: 'Maya Putri', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m7', username: 'member7', password: '123', name: 'Rizky Pratama', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m8', username: 'member8', password: '123', name: 'Hendra Wijaya', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m9', username: 'member9', password: '123', name: 'Dian Sastro', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m10', username: 'member10', password: '123', name: 'Fajar Ramadhan', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m11', username: 'member11', password: '123', name: 'Gita Gutawa', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m12', username: 'member12', password: '123', name: 'Bayu Skak', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m13', username: 'member13', password: '123', name: 'Rani Permata', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m14', username: 'member14', password: '123', name: 'Tri Wahyuni', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m15', username: 'member15', password: '123', name: 'Andi Wijaya', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m16', username: 'member16', password: '123', name: 'Bambang Susilo', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m17', username: 'member17', password: '123', name: 'Surya Kencana', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m18', username: 'member18', password: '123', name: 'Nurul Hidayah', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m19', username: 'member19', password: '123', name: 'Kevin Sanjaya', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m20', username: 'member20', password: '123', name: 'Marcus Gideon', role: 'Member', created_at: new Date().toISOString() },
-  { id: 'usr-m21', username: 'member21', password: '123', name: 'Lesti Kejora', role: 'Member', created_at: new Date().toISOString() }
+  { id: 'usr-admin-2', username: 'admin2', password: '123', name: 'Admin Operasional', role: 'Admin', created_at: new Date().toISOString() },
+  { id: 'usr-m1', username: 'member1', password: '123', name: 'Reseller Budi', role: 'Member', created_at: new Date().toISOString() },
+  { id: 'usr-m2', username: 'member2', password: '123', name: 'Reseller Siti', role: 'Member', created_at: new Date().toISOString() },
+  { id: 'usr-m3', username: 'member3', password: '123', name: 'Reseller Dewi', role: 'Member', created_at: new Date().toISOString() },
+  { id: 'usr-m4', username: 'member4', password: '123', name: 'Reseller Ahmad', role: 'Member', created_at: new Date().toISOString() }
 ];
 
 const DEFAULT_SETTINGS = {
@@ -502,7 +485,7 @@ class StoreDB {
 
   initDatabase() {
     const currentUsers = JSON.parse(localStorage.getItem(DB_KEYS.USERS)) || [];
-    if (currentUsers.length < 23) {
+    if (currentUsers.length !== DEFAULT_USERS.length) {
       localStorage.setItem(DB_KEYS.USERS, JSON.stringify(DEFAULT_USERS));
     }
 
@@ -532,13 +515,13 @@ class StoreDB {
       }
     }
 
-    const SEED_VERSION = 'v5_3_status_stock_architecture';
+    const SEED_VERSION = 'v6_0_clean_architecture_120_stocks';
     if (localStorage.getItem('babyiel_seed_version') !== SEED_VERSION) {
       this.seedInitialStocks();
       localStorage.setItem('babyiel_seed_version', SEED_VERSION);
     } else {
       const currentStocks = JSON.parse(localStorage.getItem(DB_KEYS.STOCKS)) || [];
-      if (currentStocks.length < 20) {
+      if (currentStocks.length < 50) {
         this.seedInitialStocks();
       }
     }
@@ -549,54 +532,119 @@ class StoreDB {
   }
 
   seedInitialStocks() {
-    const now = new Date();
-    const mockStocks = [
-      // === 15 STOCK READY (Under Admin Control) ===
-      { id: 'STK-1001', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', nomor: '085775335453', email: 'disney.vip01@babyiel.com', login_by: 'OTP WhatsApp', profile: 'Profil 1 (Rian)', pin: '1234', note: 'Akun batch utama', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 86400000 * 3).toISOString(), updated_at: new Date(now - 86400000 * 3).toISOString(), history: [{ type: 'CREATED', date: new Date(now - 86400000 * 3).toISOString(), by: 'admin', details: 'Stok dibuat oleh Admin' }] },
-      { id: 'STK-1005', product_id: 'prod-canva', product_name: 'Canva Pro', nomor: '081122334455', email: 'canva.designer@yahoo.com', login_by: 'Magic Link', profile: 'Admin Team', pin: '-', note: 'Akses 1 Tahun', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 86400000 * 1).toISOString(), updated_at: new Date(now - 86400000 * 1).toISOString(), history: [{ type: 'CREATED', date: new Date(now - 86400000 * 1).toISOString(), by: 'admin', details: 'Stok dibuat oleh Admin' }] },
-      { id: 'STK-1006', product_id: 'prod-chatgpt', product_name: 'ChatGPT Plus', nomor: '085775335453', email: 'gpt4o.master@openai.com', login_by: 'Email & Password', profile: 'Personal', pin: '5544', note: 'Ready GPT-4o', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 3600000 * 5).toISOString(), updated_at: new Date(now - 3600000 * 5).toISOString() },
-      { id: 'STK-1009', product_id: 'prod-vidio', product_name: 'Vidio Platinum', nomor: '085611223344', email: 'vidio.plat01@gmail.com', login_by: 'OTP Phone', profile: 'Profil 1', pin: '1234', note: 'Premier Platinum 1 Bulan', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 86400000 * 1).toISOString(), updated_at: new Date(now - 86400000 * 1).toISOString() },
-      { id: 'STK-1010', product_id: 'prod-iqiyi', product_name: 'iQIYI Premium', nomor: '087711223344', email: 'iqiyi.vip01@outlook.com', login_by: 'Email & Password', profile: 'VIP Profile', pin: '8899', note: 'Standard VIP', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 3600000 * 8).toISOString(), updated_at: new Date(now - 3600000 * 8).toISOString() },
-      { id: 'STK-1011', product_id: 'prod-spotify', product_name: 'Spotify Premium', nomor: '089988776655', email: 'spot.fam02@gmail.com', login_by: 'Invite Link', profile: 'Profil Member 11', pin: '-', note: 'Full Garansi 1 Bulan', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 86400000 * 2).toISOString(), updated_at: new Date(now - 86400000 * 2).toISOString() },
-      { id: 'STK-1012', product_id: 'prod-youtube', product_name: 'YouTube Premium', nomor: '081345678901', email: 'yt.fam02@gmail.com', login_by: 'Google Account', profile: 'User 2', pin: '-', note: 'Individu Plan', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 86400000 * 1).toISOString(), updated_at: new Date(now - 86400000 * 1).toISOString() },
-      { id: 'STK-1013', product_id: 'prod-getcontact', product_name: 'Getcontact Premium', nomor: '085811223344', email: 'getcontact.prem02@gmail.com', login_by: 'OTP SMS', profile: 'Profil 2', pin: '-', note: 'Aktif 1 Bulan', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 3600000 * 12).toISOString(), updated_at: new Date(now - 3600000 * 12).toISOString() },
-      { id: 'STK-1014', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', nomor: '081299887711', email: 'disney.prem03@babyiel.com', login_by: 'OTP WhatsApp', profile: 'Profil 3', pin: '5678', note: 'Private Profile', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 86400000 * 4).toISOString(), updated_at: new Date(now - 86400000 * 4).toISOString() },
-      { id: 'STK-1015', product_id: 'prod-netflix', product_name: 'Netflix Premium', nomor: '085711223399', email: 'net.prem4k_02@gmail.com', login_by: 'Email & Password', profile: 'Profil B', pin: '1122', note: 'Private User Screen', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 3600000 * 3).toISOString(), updated_at: new Date(now - 3600000 * 3).toISOString() },
-      { id: 'STK-1016', product_id: 'prod-canva', product_name: 'Canva Pro', nomor: '087899001122', email: 'canva.brand02@gmail.com', login_by: 'Magic Link', profile: 'Brand Kit', pin: '-', note: 'Garansi Full', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 86400000 * 2).toISOString(), updated_at: new Date(now - 86400000 * 2).toISOString() },
-      { id: 'STK-1017', product_id: 'prod-chatgpt', product_name: 'ChatGPT Plus', nomor: '081233445566', email: 'gpt4o.team02@openai.com', login_by: 'Email & Password', profile: 'Team 2', pin: '9090', note: 'Batch Admin', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 3600000 * 6).toISOString(), updated_at: new Date(now - 3600000 * 6).toISOString() },
-      { id: 'STK-1018', product_id: 'prod-vidio', product_name: 'Vidio Platinum', nomor: '085677889900', email: 'vidio.plat02@gmail.com', login_by: 'OTP Phone', profile: 'Profil 2', pin: '4321', note: 'Premier League Ready', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 86400000 * 1).toISOString(), updated_at: new Date(now - 86400000 * 1).toISOString() },
-      { id: 'STK-1019', product_id: 'prod-iqiyi', product_name: 'iQIYI Premium', nomor: '081900112233', email: 'iqiyi.vip02@gmail.com', login_by: 'Email & Password', profile: 'VIP Screen 2', pin: '7788', note: 'Aktif 1 Bulan', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 3600000 * 15).toISOString(), updated_at: new Date(now - 3600000 * 15).toISOString() },
-      { id: 'STK-1031', product_id: 'prod-spotify', product_name: 'Spotify Premium', nomor: '081244556677', email: 'spot.fam03@gmail.com', login_by: 'Invite Link', profile: 'User 5', pin: '-', note: 'Garansi 30 Hari', assigned_to: 'admin', status: 'READY', created_at: new Date(now - 86400000 * 1).toISOString(), updated_at: new Date(now - 86400000 * 1).toISOString() },
-
-      // === 10 STOCK ASSIGNED TO RESELLERS ===
-      { id: 'STK-1002', product_id: 'prod-netflix', product_name: 'Netflix Premium', nomor: '081234567890', email: 'net.prem4k@gmail.com', login_by: 'Email & Password', profile: 'Profil A', pin: '9988', note: 'Assigned to member1', assigned_to: 'member1', assigned_at: new Date(now - 86400000 * 1).toISOString(), assigned_by: 'admin', status: 'ASSIGNED', created_at: new Date(now - 86400000 * 2).toISOString(), updated_at: new Date(now - 86400000 * 1).toISOString(), history: [{ type: 'CREATED', date: new Date(now - 86400000 * 2).toISOString(), by: 'admin' }, { type: 'ASSIGNED', date: new Date(now - 86400000 * 1).toISOString(), by: 'admin', to: 'member1' }] },
-      { id: 'STK-1032', product_id: 'prod-youtube', product_name: 'YouTube Premium', nomor: '085733221100', email: 'yt.fam03@gmail.com', login_by: 'Google Account', profile: 'User 3', pin: '-', note: 'Assigned to member1', assigned_to: 'member1', assigned_at: new Date(now - 3600000 * 4).toISOString(), assigned_by: 'admin', status: 'ASSIGNED', created_at: new Date(now - 3600000 * 4).toISOString(), updated_at: new Date(now - 3600000 * 4).toISOString(), history: [{ type: 'ASSIGNED', date: new Date(now - 3600000 * 4).toISOString(), by: 'admin', to: 'member1' }] },
-      { id: 'STK-1033', product_id: 'prod-netflix', product_name: 'Netflix Premium', nomor: '081299001122', email: 'net.prem4k_03@gmail.com', login_by: 'Email & Password', profile: 'Profil D', pin: '3344', note: 'Assigned to member2', assigned_to: 'member2', assigned_at: new Date(now - 86400000 * 2).toISOString(), assigned_by: 'admin', status: 'ASSIGNED', created_at: new Date(now - 86400000 * 2).toISOString(), updated_at: new Date(now - 86400000 * 2).toISOString() },
-      { id: 'STK-1034', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', nomor: '085811335577', email: 'disney.prem04@babyiel.com', login_by: 'OTP WhatsApp', profile: 'Profil 4', pin: '9900', note: 'Assigned to member2', assigned_to: 'member2', assigned_at: new Date(now - 86400000 * 1).toISOString(), assigned_by: 'admin', status: 'ASSIGNED', created_at: new Date(now - 86400000 * 1).toISOString(), updated_at: new Date(now - 86400000 * 1).toISOString() },
-      { id: 'STK-1035', product_id: 'prod-canva', product_name: 'Canva Pro', nomor: '087811223344', email: 'canva.brand03@gmail.com', login_by: 'Magic Link', profile: 'Team Design', pin: '-', note: 'Assigned to member3', assigned_to: 'member3', assigned_at: new Date(now - 3600000 * 2).toISOString(), assigned_by: 'admin', status: 'ASSIGNED', created_at: new Date(now - 3600000 * 2).toISOString(), updated_at: new Date(now - 3600000 * 2).toISOString() },
-      { id: 'STK-1041', product_id: 'prod-chatgpt', product_name: 'ChatGPT Plus', nomor: '081299887766', email: 'gpt.res01@openai.com', login_by: 'Email & Password', profile: 'User 1', pin: '1122', note: 'Assigned to member4', assigned_to: 'member4', assigned_at: new Date(now - 86400000 * 1).toISOString(), assigned_by: 'admin', status: 'ASSIGNED', created_at: new Date(now - 86400000 * 1).toISOString(), updated_at: new Date(now - 86400000 * 1).toISOString() },
-      { id: 'STK-1042', product_id: 'prod-vidio', product_name: 'Vidio Platinum', nomor: '085711224455', email: 'vidio.res01@gmail.com', login_by: 'OTP Phone', profile: 'Profil 1', pin: '5566', note: 'Assigned to member5', assigned_to: 'member5', assigned_at: new Date(now - 86400000 * 2).toISOString(), assigned_by: 'admin', status: 'ASSIGNED', created_at: new Date(now - 86400000 * 2).toISOString(), updated_at: new Date(now - 86400000 * 2).toISOString() },
-      { id: 'STK-1043', product_id: 'prod-spotify', product_name: 'Spotify Premium', nomor: '089988771122', email: 'spot.res01@gmail.com', login_by: 'Invite Link', profile: 'Fam 1', pin: '-', note: 'Assigned to member6', assigned_to: 'member6', assigned_at: new Date(now - 86400000 * 3).toISOString(), assigned_by: 'admin', status: 'ASSIGNED', created_at: new Date(now - 86400000 * 3).toISOString(), updated_at: new Date(now - 86400000 * 3).toISOString() },
-      { id: 'STK-1044', product_id: 'prod-youtube', product_name: 'YouTube Premium', nomor: '081399887766', email: 'yt.res01@gmail.com', login_by: 'Google Account', profile: 'User 1', pin: '-', note: 'Assigned to member7', assigned_to: 'member7', assigned_at: new Date(now - 86400000 * 1).toISOString(), assigned_by: 'admin', status: 'ASSIGNED', created_at: new Date(now - 86400000 * 1).toISOString(), updated_at: new Date(now - 86400000 * 1).toISOString() },
-      { id: 'STK-1045', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', nomor: '085899887766', email: 'disney.res01@babyiel.com', login_by: 'OTP WhatsApp', profile: 'Profil 1', pin: '8899', note: 'Assigned to member8', assigned_to: 'member8', assigned_at: new Date(now - 3600000 * 5).toISOString(), assigned_by: 'admin', status: 'ASSIGNED', created_at: new Date(now - 3600000 * 5).toISOString(), updated_at: new Date(now - 3600000 * 5).toISOString() },
-
-      // === 15 STOCK SEDANG BERLANGGANAN (ACTIVE SUBSCRIPTIONS) ===
-      { id: 'STK-1003', product_id: 'prod-spotify', product_name: 'Spotify Premium', nomor: '089876543210', email: 'spot.fam01@outlook.com', login_by: 'Direct Mail Invite', profile: 'User 3', pin: '-', note: 'Family Plan', assigned_to: 'admin', sold_by: 'admin', status: 'SEDANG BERLANGGANAN', buyer_wa: '081299887766', buyer_name: 'Budi Santoso', start_date: new Date(now - 86400000 * 10).toISOString(), expired_date: new Date(now + 86400000 * 20).toISOString(), created_at: new Date(now - 86400000 * 10).toISOString(), updated_at: new Date(now - 86400000 * 10).toISOString(), sold_at: new Date(now - 86400000 * 10).toISOString(), history: [{ type: 'SOLD', date: new Date(now - 86400000 * 10).toISOString(), by: 'admin', buyer_name: 'Budi Santoso', buyer_wa: '081299887766' }] },
-      { id: 'STK-1004', product_id: 'prod-youtube', product_name: 'YouTube Premium', nomor: '085775335453', email: 'yt.noads.pro@gmail.com', login_by: 'Google Account', profile: 'Utama', pin: '-', note: 'Invited via family link', assigned_to: 'member1', sold_by: 'member1', status: 'SEDANG BERLANGGANAN', buyer_wa: '085711223344', buyer_name: 'Siti Aminah', start_date: new Date(now - 86400000 * 15).toISOString(), expired_date: new Date(now + 86400000 * 15).toISOString(), created_at: new Date(now - 86400000 * 20).toISOString(), updated_at: new Date(now - 86400000 * 15).toISOString(), sold_at: new Date(now - 86400000 * 15).toISOString(), history: [{ type: 'ASSIGNED', date: new Date(now - 86400000 * 20).toISOString(), by: 'admin', to: 'member1' }, { type: 'SOLD', date: new Date(now - 86400000 * 15).toISOString(), by: 'member1', buyer_name: 'Siti Aminah', buyer_wa: '085711223344' }] },
-      { id: 'STK-1007', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', nomor: '082233445566', email: 'disney.sub02@babyiel.com', login_by: 'OTP Phone', profile: 'Profil 2 (Budi)', pin: '4321', note: 'Terjual ke reseller', assigned_to: 'member2', sold_by: 'member2', status: 'SEDANG BERLANGGANAN', buyer_wa: '082233445566', buyer_name: 'Reseller Andi', start_date: new Date(now - 86400000 * 28).toISOString(), expired_date: new Date(now + 86400000 * 2).toISOString(), created_at: new Date(now - 86400000 * 30).toISOString(), updated_at: new Date(now - 86400000 * 28).toISOString(), sold_at: new Date(now - 86400000 * 28).toISOString() }, // EXPIRING SOON
-      { id: 'STK-1008', product_id: 'prod-getcontact', product_name: 'Getcontact Premium', nomor: '081298765432', email: 'getcontact.pro01@gmail.com', login_by: 'OTP SMS', profile: 'Utama', pin: '-', note: 'Garansi Full', assigned_to: 'member3', sold_by: 'member3', status: 'SEDANG BERLANGGANAN', buyer_wa: '081298765432', buyer_name: 'Hendra Wijaya', start_date: new Date(now - 86400000 * 5).toISOString(), expired_date: new Date(now + 86400000 * 25).toISOString(), created_at: new Date(now - 86400000 * 10).toISOString(), updated_at: new Date(now - 86400000 * 5).toISOString(), sold_at: new Date(now - 86400000 * 5).toISOString() },
-      { id: 'STK-1020', product_id: 'prod-netflix', product_name: 'Netflix Premium', nomor: '081277889900', email: 'net.sold01@gmail.com', login_by: 'Email & Password', profile: 'Profil 1', pin: '1234', note: 'Sold ke Dewi', assigned_to: 'member4', sold_by: 'member4', status: 'SEDANG BERLANGGANAN', buyer_wa: '081277889900', buyer_name: 'Dewi Lestari', start_date: new Date(now - 86400000 * 12).toISOString(), expired_date: new Date(now + 86400000 * 18).toISOString(), created_at: new Date(now - 86400000 * 15).toISOString(), updated_at: new Date(now - 86400000 * 12).toISOString(), sold_at: new Date(now - 86400000 * 12).toISOString() },
-      { id: 'STK-1021', product_id: 'prod-canva', product_name: 'Canva Pro', nomor: '085799001122', email: 'canva.sold01@yahoo.com', login_by: 'Magic Link', profile: 'User Pro', pin: '-', note: 'Sold via WA', assigned_to: 'member5', sold_by: 'member5', status: 'SEDANG BERLANGGANAN', buyer_wa: '085799001122', buyer_name: 'Ahmad Fauzi', start_date: new Date(now - 86400000 * 29).toISOString(), expired_date: new Date(now + 86400000 * 1).toISOString(), created_at: new Date(now - 86400000 * 35).toISOString(), updated_at: new Date(now - 86400000 * 29).toISOString(), sold_at: new Date(now - 86400000 * 29).toISOString() }, // EXPIRING SOON
-      { id: 'STK-1022', product_id: 'prod-chatgpt', product_name: 'ChatGPT Plus', nomor: '081311223344', email: 'gpt.sold01@openai.com', login_by: 'Email & Password', profile: 'Personal 1', pin: '4455', note: 'Plus Monthly', assigned_to: 'member6', sold_by: 'member6', status: 'SEDANG BERLANGGANAN', buyer_wa: '081311223344', buyer_name: 'Eko Prasetyo', start_date: new Date(now - 86400000 * 8).toISOString(), expired_date: new Date(now + 86400000 * 22).toISOString(), created_at: new Date(now - 86400000 * 10).toISOString(), updated_at: new Date(now - 86400000 * 8).toISOString(), sold_at: new Date(now - 86400000 * 8).toISOString() },
-      { id: 'STK-1023', product_id: 'prod-vidio', product_name: 'Vidio Platinum', nomor: '085600112233', email: 'vidio.sold01@gmail.com', login_by: 'OTP Phone', profile: 'Profil 1', pin: '9900', note: 'Platinum Premier', assigned_to: 'member7', sold_by: 'member7', status: 'SEDANG BERLANGGANAN', buyer_wa: '085600112233', buyer_name: 'Maya Putri', start_date: new Date(now - 86400000 * 4).toISOString(), expired_date: new Date(now + 86400000 * 26).toISOString(), created_at: new Date(now - 86400000 * 6).toISOString(), updated_at: new Date(now - 86400000 * 4).toISOString(), sold_at: new Date(now - 86400000 * 4).toISOString() },
-      { id: 'STK-1024', product_id: 'prod-iqiyi', product_name: 'iQIYI Premium', nomor: '087799887766', email: 'iqiyi.sold01@gmail.com', login_by: 'Email & Password', profile: 'VIP Screen 1', pin: '1212', note: 'VIP Standard', assigned_to: 'member8', sold_by: 'member8', status: 'SEDANG BERLANGGANAN', buyer_wa: '087799887766', buyer_name: 'Rizky Pratama', start_date: new Date(now - 86400000 * 14).toISOString(), expired_date: new Date(now + 86400000 * 16).toISOString(), created_at: new Date(now - 86400000 * 20).toISOString(), updated_at: new Date(now - 86400000 * 14).toISOString(), sold_at: new Date(now - 86400000 * 14).toISOString() },
-      { id: 'STK-1025', product_id: 'prod-spotify', product_name: 'Spotify Premium', nomor: '089911223344', email: 'spot.sold02@outlook.com', login_by: 'Invite Link', profile: 'Fam User 2', pin: '-', note: 'Family Plan', assigned_to: 'member9', sold_by: 'member9', status: 'SEDANG BERLANGGANAN', buyer_wa: '089911223344', buyer_name: 'Dian Sastro', start_date: new Date(now - 86400000 * 2).toISOString(), expired_date: new Date(now + 86400000 * 28).toISOString(), created_at: new Date(now - 86400000 * 5).toISOString(), updated_at: new Date(now - 86400000 * 2).toISOString(), sold_at: new Date(now - 86400000 * 2).toISOString() },
-      { id: 'STK-1026', product_id: 'prod-youtube', product_name: 'YouTube Premium', nomor: '081299881122', email: 'yt.sold02@gmail.com', login_by: 'Google Account', profile: 'Utama', pin: '-', note: 'Family Link', assigned_to: 'member10', sold_by: 'member10', status: 'SEDANG BERLANGGANAN', buyer_wa: '081299881122', buyer_name: 'Fajar Ramadhan', start_date: new Date(now - 86400000 * 18).toISOString(), expired_date: new Date(now + 86400000 * 12).toISOString(), created_at: new Date(now - 86400000 * 25).toISOString(), updated_at: new Date(now - 86400000 * 18).toISOString(), sold_at: new Date(now - 86400000 * 18).toISOString() },
-      { id: 'STK-1027', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', nomor: '085733445566', email: 'disney.sold03@babyiel.com', login_by: 'OTP WhatsApp', profile: 'Profil 1', pin: '3344', note: 'Privat Profile', assigned_to: 'member11', sold_by: 'member11', status: 'SEDANG BERLANGGANAN', buyer_wa: '085733445566', buyer_name: 'Gita Gutawa', start_date: new Date(now - 86400000 * 6).toISOString(), expired_date: new Date(now + 86400000 * 24).toISOString(), created_at: new Date(now - 86400000 * 8).toISOString(), updated_at: new Date(now - 86400000 * 6).toISOString(), sold_at: new Date(now - 86400000 * 6).toISOString() },
-      { id: 'STK-1028', product_id: 'prod-canva', product_name: 'Canva Pro', nomor: '081199887766', email: 'canva.sold02@yahoo.com', login_by: 'Magic Link', profile: 'Designer 1', pin: '-', note: 'Akses 1 Tahun', assigned_to: 'member12', sold_by: 'member12', status: 'SEDANG BERLANGGANAN', buyer_wa: '081199887766', buyer_name: 'Bayu Skak', start_date: new Date(now - 86400000 * 60).toISOString(), expired_date: new Date(now + 86400000 * 305).toISOString(), created_at: new Date(now - 86400000 * 70).toISOString(), updated_at: new Date(now - 86400000 * 60).toISOString(), sold_at: new Date(now - 86400000 * 60).toISOString() },
-      { id: 'STK-1029', product_id: 'prod-netflix', product_name: 'Netflix Premium', nomor: '085877889900', email: 'net.sold03@gmail.com', login_by: 'Email & Password', profile: 'Profil C', pin: '5566', note: 'Sold 1 Month', assigned_to: 'admin', sold_by: 'admin', status: 'SEDANG BERLANGGANAN', buyer_wa: '085877889900', buyer_name: 'Rani Permata', start_date: new Date(now - 86400000 * 3).toISOString(), expired_date: new Date(now + 86400000 * 27).toISOString(), created_at: new Date(now - 86400000 * 5).toISOString(), updated_at: new Date(now - 86400000 * 3).toISOString(), sold_at: new Date(now - 86400000 * 3).toISOString() },
-      { id: 'STK-1030', product_id: 'prod-getcontact', product_name: 'Getcontact Premium', nomor: '081399001122', email: 'getcontact.sold02@gmail.com', login_by: 'OTP SMS', profile: 'User Premium', pin: '-', note: 'Garansi 30 Hari', assigned_to: 'member14', sold_by: 'member14', status: 'SEDANG BERLANGGANAN', buyer_wa: '081399001122', buyer_name: 'Tri Wahyuni', start_date: new Date(now - 86400000 * 7).toISOString(), expired_date: new Date(now + 86400000 * 23).toISOString(), created_at: new Date(now - 86400000 * 10).toISOString(), updated_at: new Date(now - 86400000 * 7).toISOString(), sold_at: new Date(now - 86400000 * 7).toISOString() }
+    const products = [
+      { id: 'prod-netflix', name: 'Netflix Premium' },
+      { id: 'prod-canva', name: 'Canva Pro' },
+      { id: 'prod-chatgpt', name: 'ChatGPT Plus' },
+      { id: 'prod-getcontact', name: 'Getcontact Premium' },
+      { id: 'prod-disney', name: 'Disney+ Hotstar' },
+      { id: 'prod-youtube', name: 'YouTube Premium' },
+      { id: 'prod-alightmotion', name: 'Alight Motion Premium' },
+      { id: 'prod-vidio', name: 'Vidio Platinum' },
+      { id: 'prod-wetv', name: 'WeTV Premium' }
     ];
+
+    const mockStocks = [];
+    const now = new Date();
+
+    // 1. 100 STOCKS READY (STK-1001 to STK-1100)
+    for (let i = 1; i <= 100; i++) {
+      const id = `STK-${1000 + i}`;
+      const p = products[(i - 1) % products.length];
+      const numPadded = String(i).padStart(3, '0');
+      mockStocks.push({
+        id: id,
+        product_id: p.id,
+        product_name: p.name,
+        nomor: `0857753${numPadded}53`,
+        email: `${p.id.replace('prod-', '')}.ready${numPadded}@babyiel.com`,
+        password: `pass${100000 + i}`,
+        login_by: i % 2 === 0 ? 'Email & Password' : 'OTP WhatsApp',
+        profile: `Profil ${(i % 4) + 1}`,
+        pin: `${1000 + (i % 9000)}`,
+        note: 'Garansi Resmi Full 100%',
+        assigned_to: 'admin',
+        status: 'READY',
+        created_at: new Date(now - 86400000 * (i % 10)).toISOString(),
+        updated_at: new Date(now - 86400000 * (i % 10)).toISOString()
+      });
+    }
+
+    // 2. 10 STOCKS ASSIGNED (STK-1101 to STK-1110)
+    const members = ['member1', 'member2', 'member3', 'member4'];
+    for (let i = 1; i <= 10; i++) {
+      const id = `STK-${1100 + i}`;
+      const p = products[(i - 1) % products.length];
+      const numPadded = String(i).padStart(2, '0');
+      const member = members[(i - 1) % members.length];
+      mockStocks.push({
+        id: id,
+        product_id: p.id,
+        product_name: p.name,
+        nomor: `081234567${numPadded}`,
+        email: `${p.id.replace('prod-', '')}.assign${numPadded}@babyiel.com`,
+        password: `passassign${numPadded}`,
+        login_by: 'Email & Password',
+        profile: `Profil ${(i % 4) + 1}`,
+        pin: `${2000 + i}`,
+        note: `Assigned to ${member}`,
+        assigned_to: member,
+        assigned_at: new Date(now - 86400000 * 2).toISOString(),
+        assigned_by: 'admin',
+        status: 'ASSIGNED',
+        created_at: new Date(now - 86400000 * 3).toISOString(),
+        updated_at: new Date(now - 86400000 * 2).toISOString()
+      });
+    }
+
+    // 3. 10 STOCKS SEDANG BERLANGGANAN (STK-1111 to STK-1120)
+    const buyers = [
+      { name: 'Budi Santoso', wa: '081299887766' },
+      { name: 'Siti Aminah', wa: '085711223344' },
+      { name: 'Dewi Lestari', wa: '081277889900' },
+      { name: 'Ahmad Fauzi', wa: '085799001122' },
+      { name: 'Eko Prasetyo', wa: '081311223344' },
+      { name: 'Maya Putri', wa: '085600112233' },
+      { name: 'Rizky Pratama', wa: '087799887766' },
+      { name: 'Hendra Wijaya', wa: '081298765432' },
+      { name: 'Dian Sastro', wa: '089911223344' },
+      { name: 'Fajar Ramadhan', wa: '081299881122' }
+    ];
+
+    for (let i = 1; i <= 10; i++) {
+      const id = `STK-${1110 + i}`;
+      const p = products[(i - 1) % products.length];
+      const buyer = buyers[i - 1];
+      const member = members[(i - 1) % members.length];
+      const numPadded = String(i).padStart(2, '0');
+      mockStocks.push({
+        id: id,
+        product_id: p.id,
+        product_name: p.name,
+        nomor: buyer.wa,
+        email: `${p.id.replace('prod-', '')}.sub${numPadded}@babyiel.com`,
+        password: `passsub${numPadded}`,
+        login_by: 'Email & Password',
+        profile: `Profil ${(i % 4) + 1}`,
+        pin: `${3000 + i}`,
+        note: 'Garansi Reseller 30 Hari',
+        assigned_to: member,
+        sold_by: member,
+        status: 'SEDANG BERLANGGANAN',
+        buyer_name: buyer.name,
+        buyer_wa: buyer.wa,
+        customer_name: buyer.name,
+        customer_wa: buyer.wa,
+        start_date: new Date(now - 86400000 * 5).toISOString(),
+        purchased_at: new Date(now - 86400000 * 5).toISOString(),
+        activated_at: new Date(now - 86400000 * 5).toISOString(),
+        expired_date: new Date(now.getTime() + 86400000 * 25).toISOString(),
+        expires_at: new Date(now.getTime() + 86400000 * 25).toISOString(),
+        created_at: new Date(now - 86400000 * 10).toISOString(),
+        updated_at: new Date(now - 86400000 * 5).toISOString(),
+        sold_at: new Date(now - 86400000 * 5).toISOString()
+      });
+    }
 
     localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify(mockStocks));
   }
