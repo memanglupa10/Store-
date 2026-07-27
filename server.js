@@ -5,10 +5,12 @@ const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
-const DB_FILE = path.join(__dirname, 'data', 'database.json');
+const IS_VERCEL = !!process.env.VERCEL;
+const SEED_DB_FILE = path.join(__dirname, 'data', 'database.json');
+const DB_FILE = IS_VERCEL ? path.join('/tmp', 'database.json') : SEED_DB_FILE;
 
-// Ensure data folder exists
-if (!fs.existsSync(path.join(__dirname, 'data'))) {
+// Ensure data folder exists (local environment)
+if (!IS_VERCEL && !fs.existsSync(path.join(__dirname, 'data'))) {
   fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
 }
 
@@ -183,29 +185,43 @@ const DEFAULT_STOCKS = [
 // Database Manager
 function loadDB() {
   if (!fs.existsSync(DB_FILE)) {
-    const initialData = {
-      products: DEFAULT_PRODUCTS,
-      stocks: DEFAULT_STOCKS,
-      orders: [],
-      notifications: [],
-      logs: [],
-      webhook_logs: [],
-      users: [
-        { id: 'usr-admin-1', username: 'admin', password: '123', name: 'Super Admin Babyiel', role: 'Admin' },
-        { id: 'usr-admin-2', username: 'admin2', password: '123', name: 'Admin Operasional', role: 'Admin' },
-        { id: 'usr-m1', username: 'member1', password: '123', name: 'Reseller Budi', role: 'Member' },
-        { id: 'usr-m2', username: 'member2', password: '123', name: 'Reseller Siti', role: 'Member' },
-        { id: 'usr-m3', username: 'member3', password: '123', name: 'Reseller Dewi', role: 'Member' },
-        { id: 'usr-m4', username: 'member4', password: '123', name: 'Reseller Ahmad', role: 'Member' }
-      ],
-      settings: {
-        store_title: 'Babyiel Store',
-        support_phone: '085775335453',
-        qris_merchant_name: 'BABYIEL STORE OFFICIAL',
-        qris_merchant_id: 'ID1029384756'
+    let initialData = null;
+    if (fs.existsSync(SEED_DB_FILE)) {
+      try {
+        initialData = JSON.parse(fs.readFileSync(SEED_DB_FILE, 'utf-8'));
+      } catch (err) {
+        console.error('Error reading SEED_DB_FILE:', err);
       }
-    };
-    fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
+    }
+    if (!initialData) {
+      initialData = {
+        products: DEFAULT_PRODUCTS,
+        stocks: DEFAULT_STOCKS,
+        orders: [],
+        notifications: [],
+        logs: [],
+        webhook_logs: [],
+        users: [
+          { id: 'usr-admin-1', username: 'admin', password: '123', name: 'Super Admin Babyiel', role: 'Admin' },
+          { id: 'usr-admin-2', username: 'admin2', password: '123', name: 'Admin Operasional', role: 'Admin' },
+          { id: 'usr-m1', username: 'member1', password: '123', name: 'Reseller Budi', role: 'Member' },
+          { id: 'usr-m2', username: 'member2', password: '123', name: 'Reseller Siti', role: 'Member' },
+          { id: 'usr-m3', username: 'member3', password: '123', name: 'Reseller Dewi', role: 'Member' },
+          { id: 'usr-m4', username: 'member4', password: '123', name: 'Reseller Ahmad', role: 'Member' }
+        ],
+        settings: {
+          store_title: 'Babyiel Store',
+          support_phone: '085775335453',
+          qris_merchant_name: 'BABYIEL STORE OFFICIAL',
+          qris_merchant_id: 'ID1029384756'
+        }
+      };
+    }
+    try {
+      fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
+    } catch (e) {
+      console.error('Warning: Unable to write to DB_FILE:', e);
+    }
     return initialData;
   }
   try {
@@ -327,7 +343,10 @@ async function lockAndAllocateStock(db, order) {
     const now = new Date();
     const nowIso = now.toISOString();
 
-    let stock = db.stocks.find(s => s.order_id === order.id || (s.product_id === order.product_id && s.status === 'RESERVED'));
+    let stock = db.stocks.find(s => s.order_id === order.id || (s.id === order.stock_id));
+    if (!stock) {
+      stock = db.stocks.find(s => s.product_id === order.product_id && s.status === 'RESERVED');
+    }
     if (!stock) {
       stock = db.stocks.find(s => s.product_id === order.product_id && (s.status === 'AVAILABLE' || s.status === 'READY'));
     }
@@ -337,9 +356,14 @@ async function lockAndAllocateStock(db, order) {
       stock.order_id = order.id;
       stock.customer_name = order.customer_name;
       stock.customer_wa = order.customer_wa;
+      stock.buyer_name = order.customer_name;
+      stock.buyer_wa = order.customer_wa;
+      stock.sold_by = 'admin';
       stock.purchased_at = nowIso;
       stock.activated_at = nowIso;
-      stock.expires_at = calculateExpiryDate(order.package_name, now);
+      const expDateIso = calculateExpiryDate(order.package_name, now);
+      stock.expires_at = expDateIso;
+      stock.expired_date = expDateIso;
 
       order.stock_id = stock.id;
       order.order_status = 'COMPLETED';
@@ -485,35 +509,37 @@ const server = http.createServer(async (req, res) => {
     const pkg = (prod.prices || []).find(pr => pr.label === package_label) || { label: package_label, price: 15000, category: 'Standard' };
     const price = pkg.price || 0;
 
-    let availableStock = db.stocks.find(s => s.product_id === product_id && s.package_label === package_label && (s.status === 'AVAILABLE' || s.status === 'READY'));
-    if (!availableStock) {
-      availableStock = db.stocks.find(s => s.product_id === product_id && (s.status === 'AVAILABLE' || s.status === 'READY'));
-    }
-
-    if (!availableStock) {
-      const newStockId = `stk-${product_id.replace('prod-', '')}-${Date.now().toString().slice(-4)}`;
-      availableStock = {
-        id: newStockId,
-        product_id: product_id,
-        package_label: package_label,
-        email: `${product_id.replace('prod-', '')}.user${Math.floor(Math.random()*900+100)}@babyiel.com`,
-        password: encryptCredential(`pass${Math.floor(Math.random()*899999+100000)}`),
-        login_by: 'Email & Password / OTP WA',
-        profile: `Profil ${Math.floor(Math.random()*4+1)}`,
-        pin: encryptCredential(`${Math.floor(Math.random()*8999+1000)}`),
-        note: 'Garansi Resmi Full 100%',
-        status: 'AVAILABLE',
-        order_id: null,
-        created_at: new Date().toISOString()
-      };
-      db.stocks.push(availableStock);
-    }
+    let availableStock = db.stocks.find(s => s.product_id === product_id && (s.status === 'READY' || s.status === 'AVAILABLE'));
 
     const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     const qrisInfo = generateQRISData(orderId, price);
 
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 15 * 60 * 1000).toISOString();
+
+    if (availableStock) {
+      availableStock.status = 'RESERVED';
+      availableStock.order_id = orderId;
+      availableStock.reserved_until = expiresAt;
+    } else {
+      const newStockId = `STK-${Date.now().toString().slice(-6)}`;
+      availableStock = {
+        id: newStockId,
+        product_id: product_id,
+        product_name: prod.name,
+        email: `${product_id.replace('prod-', '')}.ready${Math.floor(Math.random()*900+100)}@babyiel.com`,
+        password: encryptCredential(`pass${Math.floor(Math.random()*899999+100000)}`),
+        login_by: 'Email & Password / OTP WA',
+        profile: `Profil ${Math.floor(Math.random()*4+1)}`,
+        pin: encryptCredential(`${Math.floor(Math.random()*8999+1000)}`),
+        note: 'Garansi Resmi Full 100%',
+        status: 'RESERVED',
+        order_id: orderId,
+        reserved_until: expiresAt,
+        created_at: new Date().toISOString()
+      };
+      db.stocks.push(availableStock);
+    }
 
     const newOrder = {
       id: orderId,
@@ -871,10 +897,14 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`===================================================`);
-  console.log(`🚀 Babyiel Store Automated Sales Server running on port ${PORT}`);
-  console.log(`🔒 Security Hardening Enabled: Encryption at Rest & RBAC Auth Active`);
-  console.log(`👉 Access URL: http://localhost:${PORT}`);
-  console.log(`===================================================`);
-});
+if (!process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`===================================================`);
+    console.log(`🚀 Babyiel Store Automated Sales Server running on port ${PORT}`);
+    console.log(`🔒 Security Hardening Enabled: Encryption at Rest & RBAC Auth Active`);
+    console.log(`👉 Access URL: http://localhost:${PORT}`);
+    console.log(`===================================================`);
+  });
+}
+
+module.exports = server;

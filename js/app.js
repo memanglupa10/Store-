@@ -814,6 +814,13 @@ const App = {
         });
 
         localStorage.setItem('babyiel_stocks', JSON.stringify(localStocks));
+
+        // Auto re-render stock table & dashboard if user is currently viewing them
+        if (this.currentPage === 'stock') {
+          this.renderStockTable();
+        } else if (this.currentPage === 'dashboard') {
+          this.renderDashboardView();
+        }
       }
 
       // Fetch Notifications & Update Badge / Toast
