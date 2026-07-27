@@ -105,7 +105,24 @@ const App = {
     }
   },
 
+  toggleMobileSidebar(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (e && e.stopPropagation) e.stopPropagation();
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar) sidebar.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('active');
+  },
+
+  closeMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar) sidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('active');
+  },
+
   goToStorefront() {
+    this.closeMobileSidebar();
     if (location.hash !== '#katalog') {
       history.replaceState(null, '', '#katalog');
     }
@@ -1209,19 +1226,11 @@ const App = {
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     
     if (mobileToggle) {
-      mobileToggle.addEventListener('click', () => {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) sidebar.classList.toggle('open');
-        if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-      });
+      mobileToggle.addEventListener('click', (e) => this.toggleMobileSidebar(e));
     }
 
     if (sidebarOverlay) {
-      sidebarOverlay.addEventListener('click', () => {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) sidebar.classList.remove('open');
-        sidebarOverlay.classList.remove('active');
-      });
+      sidebarOverlay.addEventListener('click', () => this.closeMobileSidebar());
     }
 
     // Quick Add Stock Form Submit (Modal)
@@ -1463,6 +1472,7 @@ const App = {
   },
 
   navigate(page) {
+    this.closeMobileSidebar();
     if (page === 'katalog' || page === 'storefront' || page === 'publik') {
       this.goToStorefront();
       return;

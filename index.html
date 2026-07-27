@@ -494,7 +494,7 @@
   <div id="app-main" class="app-layout" style="display: none;">
 
     <!-- MOBILE SIDEBAR OVERLAY BACKDROP -->
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="App.closeMobileSidebar()"></div>
 
     <!-- SIDEBAR NAVIGATION -->
     <aside id="sidebar" class="sidebar">
@@ -583,7 +583,7 @@
       <!-- TOP HEADER -->
       <header class="top-header">
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <button id="mobile-toggle" class="mobile-toggle">
+          <button id="mobile-toggle" class="mobile-toggle" onclick="App.toggleMobileSidebar(event)" title="Menu Navigasi">
             <i class="fa-solid fa-bars"></i>
           </button>
 
