@@ -31,6 +31,7 @@ const App = {
   init() {
     this.bindEvents();
     this.startClock();
+    window.addEventListener('hashchange', () => this.handleRoute());
     try {
       this.checkAuth();
     } catch (e) {
@@ -50,48 +51,75 @@ const App = {
     }, 30000);
   },
 
+  handleRoute() {
+    const rawHash = (location.hash || '').replace('#', '').trim();
+    if (rawHash === 'katalog' || rawHash === 'storefront' || rawHash === 'publik' || rawHash === 'store') {
+      this.goToStorefront();
+    } else if (['dashboard', 'stock', 'products', 'catalog', 'report', 'activity', 'settings'].includes(rawHash)) {
+      this.navigate(rawHash);
+    } else if (rawHash === 'login') {
+      const auth = db.getAuth();
+      if (!auth) {
+        const storefront = document.getElementById('storefront-screen');
+        const loginWrapper = document.getElementById('login-screen');
+        const mainApp = document.getElementById('app-main');
+        if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
+        if (mainApp) { mainApp.classList.remove('active'); mainApp.style.display = 'none'; }
+        if (loginWrapper) { loginWrapper.classList.add('active'); loginWrapper.style.display = 'flex'; }
+      } else {
+        this.navigate('dashboard');
+      }
+    } else if (!rawHash) {
+      const auth = db.getAuth();
+      if (!auth) {
+        this.goToStorefront();
+      } else {
+        this.navigate('dashboard');
+      }
+    }
+  },
+
   checkAuth() {
     const auth = db.getAuth();
     const loginWrapper = document.getElementById('login-screen');
     const mainApp = document.getElementById('app-main');
     const storefront = document.getElementById('storefront-screen');
+    const rawHash = (location.hash || '').replace('#', '').trim();
 
     if (!auth) {
-      if (storefront) {
-        storefront.classList.remove('active');
-        storefront.style.display = 'none';
-      }
-      if (mainApp) {
-        mainApp.classList.remove('active');
-        mainApp.style.display = 'none';
-      }
-      if (loginWrapper) {
-        loginWrapper.classList.add('active');
-        loginWrapper.style.display = 'flex';
+      if (rawHash === 'login') {
+        if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
+        if (mainApp) { mainApp.classList.remove('active'); mainApp.style.display = 'none'; }
+        if (loginWrapper) { loginWrapper.classList.add('active'); loginWrapper.style.display = 'flex'; }
+      } else {
+        this.goToStorefront();
       }
     } else {
-      if (storefront) {
-        storefront.classList.remove('active');
-        storefront.style.display = 'none';
-      }
       if (loginWrapper) {
         loginWrapper.classList.remove('active');
         loginWrapper.style.display = 'none';
       }
-      if (mainApp) {
-        mainApp.classList.add('active');
-        mainApp.style.display = 'flex';
-      }
       this.updateAdminHeader(auth);
       this.updateNotificationBadge();
-      this.navigate(this.currentPage);
+      this.handleRoute();
     }
   },
 
   goToStorefront() {
+    if (location.hash !== '#katalog') {
+      history.replaceState(null, '', '#katalog');
+    }
     const storefront = document.getElementById('storefront-screen');
     const loginWrapper = document.getElementById('login-screen');
     const mainApp = document.getElementById('app-main');
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.getAttribute('data-page') === 'katalog') {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
 
     if (loginWrapper) {
       loginWrapper.classList.remove('active');
@@ -1435,7 +1463,23 @@ const App = {
   },
 
   navigate(page) {
+    if (page === 'katalog' || page === 'storefront' || page === 'publik') {
+      this.goToStorefront();
+      return;
+    }
+
     this.currentPage = page;
+    if (location.hash !== '#' + page) {
+      history.replaceState(null, '', '#' + page);
+    }
+
+    // Ensure main app is visible and storefront/login hidden
+    const mainApp = document.getElementById('app-main');
+    const storefront = document.getElementById('storefront-screen');
+    const loginWrapper = document.getElementById('login-screen');
+    if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
+    if (loginWrapper) { loginWrapper.classList.remove('active'); loginWrapper.style.display = 'none'; }
+    if (mainApp) { mainApp.classList.add('active'); mainApp.style.display = 'flex'; }
 
     // Update active navbar
     document.querySelectorAll('.nav-link').forEach(link => {
