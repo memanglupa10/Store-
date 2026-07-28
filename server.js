@@ -377,13 +377,40 @@ function parseBody(req) {
   if (typeof req.body === 'string' && req.body.trim() !== '') {
     try { return Promise.resolve(JSON.parse(req.body)); } catch (e) {}
   }
+  if (req.rawBody) {
+    try { return Promise.resolve(JSON.parse(req.rawBody.toString())); } catch (e) {}
+  }
+  if (req.complete || req.readableEnded) {
+    return Promise.resolve({});
+  }
+
   return new Promise((resolve) => {
     let body = '';
+    let resolved = false;
+
+    const timer = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        try { resolve(body ? JSON.parse(body) : {}); } catch (e) { resolve({}); }
+      }
+    }, 1200);
+
     req.on('data', chunk => { body += chunk.toString(); });
     req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (err) {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timer);
+        try {
+          resolve(body ? JSON.parse(body) : {});
+        } catch (err) {
+          resolve({});
+        }
+      }
+    });
+    req.on('error', () => {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timer);
         resolve({});
       }
     });
