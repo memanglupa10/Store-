@@ -465,10 +465,11 @@ async function lockAndAllocateStock(db, order) {
 // MAIN HTTP REQUEST HANDLER
 async function handleRequest(req, res) {
   let rawUrl = req.url || '/';
-  if (req.headers['x-forwarded-url']) {
-    rawUrl = req.headers['x-forwarded-url'];
-  } else if (req.headers['x-matched-path']) {
-    rawUrl = req.headers['x-matched-path'];
+  if ((rawUrl === '/' || rawUrl === '/index.html' || !rawUrl.startsWith('/api')) && req.headers['x-forwarded-url']) {
+    const fwdUrl = req.headers['x-forwarded-url'];
+    if (fwdUrl.startsWith('/api')) {
+      rawUrl = fwdUrl;
+    }
   }
 
   let parsedUrl;
