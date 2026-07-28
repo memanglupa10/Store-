@@ -450,8 +450,8 @@ async function lockAndAllocateStock(db, order) {
   }
 }
 
-// MAIN HTTP SERVER
-const server = http.createServer(async (req, res) => {
+// MAIN HTTP REQUEST HANDLER
+async function handleRequest(req, res) {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
   const method = req.method.toUpperCase();
@@ -983,7 +983,9 @@ const server = http.createServer(async (req, res) => {
       res.end('404 Not Found');
     });
   });
-});
+}
+
+const server = http.createServer(handleRequest);
 
 if (!process.env.VERCEL) {
   server.listen(PORT, () => {
@@ -995,4 +997,5 @@ if (!process.env.VERCEL) {
   });
 }
 
-module.exports = server;
+module.exports = handleRequest;
+module.exports.server = server;
