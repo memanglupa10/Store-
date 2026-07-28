@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: babyiel-store
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: XENDIT_SECRET_KEY
+        value: xnd_development_CntWtXzUv2RrzD1FW5HKzbVE6B5g58Xk7Axoh0vMjlFl1XS7F7yy5IzquwDyZs
+      - key: WEBHOOK_SECRET
+        value: babyiel-qris-webhook-secret-99
