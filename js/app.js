@@ -552,15 +552,26 @@ const App = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          product_id: prod.id,
-          package_label: label,
+          product_id: prod ? prod.id : '',
+          package_label: label || '',
           customer_name: name,
           customer_wa: wa,
           customer_email: email
         })
       });
 
+      let res = null;
+      try {
+        if (response.ok) {
+          res = await response.json();
+        }
+      } catch (jsonErr) {
+        console.warn('Response JSON parse error:', jsonErr);
+      }
+
       let orderObj = null;
+      const currentPrice = (this.selectedPackageData && this.selectedPackageData.price) ? this.selectedPackageData.price : 10000;
+
       if (res && res.success && res.order) {
         orderObj = res.order;
       } else {
@@ -568,9 +579,9 @@ const App = {
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="220" height="220"><rect width="100%" height="100%" fill="#ffffff"/><path d="M20 20h50v50H20zM30 30v30h30V30zM40 40h10v10H40zM130 20h50v50h-50zM140 30v30h30V30zM150 40h10v10h-10zM20 130h50v50H20zM30 140v30h30v-30zM40 150h10v10H40zM80 20h20v20H80zM100 40h20v20h-20zM80 70h30v20H80zM130 80h20v30h-20zM80 110h40v20H80zM140 120h30v20h-30zM90 140h30v40H90zM140 150h40v30h-40z" fill="#0f172a"/><text x="100" y="105" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#7c3aed">QRIS BYL</text></svg>`;
         orderObj = {
           id: orderId,
-          product_name: prod.name,
-          package_name: label,
-          price: price,
+          product_name: prod ? prod.name : 'Produk Digital',
+          package_name: label || 'Standard',
+          price: currentPrice,
           customer_name: name,
           customer_wa: wa,
           payment_status: 'PENDING',
@@ -597,14 +608,16 @@ const App = {
         btnSubmit.innerHTML = 'Lanjutkan Pembayaran QRIS <i class="fa-solid fa-arrow-right"></i>';
       }
 
-      const { prod, label, price } = this.selectedPackageData;
+      const prodInfo = this.selectedPackageData ? this.selectedPackageData.prod : null;
+      const labelInfo = this.selectedPackageData ? this.selectedPackageData.label : 'Standard';
+      const priceInfo = this.selectedPackageData ? this.selectedPackageData.price : 10000;
       const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="220" height="220"><rect width="100%" height="100%" fill="#ffffff"/><path d="M20 20h50v50H20zM30 30v30h30V30zM40 40h10v10H40zM130 20h50v50h-50zM140 30v30h30V30zM150 40h10v10h-10zM20 130h50v50H20zM30 140v30h30v-30zM40 150h10v10H40zM80 20h20v20H80zM100 40h20v20h-20zM80 70h30v20H80zM130 80h20v30h-20zM80 110h40v20H80zM140 120h30v20h-30zM90 140h30v40H90zM140 150h40v30h-40z" fill="#0f172a"/><text x="100" y="105" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#7c3aed">QRIS BYL</text></svg>`;
       const fallbackOrder = {
         id: orderId,
-        product_name: prod.name,
-        package_name: label,
-        price: price,
+        product_name: prodInfo ? prodInfo.name : 'Produk Digital',
+        package_name: labelInfo,
+        price: priceInfo,
         customer_name: name,
         customer_wa: wa,
         payment_status: 'PENDING',
