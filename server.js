@@ -265,10 +265,13 @@ function generateQRISData(orderId, amount) {
   };
 }
 
-// Xendit Official QRIS Charge API Helper
+// Xendit Official QRIS Charge API Helper (with 3.5s Timeout Safeguard)
 async function createXenditQRISCode(orderId, amount) {
   const secretKey = process.env.XENDIT_SECRET_KEY;
   if (!secretKey) return null;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3500);
 
   try {
     const authHeader = 'Basic ' + Buffer.from(secretKey + ':').toString('base64');
@@ -286,8 +289,10 @@ async function createXenditQRISCode(orderId, amount) {
         'Authorization': authHeader,
         'Content-Type': 'application/json'
       },
-      body: payload
+      body: payload,
+      signal: controller.signal
     });
+    clearTimeout(timeout);
 
     const data = await response.json();
     if (data && (data.qr_string || data.id)) {
@@ -301,6 +306,7 @@ async function createXenditQRISCode(orderId, amount) {
       };
     }
   } catch (err) {
+    clearTimeout(timeout);
     console.error('[XENDIT ERROR] Failed to create QR Code via Xendit API:', err);
   }
   return null;
