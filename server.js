@@ -365,6 +365,12 @@ const serveFile = (targetPath, res) => {
 };
 
 function parseBody(req) {
+  if (req.body && typeof req.body === 'object') {
+    return Promise.resolve(req.body);
+  }
+  if (typeof req.body === 'string' && req.body.trim() !== '') {
+    try { return Promise.resolve(JSON.parse(req.body)); } catch (e) {}
+  }
   return new Promise((resolve) => {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
@@ -452,8 +458,28 @@ async function lockAndAllocateStock(db, order) {
 
 // MAIN HTTP REQUEST HANDLER
 async function handleRequest(req, res) {
-  const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  const pathname = parsedUrl.pathname;
+  let rawUrl = req.url || '/';
+  if (req.headers['x-forwarded-url']) {
+    rawUrl = req.headers['x-forwarded-url'];
+  } else if (req.headers['x-matched-path']) {
+    rawUrl = req.headers['x-matched-path'];
+  }
+
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(rawUrl, `http://${req.headers.host || 'localhost'}`);
+  } catch (e) {
+    parsedUrl = new URL('/', `http://${req.headers.host || 'localhost'}`);
+  }
+
+  let pathname = parsedUrl.pathname;
+  if (pathname === '/api/index.js' || pathname === '/api') {
+    const fallbackUrl = req.headers['x-forwarded-url'] || req.url || '/';
+    try {
+      pathname = new URL(fallbackUrl, `http://${req.headers.host || 'localhost'}`).pathname;
+    } catch (e) {}
+  }
+
   const method = req.method.toUpperCase();
   const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
 

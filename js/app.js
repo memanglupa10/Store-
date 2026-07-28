@@ -560,7 +560,15 @@ const App = {
         })
       });
 
-      const res = await response.json();
+      let res = {};
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        res = await response.json();
+      } else {
+        const rawText = await response.text();
+        console.error('Non-JSON response from /api/checkout:', response.status, rawText);
+        res = { success: false, message: `Server error (${response.status}): ${rawText.slice(0, 100)}` };
+      }
 
       if (btnSubmit) {
         btnSubmit.disabled = false;
@@ -578,7 +586,12 @@ const App = {
 
     } catch (err) {
       console.error('Checkout API error:', err);
-      this.showToast('Error Server', 'Gagal terhubung ke backend server.', 'error');
+      const btnSubmit = document.getElementById('btn-submit-checkout');
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = 'Lanjutkan Pembayaran QRIS <i class="fa-solid fa-arrow-right"></i>';
+      }
+      this.showToast('Error Server', err.message || 'Gagal terhubung ke backend server.', 'error');
     }
   },
 
