@@ -275,6 +275,7 @@ async function createXenditQRISCode(orderId, amount) {
     const payload = JSON.stringify({
       external_id: orderId,
       type: 'DYNAMIC',
+      callback_url: 'https://babyielstore.my.id/api/webhook/qris',
       amount: amount,
       currency: 'IDR'
     });
