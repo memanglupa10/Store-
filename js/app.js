@@ -3808,6 +3808,184 @@ const App = {
   closeConfirmModal() {
     const modal = document.getElementById('modal-confirm');
     if (modal) modal.classList.remove('active');
+  },
+
+  // =========================================================
+  // AUTOMATED QRIS CHECKOUT & WEBHOOK DELIVERY ENGINE
+  // =========================================================
+  activeQRISPollInterval: null,
+  activeQRISOrderId: null,
+  activeQRISTimerInterval: null,
+
+  async handleCheckoutSubmit(productId, packageLabel, customerName, customerWa, customerEmail = '') {
+    try {
+      this.showToast('Membuat Order QRIS...', 'Menghubungkan ke Payment Gateway server...', 'info');
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id: productId,
+          package_label: packageLabel,
+          customer_name: customerName,
+          customer_wa: customerWa,
+          customer_email: customerEmail
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.order) {
+        this.openQRISCheckoutModal(data.order);
+      } else {
+        this.showToast('Checkout Gagal', data.message || 'Gagal membuat QRIS.', 'error');
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      this.showToast('Checkout Error', 'Gagal terhubung ke server backend.', 'error');
+    }
+  },
+
+  openQRISCheckoutModal(orderData) {
+    this.activeQRISOrderId = orderData.id;
+    
+    const elOrderId = document.getElementById('qris-order-id');
+    const elQrisImg = document.getElementById('qris-image-display');
+    const elTotal = document.getElementById('qris-total-amount');
+    const elStatusText = document.getElementById('qris-status-text');
+
+    if (elOrderId) elOrderId.textContent = orderData.id;
+    if (elQrisImg) elQrisImg.src = orderData.qris_url || 'assets/icons/qris-sample.svg';
+    if (elTotal) elTotal.textContent = `Rp ${(orderData.price || 0).toLocaleString('id-ID')}`;
+    if (elStatusText) elStatusText.textContent = 'Mengecek Pembayaran Otomatis via Webhook...';
+    
+    const modal = document.getElementById('modal-qris-checkout');
+    if (modal) {
+      modal.style.display = 'flex';
+      modal.classList.add('active');
+    }
+
+    // Start 15-minute Countdown Timer
+    let secondsLeft = 15 * 60;
+    if (this.activeQRISTimerInterval) clearInterval(this.activeQRISTimerInterval);
+    this.activeQRISTimerInterval = setInterval(() => {
+      secondsLeft--;
+      const mins = Math.floor(secondsLeft / 60);
+      const secs = secondsLeft % 60;
+      const timerEl = document.getElementById('qris-timer-text');
+      if (timerEl) timerEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      if (secondsLeft <= 0) {
+        clearInterval(this.activeQRISTimerInterval);
+        this.showToast('Waktu Habis', 'Sesi pembayaran QRIS telah kadaluarsa.', 'warning');
+        this.closeQRISModal();
+      }
+    }, 1000);
+
+    // Start Polling Status every 3 seconds
+    if (this.activeQRISPollInterval) clearInterval(this.activeQRISPollInterval);
+    this.activeQRISPollInterval = setInterval(() => {
+      this.checkQRISPaymentStatus(orderData.id);
+    }, 3000);
+  },
+
+  async checkQRISPaymentStatus(orderId) {
+    try {
+      const res = await fetch(`/api/orders/${orderId}/status`);
+      if (!res.ok) return;
+      const data = await res.json();
+      
+      if (data.success && (data.payment_status === 'PAID' || data.order_status === 'COMPLETED')) {
+        // PAYMENT DETECTED BY WEBHOOK!
+        clearInterval(this.activeQRISPollInterval);
+        clearInterval(this.activeQRISTimerInterval);
+        this.closeQRISModal();
+
+        this.showToast('Pembayaran Berhasil! 🎉', 'Pembayaran QRIS terdeteksi. Stok otomatis terpotong!', 'success');
+        
+        // Show Delivery Modal
+        this.openDigitalAccountDeliveryModal(data);
+      }
+    } catch (err) {
+      console.warn('Status polling error:', err);
+    }
+  },
+
+  async simulatePayment() {
+    if (!this.activeQRISOrderId) return;
+    try {
+      this.showToast('Simulasi Pembayaran...', 'Mengirim notifikasi pembayaran ke webhook...', 'info');
+      const res = await fetch('/api/simulations/pay-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: this.activeQRISOrderId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        this.checkQRISPaymentStatus(this.activeQRISOrderId);
+      } else {
+        this.showToast('Gagal Simulasi', data.message || 'Error simulasi.', 'error');
+      }
+    } catch (e) {
+      this.showToast('Gagal Simulasi', 'Gagal memanggil endpoint simulasi.', 'error');
+    }
+  },
+
+  closeQRISModal() {
+    if (this.activeQRISPollInterval) clearInterval(this.activeQRISPollInterval);
+    if (this.activeQRISTimerInterval) clearInterval(this.activeQRISTimerInterval);
+    const modal = document.getElementById('modal-qris-checkout');
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.remove('active');
+    }
+  },
+
+  openDigitalAccountDeliveryModal(orderData) {
+    const acc = orderData.account || {};
+    const elProd = document.getElementById('delivery-product-name');
+    const elEmail = document.getElementById('delivery-email');
+    const elPass = document.getElementById('delivery-password');
+    const elProf = document.getElementById('delivery-profile');
+    const elPin = document.getElementById('delivery-pin');
+    const elNote = document.getElementById('delivery-note');
+
+    if (elProd) elProd.textContent = `${orderData.product_name || 'Akun Digital'} (${orderData.package_name || ''})`;
+    if (elEmail) elEmail.value = acc.email || '-';
+    if (elPass) elPass.value = acc.password || '-';
+    if (elProf) elProf.value = acc.profile || 'Profil 1';
+    if (elPin) elPin.value = acc.pin || '-';
+    if (elNote) elNote.textContent = `✅ Garansi: ${acc.note || 'Full Garansi Sesuai S&K'}`;
+
+    const modal = document.getElementById('modal-account-delivery');
+    if (modal) {
+      modal.style.display = 'flex';
+      modal.classList.add('active');
+    }
+  },
+
+  closeDeliveryModal() {
+    const modal = document.getElementById('modal-account-delivery');
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.remove('active');
+    }
+  },
+
+  copyText(inputId) {
+    const input = document.getElementById(inputId);
+    if (input && input.value) {
+      navigator.clipboard.writeText(input.value);
+      this.showToast('Tersalin!', `${input.value} disalin ke clipboard.`, 'success');
+    }
+  },
+
+  copyAllAccountDetails() {
+    const email = document.getElementById('delivery-email')?.value || '-';
+    const pass = document.getElementById('delivery-password')?.value || '-';
+    const profile = document.getElementById('delivery-profile')?.value || '-';
+    const pin = document.getElementById('delivery-pin')?.value || '-';
+    const prod = document.getElementById('delivery-product-name')?.textContent || 'Digital Product';
+    
+    const text = `🎉 DETAIL AKUN ${prod}\n======================\nEmail: ${email}\nPassword: ${pass}\nProfil: ${profile}\nPIN: ${pin}\n======================\nTerima kasih telah berbelanja di Babyiel Store!`;
+    navigator.clipboard.writeText(text);
+    this.showToast('Semua Detail Tersalin! 🚀', 'Seluruh info akun berhasil disalin ke clipboard.', 'success');
   }
 };
 

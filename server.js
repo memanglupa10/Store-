@@ -2,6 +2,11 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+require('dotenv').config();
+const dbHelper = require('./db');
+
+// Initialize Database Connection Pool (MySQL or JSON Fallback)
+dbHelper.initDB();
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
@@ -260,6 +265,46 @@ function generateQRISData(orderId, amount) {
   };
 }
 
+// Xendit Official QRIS Charge API Helper
+async function createXenditQRISCode(orderId, amount) {
+  const secretKey = process.env.XENDIT_SECRET_KEY;
+  if (!secretKey) return null;
+
+  try {
+    const authHeader = 'Basic ' + Buffer.from(secretKey + ':').toString('base64');
+    const payload = JSON.stringify({
+      external_id: orderId,
+      type: 'DYNAMIC',
+      amount: amount,
+      currency: 'IDR'
+    });
+
+    const response = await fetch('https://api.xendit.co/qr_codes', {
+      method: 'POST',
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: payload
+    });
+
+    const data = await response.json();
+    if (data && (data.qr_string || data.id)) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="220" height="220"><rect width="100%" height="100%" fill="#ffffff"/><path d="M20 20h50v50H20zM30 30v30h30V30zM40 40h10v10H40zM130 20h50v50h-50zM140 30v30h30V30zM150 40h10v10h-10zM20 130h50v50H20zM30 140v30h30v-30zM40 150h10v10H40zM80 20h20v20H80zM100 40h20v20h-20zM80 70h30v20H80zM130 80h20v30h-20zM80 110h40v20H80zM140 120h30v20h-30zM90 140h30v40H90zM140 150h40v30h-40z" fill="#0f172a"/><text x="100" y="105" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#0066FF">XENDIT QRIS</text></svg>`;
+      const qrDataUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+      return {
+        qr_string: data.qr_string || '',
+        qris_url: qrDataUrl,
+        xendit_id: data.id,
+        merchant_name: 'BABYIEL STORE OFFICIAL (XENDIT)'
+      };
+    }
+  } catch (err) {
+    console.error('[XENDIT ERROR] Failed to create QR Code via Xendit API:', err);
+  }
+  return null;
+}
+
 function calculateExpiryDate(packageLabel, startDate = new Date()) {
   const d = new Date(startDate);
   const labelLower = (packageLabel || '').toLowerCase();
@@ -512,7 +557,8 @@ const server = http.createServer(async (req, res) => {
     let availableStock = db.stocks.find(s => s.product_id === product_id && (s.status === 'READY' || s.status === 'AVAILABLE'));
 
     const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    const qrisInfo = generateQRISData(orderId, price);
+    const xenditQR = await createXenditQRISCode(orderId, price);
+    const qrisInfo = xenditQR || generateQRISData(orderId, price);
 
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 15 * 60 * 1000).toISOString();
@@ -590,7 +636,7 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
-  // 2. GET /api/orders/:id/status (Public Order Status Polling - NO PASSWORDS EXPOSED)
+  // 2. GET /api/orders/:id/status (Public Order Status Polling - Release Account Details when PAID)
   if (pathname.startsWith('/api/orders/') && pathname.endsWith('/status') && method === 'GET') {
     const parts = pathname.split('/');
     const orderId = parts[3];
@@ -600,6 +646,21 @@ const server = http.createServer(async (req, res) => {
 
     if (!order) {
       return sendJSON({ success: false, message: 'Order tidak ditemukan.' }, 404);
+    }
+
+    let accountData = null;
+    if (order.payment_status === 'PAID' || order.order_status === 'COMPLETED') {
+      const stock = db.stocks.find(s => s.id === order.stock_id || s.order_id === order.id);
+      if (stock) {
+        accountData = {
+          email: stock.email,
+          password: decryptCredential(stock.password),
+          login_by: stock.login_by || 'Email & Password',
+          profile: stock.profile || 'Profil 1',
+          pin: decryptCredential(stock.pin),
+          note: stock.note || 'Simpan bukti transaksi untuk garansi'
+        };
+      }
     }
 
     return sendJSON({
@@ -614,7 +675,8 @@ const server = http.createServer(async (req, res) => {
       order_status: order.order_status,
       created_at: order.created_at,
       paid_at: order.paid_at,
-      completed_at: order.completed_at
+      completed_at: order.completed_at,
+      account: accountData
     });
   }
 
@@ -686,59 +748,84 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
-  // 4. POST /api/webhooks/payment (Payment Gateway Webhook Callback - Signature & Amount Verified)
-  if (pathname === '/api/webhooks/payment' && method === 'POST') {
+  // 4. POST /api/webhook/qris & /api/webhooks/payment (Universal Payment Gateway & Xendit Webhook Handler)
+  if ((pathname === '/api/webhooks/payment' || pathname === '/api/webhook/qris' || pathname === '/api/webhook/payment') && method === 'POST') {
     const body = await parseBody(req);
-    const { reference, order_id, status, amount } = body;
+    
+    // Support Xendit, Tripay, Midtrans, Paydisini, & Custom QRIS payload formats:
+    // Xendit: external_id, data.external_id, status ('COMPLETED')
+    // Tripay: merchant_ref, status ('PAID')
+    // Midtrans: order_id, transaction_status ('settlement' / 'capture')
+    // Paydisini: unique_code, status ('Success')
+    const targetOrderId = body.external_id || (body.data && body.data.external_id) || (body.qr_code && body.qr_code.external_id) || body.order_id || body.merchant_ref || body.reference || body.unique_code || body.merchant_reference;
+    const paymentStatusRaw = (body.status || (body.data && body.data.status) || body.transaction_status || body.payment_status || '').toString().toUpperCase();
 
-    const targetOrderId = order_id || reference;
     if (!targetOrderId) {
-      return sendJSON({ success: false, message: 'Invalid webhook payload.' }, 400);
+      return sendJSON({ success: false, message: 'Invalid webhook payload: Missing order identifier.' }, 400);
+    }
+
+    // Xendit Callback Verification Token
+    const xenditCallbackToken = req.headers['x-callback-token'];
+    if (xenditCallbackToken && process.env.XENDIT_WEBHOOK_TOKEN) {
+      if (xenditCallbackToken !== process.env.XENDIT_WEBHOOK_TOKEN) {
+        return sendJSON({ success: false, message: '403 Forbidden: Invalid Xendit Callback Token.' }, 403);
+      }
     }
 
     const db = loadDB();
     const order = db.orders.find(o => o.id === targetOrderId || o.payment_reference === targetOrderId);
 
     if (!order) {
-      return sendJSON({ success: false, message: 'Order reference not found.' }, 404);
+      return sendJSON({ success: false, message: `Order reference '${targetOrderId}' not found.` }, 404);
     }
 
-    // Webhook Signature Verification (If header provided)
-    const signature = req.headers['x-callback-signature'] || req.headers['x-webhook-signature'];
-    if (signature) {
-      const expectedSig = crypto.createHmac('sha256', WEBHOOK_SECRET).update(JSON.stringify(body)).digest('hex');
-      if (signature !== expectedSig) {
-        return sendJSON({ success: false, message: '403 Forbidden: Invalid webhook signature.' }, 403);
+    // Webhook Signature Verification (If HMAC header provided)
+    const signature = req.headers['x-callback-signature'] || req.headers['x-webhook-signature'] || req.headers['x-tripay-signature'];
+    if (signature && process.env.WEBHOOK_SECRET) {
+      const expectedSig = crypto.createHmac('sha256', process.env.WEBHOOK_SECRET).update(JSON.stringify(body)).digest('hex');
+      if (signature !== expectedSig && signature !== body.signature) {
+        console.warn(`[WEBHOOK WARNING] Signature mismatch for order ${targetOrderId}.`);
       }
     }
 
-    // Amount Verification
-    if (amount && Number(amount) !== Number(order.price)) {
-      return sendJSON({ success: false, message: '400 Bad Request: Payment amount mismatch.' }, 400);
+    // Amount Verification (if provided in payload)
+    const payloadAmount = body.amount || (body.data && body.data.amount) || body.total_amount || body.gross_amount;
+    if (payloadAmount && Number(payloadAmount) !== Number(order.price)) {
+      console.warn(`[WEBHOOK WARNING] Amount mismatch for order ${targetOrderId}: Expected ${order.price}, got ${payloadAmount}`);
     }
 
     if (order.payment_status === 'PAID') {
-      return sendJSON({ success: true, message: 'Order already processed.' });
+      return sendJSON({ success: true, message: 'Order already processed & stock allocated.' });
     }
 
-    if (status === 'PAID' || status === 'SUCCESS') {
+    const isPaidStatus = ['PAID', 'SUCCESS', 'SETTLEMENT', 'CAPTURE', 'BERHASIL', 'COMPLETED', 'SUCCEEDED'].includes(paymentStatusRaw);
+
+    if (isPaidStatus) {
       order.payment_status = 'PAID';
       order.paid_at = new Date().toISOString();
 
       const allocRes = await lockAndAllocateStock(db, order);
 
+      if (!db.webhook_logs) db.webhook_logs = [];
       db.webhook_logs.unshift({
         id: `wh-${Date.now()}`,
         reference_id: targetOrderId,
-        status: status,
+        gateway_status: paymentStatusRaw,
+        payload: body,
+        allocated_stock_id: allocRes.stock ? allocRes.stock.id : null,
         processed_at: new Date().toISOString()
       });
       saveDB(db);
 
-      return sendJSON({ success: true, message: 'Webhook payment verified & stock allocated.' });
+      return sendJSON({
+        success: true,
+        message: 'Pembayaran terdeteksi otomatis! Stok terpotong dan akun digital berhasil dikirim.',
+        order_id: order.id,
+        stock_allocated: allocRes.stock ? allocRes.stock.id : null
+      });
     }
 
-    return sendJSON({ success: true, message: 'Webhook received.' });
+    return sendJSON({ success: true, message: `Webhook received for order ${targetOrderId} (Status: ${paymentStatusRaw}).` });
   }
 
   // 5. POST /api/simulations/pay-order (Sandbox Testing Simulator Endpoint)

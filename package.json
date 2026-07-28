@@ -8,6 +8,10 @@
     "dev": "node server.js",
     "serve": "npx serve -l 3000 ."
   },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "mysql2": "^3.9.2"
+  },
   "keywords": [
     "inventory",
     "saas",

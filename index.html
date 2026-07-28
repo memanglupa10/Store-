@@ -1717,6 +1717,120 @@
     </div>
   </div>
 
+  <!-- MODAL: CHECKOUT QRIS AUTO DETECT -->
+  <div id="modal-qris-checkout" class="modal" style="display: none;">
+    <div class="modal-backdrop" onclick="App.closeQRISModal()"></div>
+    <div class="modal-content" style="max-width: 440px; text-align: center; border-radius: 16px;">
+      <div class="modal-header" style="justify-content: center; position: relative;">
+        <h3 class="modal-title" style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">
+          <i class="fa-solid fa-qrcode" style="color: #7c3aed;"></i> Pembayaran QRIS Instant
+        </h3>
+        <button type="button" class="btn-close" onclick="App.closeQRISModal()" style="position: absolute; right: 1rem; top: 1rem;">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 1.5rem 1rem;">
+        <div style="background: rgba(124, 58, 237, 0.08); border: 1px dashed #7c3aed; padding: 0.75rem; border-radius: 10px; margin-bottom: 1rem;">
+          <div style="font-size: 0.8rem; color: var(--text-muted);">ORDER ID</div>
+          <div id="qris-order-id" style="font-family: monospace; font-weight: 700; font-size: 1.05rem; color: #7c3aed;">BYL-20260728-XXXX</div>
+        </div>
+
+        <!-- QRIS IMAGE BOX -->
+        <div style="background: #ffffff; padding: 1rem; border-radius: 14px; display: inline-block; box-shadow: 0 8px 24px rgba(0,0,0,0.12); margin-bottom: 1rem; border: 2px solid #e2e8f0;">
+          <img id="qris-image-display" src="" alt="QRIS Code" style="width: 200px; height: 200px; object-fit: contain; display: block; margin: 0 auto;">
+          <div style="margin-top: 0.5rem; font-size: 0.75rem; font-weight: 700; color: #0f172a; letter-spacing: 0.5px;">
+            <i class="fa-solid fa-building-columns"></i> Scan QRIS Pakai BCA / GoPay / OVO / Dana / ShopeePay
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.2rem;">
+          <div style="font-size: 0.82rem; color: var(--text-muted);">TOTAL PEMBAYARAN</div>
+          <div id="qris-total-amount" style="font-size: 1.6rem; font-weight: 800; color: var(--success); text-shadow: 0 0 10px rgba(16, 185, 129, 0.2);">
+            Rp 0
+          </div>
+        </div>
+
+        <!-- AUTO DETECT STATUS BADGE -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.6rem; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.65rem 1rem; border-radius: 30px; margin-bottom: 1rem;">
+          <div class="pulse-spinner" style="width: 12px; height: 12px; background: #3b82f6; border-radius: 50%; animation: pulse 1.2s infinite;"></div>
+          <span style="font-size: 0.82rem; font-weight: 600; color: #3b82f6;" id="qris-status-text">
+            Mengecek Pembayaran Otomatis via Webhook...
+          </span>
+        </div>
+
+        <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Batas Waktu Pembayaran: <b id="qris-timer-text" style="color: #ef4444;">15:00</b>
+        </div>
+
+        <!-- SIMULATOR BUTTON (FOR TESTING & DEMO) -->
+        <button type="button" class="btn btn-secondary btn-sm" onclick="App.simulatePayment()" style="width: 100%; border-radius: 8px; font-size: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color);">
+          <i class="fa-solid fa-vial-circle-check"></i> Simulasi Pembayaran QRIS (Sandbox Test)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DIGITAL ACCOUNT DELIVERY -->
+  <div id="modal-account-delivery" class="modal" style="display: none;">
+    <div class="modal-backdrop" onclick="App.closeDeliveryModal()"></div>
+    <div class="modal-content" style="max-width: 500px; border-radius: 16px;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border-radius: 16px 16px 0 0; padding: 1.25rem 1.5rem;">
+        <h3 class="modal-title" style="color: #ffffff; font-size: 1.2rem; font-weight: 700;">
+          <i class="fa-solid fa-circle-check"></i> Pembayaran Berhasil!
+        </h3>
+        <button type="button" class="btn-close" onclick="App.closeDeliveryModal()" style="color: #ffffff;">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 1.5rem;">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Terima kasih! Pembayaran QRIS telah terdeteksi. Stok otomatis terpotong dan akun digital Anda siap digunakan:
+        </p>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);">PRODUK</span>
+            <span id="delivery-product-name" style="font-weight: 700; color: var(--text-main);">Netflix Premium</span>
+          </div>
+
+          <div style="margin-bottom: 0.75rem;">
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">EMAIL / USERNAME</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.2rem;">
+              <input type="text" id="delivery-email" readonly class="form-input" style="font-weight: 600; font-family: monospace;">
+              <button class="btn btn-secondary btn-sm" onclick="App.copyText('delivery-email')"><i class="fa-solid fa-copy"></i></button>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 0.75rem;">
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">PASSWORD</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.2rem;">
+              <input type="text" id="delivery-password" readonly class="form-input" style="font-weight: 600; font-family: monospace;">
+              <button class="btn btn-secondary btn-sm" onclick="App.copyText('delivery-password')"><i class="fa-solid fa-copy"></i></button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div>
+              <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">PROFIL / SCREEN</label>
+              <input type="text" id="delivery-profile" readonly class="form-input" style="font-size: 0.85rem;">
+            </div>
+            <div>
+              <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">PIN PROFIL</label>
+              <input type="text" id="delivery-pin" readonly class="form-input" style="font-size: 0.85rem; font-family: monospace;">
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">CATATAN GARANSI</label>
+            <div id="delivery-note" style="font-size: 0.82rem; color: #10b981; font-weight: 600; background: rgba(16,185,129,0.08); padding: 0.5rem; border-radius: 6px; margin-top: 0.2rem;">
+              ✅ Full Garansi Sesuai S&K
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" style="width: 100%; font-weight: 700; border-radius: 10px; padding: 0.75rem;" onclick="App.copyAllAccountDetails()">
+          <i class="fa-solid fa-copy"></i> Salin Semua Detail Akun
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toast-container" class="toast-container"></div>
 
