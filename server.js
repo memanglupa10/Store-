@@ -265,6 +265,76 @@ function generateQRISData(orderId, amount) {
   };
 }
 
+// Mayar Official QRIS & Payment API Helper (with 3.5s Timeout Safeguard)
+async function createMayarQRISCode(orderId, amount, customerInfo = {}) {
+  const apiKey = process.env.MAYAR_API_KEY;
+  if (!apiKey) return null;
+
+  const env = (process.env.MAYAR_ENV || 'production').toLowerCase();
+  const baseUrl = env === 'sandbox' ? 'https://api.mayar.club/hl/v1' : 'https://api.mayar.id/hl/v1';
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3500);
+
+  try {
+    const payload = JSON.stringify({
+      name: customerInfo.name || 'Pelanggan Babyiel Store',
+      email: customerInfo.email || 'customer@babyielstore.my.id',
+      mobile: customerInfo.mobile || customerInfo.wa || '081234567890',
+      amount: amount,
+      description: `Pembayaran Order ${orderId}`,
+      redirectUrl: `https://babyielstore.my.id/orders/status?order_id=${orderId}`
+    });
+
+    let response = await fetch(`${baseUrl}/qrcode/create`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: payload,
+      signal: controller.signal
+    });
+
+    if (!response.ok && response.status === 404) {
+      response = await fetch(`${baseUrl}/invoice/create`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: payload,
+        signal: controller.signal
+      });
+    }
+
+    clearTimeout(timeout);
+
+    const resData = await response.json();
+    const data = resData.data || resData;
+
+    if (data && (data.qrString || data.qrCodeUrl || data.link || data.id)) {
+      let qrDataUrl = data.qrCodeUrl || data.qr_url;
+      if (!qrDataUrl && data.qrString) {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="220" height="220"><rect width="100%" height="100%" fill="#ffffff"/><path d="M20 20h50v50H20zM30 30v30h30V30zM40 40h10v10H40zM130 20h50v50h-50zM140 30v30h30V30zM150 40h10v10h-10zM20 130h50v50H20zM30 140v30h30v-30zM40 150h10v10H40zM80 20h20v20H80zM100 40h20v20h-20zM80 70h30v20H80zM130 80h20v30h-20zM80 110h40v20H80zM140 120h30v20h-30zM90 140h30v40H90zM140 150h40v30h-40z" fill="#0f172a"/><text x="100" y="105" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#00C853">MAYAR QRIS</text></svg>`;
+        qrDataUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+      }
+
+      return {
+        qr_string: data.qrString || data.qr_string || '',
+        qris_url: qrDataUrl || data.link || '',
+        payment_url: data.link || data.url || '',
+        mayar_id: data.id,
+        merchant_name: 'BABYIEL STORE OFFICIAL (MAYAR)'
+      };
+    }
+  } catch (err) {
+    clearTimeout(timeout);
+    console.error('[MAYAR ERROR] Failed to create QR Code via Mayar API:', err);
+  }
+  return null;
+}
+
 // Xendit Official QRIS Charge API Helper (with 3.5s Timeout Safeguard)
 async function createXenditQRISCode(orderId, amount) {
   const secretKey = process.env.XENDIT_SECRET_KEY;
@@ -613,13 +683,19 @@ async function handleRequest(req, res) {
     }
 
     const pkg = (prod.prices || []).find(pr => pr.label === package_label) || { label: package_label, price: 15000, category: 'Standard' };
-    const price = pkg.price || 0;
+    const catalogPrice = pkg.price || 0;
+    
+    // Add 5% surcharge for QRIS & hosting fees, rounded UP to nearest Rp 500 (e.g. 7.000 -> 7.350 -> 7.500)
+    const rawPriceWithFee = catalogPrice * 1.05;
+    const price = catalogPrice > 0 ? Math.ceil(rawPriceWithFee / 500) * 500 : 0;
 
     let availableStock = db.stocks.find(s => s.product_id === product_id && (s.status === 'READY' || s.status === 'AVAILABLE'));
 
     const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    const xenditQR = await createXenditQRISCode(orderId, price);
-    const qrisInfo = xenditQR || generateQRISData(orderId, price);
+    const customerInfo = { name: customer_name, wa: customer_wa, email: customer_email };
+    const mayarQR = await createMayarQRISCode(orderId, price, customerInfo);
+    const xenditQR = !mayarQR ? await createXenditQRISCode(orderId, price) : null;
+    const qrisInfo = mayarQR || xenditQR || generateQRISData(orderId, price);
 
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 15 * 60 * 1000).toISOString();
@@ -653,6 +729,7 @@ async function handleRequest(req, res) {
       product_id: prod.id,
       product_name: prod.name,
       package_name: `${pkg.label} (${pkg.category || 'Member'})`,
+      original_price: catalogPrice,
       price: price,
       customer_name: customer_name.trim(),
       customer_wa: customer_wa.trim(),
@@ -809,23 +886,29 @@ async function handleRequest(req, res) {
     });
   }
 
-  // 4. POST /api/webhook/qris & /api/webhooks/payment (Universal Payment Gateway & Xendit Webhook Handler)
-  if ((pathname === '/api/webhooks/payment' || pathname === '/api/webhook/qris' || pathname === '/api/webhook/payment') && method === 'POST') {
+  // 4. POST /api/webhook/qris, /api/webhooks/payment, & /api/webhook/mayar (Universal Payment Gateway, Mayar, & Xendit Webhook Handler)
+  if ((pathname === '/api/webhooks/payment' || pathname === '/api/webhook/qris' || pathname === '/api/webhook/payment' || pathname === '/api/webhook/mayar') && method === 'POST') {
     const body = await parseBody(req);
     
-    // Support Xendit, Tripay, Midtrans, Paydisini, & Custom QRIS payload formats:
+    // Support Mayar, Xendit, Tripay, Midtrans, Paydisini, & Custom QRIS payload formats:
+    // Mayar: event 'payment.received', data.id, data.description, data.transactionId
     // Xendit: external_id, data.external_id, status ('COMPLETED')
     // Tripay: merchant_ref, status ('PAID')
     // Midtrans: order_id, transaction_status ('settlement' / 'capture')
     // Paydisini: unique_code, status ('Success')
-    const targetOrderId = body.external_id || (body.data && body.data.external_id) || (body.qr_code && body.qr_code.external_id) || body.order_id || body.merchant_ref || body.reference || body.unique_code || body.merchant_reference;
-    const paymentStatusRaw = (body.status || (body.data && body.data.status) || body.transaction_status || body.payment_status || '').toString().toUpperCase();
+    // Regex extract order ID format (BYL-YYYYMMDD-XXXX) if embedded in description / remark / json
+    const searchString = JSON.stringify(body);
+    const matchBYL = searchString.match(/BYL-\d{8}-[A-Z0-9]{4}/);
+    let targetOrderId = (matchBYL && matchBYL[0]) || body.external_id || (body.data && body.data.external_id) || (body.qr_code && body.qr_code.external_id) || body.order_id || body.merchant_ref || body.reference || body.unique_code || body.merchant_reference || (body.data && body.data.id);
+
+    const eventRaw = (body.event || '').toString().toUpperCase();
+    const paymentStatusRaw = (body.status || (body.data && body.data.status) || (body.data && body.data.transactionStatus) || body.transaction_status || body.payment_status || eventRaw || '').toString().toUpperCase();
 
     if (!targetOrderId) {
       return sendJSON({ success: false, message: 'Invalid webhook payload: Missing order identifier.' }, 400);
     }
 
-    // Xendit Callback Verification Token
+    // Mayar / Xendit Callback Verification Token
     const xenditCallbackToken = req.headers['x-callback-token'];
     if (xenditCallbackToken && process.env.XENDIT_WEBHOOK_TOKEN) {
       if (xenditCallbackToken !== process.env.XENDIT_WEBHOOK_TOKEN) {
@@ -833,15 +916,22 @@ async function handleRequest(req, res) {
       }
     }
 
+    const mayarToken = req.headers['x-mayar-token'] || req.headers['x-mayar-signature'];
+    if (mayarToken && process.env.MAYAR_WEBHOOK_TOKEN) {
+      if (mayarToken !== process.env.MAYAR_WEBHOOK_TOKEN) {
+        return sendJSON({ success: false, message: '403 Forbidden: Invalid Mayar Callback Token.' }, 403);
+      }
+    }
+
     const db = loadDB();
-    const order = db.orders.find(o => o.id === targetOrderId || o.payment_reference === targetOrderId);
+    const order = db.orders.find(o => o.id === targetOrderId || o.payment_reference === targetOrderId || (o.qris_info && o.qris_info.mayar_id === targetOrderId));
 
     if (!order) {
       return sendJSON({ success: false, message: `Order reference '${targetOrderId}' not found.` }, 404);
     }
 
     // Webhook Signature Verification (If HMAC header provided)
-    const signature = req.headers['x-callback-signature'] || req.headers['x-webhook-signature'] || req.headers['x-tripay-signature'];
+    const signature = req.headers['x-callback-signature'] || req.headers['x-webhook-signature'] || req.headers['x-tripay-signature'] || req.headers['x-mayar-signature'];
     if (signature && process.env.WEBHOOK_SECRET) {
       const expectedSig = crypto.createHmac('sha256', process.env.WEBHOOK_SECRET).update(JSON.stringify(body)).digest('hex');
       if (signature !== expectedSig && signature !== body.signature) {
@@ -859,7 +949,7 @@ async function handleRequest(req, res) {
       return sendJSON({ success: true, message: 'Order already processed & stock allocated.' });
     }
 
-    const isPaidStatus = ['PAID', 'SUCCESS', 'SETTLEMENT', 'CAPTURE', 'BERHASIL', 'COMPLETED', 'SUCCEEDED'].includes(paymentStatusRaw);
+    const isPaidStatus = ['PAID', 'SUCCESS', 'SETTLEMENT', 'CAPTURE', 'BERHASIL', 'COMPLETED', 'SUCCEEDED', 'PAYMENT.RECEIVED', 'PAYMENT_RECEIVED'].includes(paymentStatusRaw);
 
     if (isPaidStatus) {
       order.payment_status = 'PAID';

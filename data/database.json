@@ -1518,9 +1518,11 @@
       "pin": "1073",
       "note": "Garansi Resmi Full 100%",
       "assigned_to": "admin",
-      "status": "READY",
+      "status": "RESERVED",
       "created_at": "2026-07-21T11:58:00.713Z",
-      "updated_at": "2026-07-21T11:58:00.713Z"
+      "updated_at": "2026-07-21T11:58:00.713Z",
+      "order_id": "BYL-20260731-K3YT",
+      "reserved_until": "2026-07-31T07:09:49.203Z"
     },
     {
       "id": "STK-1074",
@@ -1662,9 +1664,11 @@
       "pin": "1082",
       "note": "Garansi Resmi Full 100%",
       "assigned_to": "admin",
-      "status": "READY",
+      "status": "RESERVED",
       "created_at": "2026-07-22T11:58:00.713Z",
-      "updated_at": "2026-07-22T11:58:00.713Z"
+      "updated_at": "2026-07-22T11:58:00.713Z",
+      "order_id": "BYL-20260731-FL4T",
+      "reserved_until": "2026-07-31T07:15:55.013Z"
     },
     {
       "id": "STK-1083",
@@ -1806,9 +1810,20 @@
       "pin": "1091",
       "note": "Garansi Resmi Full 100%",
       "assigned_to": "admin",
-      "status": "READY",
+      "status": "BERLANGGANAN",
       "created_at": "2026-07-23T11:58:00.713Z",
-      "updated_at": "2026-07-23T11:58:00.713Z"
+      "updated_at": "2026-07-23T11:58:00.713Z",
+      "order_id": "BYL-20260731-O76Q",
+      "reserved_until": "2026-07-31T07:16:19.607Z",
+      "customer_name": "Budi Test Flow",
+      "customer_wa": "081299998888",
+      "buyer_name": "Budi Test Flow",
+      "buyer_wa": "081299998888",
+      "sold_by": "admin",
+      "purchased_at": "2026-07-31T07:01:19.628Z",
+      "activated_at": "2026-07-31T07:01:19.628Z",
+      "expires_at": "2026-08-31T07:01:19.628Z",
+      "expired_date": "2026-08-31T07:01:19.628Z"
     },
     {
       "id": "STK-1092",
@@ -1950,9 +1965,20 @@
       "pin": "1100",
       "note": "Garansi Resmi Full 100%",
       "assigned_to": "admin",
-      "status": "READY",
+      "status": "BERLANGGANAN",
       "created_at": "2026-07-24T11:58:00.713Z",
-      "updated_at": "2026-07-24T11:58:00.713Z"
+      "updated_at": "2026-07-24T11:58:00.713Z",
+      "order_id": "BYL-20260731-MOFW",
+      "reserved_until": "2026-07-31T07:16:42.752Z",
+      "customer_name": "dianP",
+      "customer_wa": "0813131414",
+      "buyer_name": "dianP",
+      "buyer_wa": "0813131414",
+      "sold_by": "admin",
+      "purchased_at": "2026-07-31T07:01:52.215Z",
+      "activated_at": "2026-07-31T07:01:52.215Z",
+      "expires_at": "2026-08-07T07:01:52.215Z",
+      "expired_date": "2026-08-07T07:01:52.215Z"
     },
     {
       "id": "STK-1101",
@@ -2403,9 +2429,130 @@
       "created_at": "2026-07-14T11:58:00.713Z",
       "updated_at": "2026-07-19T11:58:00.713Z",
       "sold_at": "2026-07-19T11:58:00.713Z"
+    },
+    {
+      "id": "STK-072381",
+      "product_id": "prod-netflix",
+      "product_name": "Netflix Premium",
+      "email": "netflix.ready875@babyiel.com",
+      "password": "enc:c0a405fe4414f1538b8510047d9035fa",
+      "login_by": "Email & Password / OTP WA",
+      "profile": "Profil 1",
+      "pin": "enc:478f62f5add69ec137e03b3b5b53d268",
+      "note": "Garansi Resmi Full 100%",
+      "status": "RESERVED",
+      "order_id": "BYL-20260731-BD61",
+      "reserved_until": "2026-07-31T08:02:52.381Z",
+      "created_at": "2026-07-31T07:47:52.384Z"
     }
   ],
   "orders": [
+    {
+      "id": "BYL-20260731-BD61",
+      "product_id": "prod-netflix",
+      "product_name": "Netflix Premium",
+      "package_name": "1 Bulan Ultra HD (1 Screen) (Standard)",
+      "original_price": 15000,
+      "price": 16000,
+      "customer_name": "Budi Test Mayar",
+      "customer_wa": "081299998888",
+      "customer_email": "budi@gmail.com",
+      "payment_status": "PENDING",
+      "order_status": "PENDING_PAYMENT",
+      "payment_reference": "REF-BYL-20260731-BD61",
+      "qris_string": "some-random-qr-string",
+      "qris_url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0yMCAyMGg1MHY1MEgyMHpNMzAgMzB2MzBoMzBWMzB6TTQwIDQwaDEwdjEwSDQwek0xMzAgMjBoNTB2NTBoLTUwek0xNDAgMzB2MzBoMzBWMzB6TTE1MCA0MGgxMHYxMGgtMTB6TTIwIDEzMGg1MHY1MEgyMHpNMzAgMTQwdjMwaDMwdi0zMHpNNDAgMTUwaDEwdjEwSDQwek04MCAyMGgyMHYyMEg4MHpNMTAwIDQwaDIwdjIwaC0yMHpNODAgNzBoMzB2MjBIODB6TTEzMCA4MGgyMHYzMGgtMjB6TTgwIDExMGg0MHYyMEg4MHpNMTQwIDEyMGgzMHYyMGgtMzB6TTkwIDE0MGgzMHY0MEg5MHpNMTQwIDE1MGg0MHYzMGgtNDB6IiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iMTAwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzAwNjZGRiI+WEVORElUIFFSSVM8L3RleHQ+PC9zdmc+",
+      "merchant_name": "BABYIEL STORE OFFICIAL (XENDIT)",
+      "stock_id": "STK-072381",
+      "created_at": "2026-07-31T07:47:52.381Z",
+      "expires_at": "2026-07-31T08:02:52.381Z",
+      "paid_at": null,
+      "completed_at": null
+    },
+    {
+      "id": "BYL-20260731-MOFW",
+      "product_id": "prod-netflix",
+      "product_name": "Netflix Premium",
+      "package_name": "7 Hari (💎 Sharing 1P1U)",
+      "price": 14000,
+      "customer_name": "dianP",
+      "customer_wa": "0813131414",
+      "customer_email": "",
+      "payment_status": "PAID",
+      "order_status": "COMPLETED",
+      "payment_reference": "REF-BYL-20260731-MOFW",
+      "qris_string": "some-random-qr-string",
+      "qris_url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0yMCAyMGg1MHY1MEgyMHpNMzAgMzB2MzBoMzBWMzB6TTQwIDQwaDEwdjEwSDQwek0xMzAgMjBoNTB2NTBoLTUwek0xNDAgMzB2MzBoMzBWMzB6TTE1MCA0MGgxMHYxMGgtMTB6TTIwIDEzMGg1MHY1MEgyMHpNMzAgMTQwdjMwaDMwdi0zMHpNNDAgMTUwaDEwdjEwSDQwek04MCAyMGgyMHYyMEg4MHpNMTAwIDQwaDIwdjIwaC0yMHpNODAgNzBoMzB2MjBIODB6TTEzMCA4MGgyMHYzMGgtMjB6TTgwIDExMGg0MHYyMEg4MHpNMTQwIDEyMGgzMHYyMGgtMzB6TTkwIDE0MGgzMHY0MEg5MHpNMTQwIDE1MGg0MHYzMGgtNDB6IiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iMTAwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzAwNjZGRiI+WEVORElUIFFSSVM8L3RleHQ+PC9zdmc+",
+      "merchant_name": "BABYIEL STORE OFFICIAL (XENDIT)",
+      "stock_id": "STK-1100",
+      "created_at": "2026-07-31T07:01:42.752Z",
+      "expires_at": "2026-07-31T07:16:42.752Z",
+      "paid_at": "2026-07-31T07:01:52.215Z",
+      "completed_at": "2026-07-31T07:01:52.215Z"
+    },
+    {
+      "id": "BYL-20260731-O76Q",
+      "product_id": "prod-netflix",
+      "product_name": "Netflix Premium",
+      "package_name": "1 Bulan Ultra HD (1 Screen) (Standard)",
+      "price": 15000,
+      "customer_name": "Budi Test Flow",
+      "customer_wa": "081299998888",
+      "customer_email": "budi@gmail.com",
+      "payment_status": "PAID",
+      "order_status": "COMPLETED",
+      "payment_reference": "REF-BYL-20260731-O76Q",
+      "qris_string": "some-random-qr-string",
+      "qris_url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0yMCAyMGg1MHY1MEgyMHpNMzAgMzB2MzBoMzBWMzB6TTQwIDQwaDEwdjEwSDQwek0xMzAgMjBoNTB2NTBoLTUwek0xNDAgMzB2MzBoMzBWMzB6TTE1MCA0MGgxMHYxMGgtMTB6TTIwIDEzMGg1MHY1MEgyMHpNMzAgMTQwdjMwaDMwdi0zMHpNNDAgMTUwaDEwdjEwSDQwek04MCAyMGgyMHYyMEg4MHpNMTAwIDQwaDIwdjIwaC0yMHpNODAgNzBoMzB2MjBIODB6TTEzMCA4MGgyMHYzMGgtMjB6TTgwIDExMGg0MHYyMEg4MHpNMTQwIDEyMGgzMHYyMGgtMzB6TTkwIDE0MGgzMHY0MEg5MHpNMTQwIDE1MGg0MHYzMGgtNDB6IiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iMTAwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzAwNjZGRiI+WEVORElUIFFSSVM8L3RleHQ+PC9zdmc+",
+      "merchant_name": "BABYIEL STORE OFFICIAL (XENDIT)",
+      "stock_id": "STK-1091",
+      "created_at": "2026-07-31T07:01:19.607Z",
+      "expires_at": "2026-07-31T07:16:19.607Z",
+      "paid_at": "2026-07-31T07:01:19.627Z",
+      "completed_at": "2026-07-31T07:01:19.628Z"
+    },
+    {
+      "id": "BYL-20260731-FL4T",
+      "product_id": "prod-netflix",
+      "product_name": "Netflix Premium",
+      "package_name": "1 Bulan Ultra HD (1 Screen) (Standard)",
+      "price": 15000,
+      "customer_name": "Budi Test Flow",
+      "customer_wa": "081299998888",
+      "customer_email": "budi@gmail.com",
+      "payment_status": "PENDING",
+      "order_status": "PENDING_PAYMENT",
+      "payment_reference": "REF-BYL-20260731-FL4T",
+      "qris_string": "some-random-qr-string",
+      "qris_url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0yMCAyMGg1MHY1MEgyMHpNMzAgMzB2MzBoMzBWMzB6TTQwIDQwaDEwdjEwSDQwek0xMzAgMjBoNTB2NTBoLTUwek0xNDAgMzB2MzBoMzBWMzB6TTE1MCA0MGgxMHYxMGgtMTB6TTIwIDEzMGg1MHY1MEgyMHpNMzAgMTQwdjMwaDMwdi0zMHpNNDAgMTUwaDEwdjEwSDQwek04MCAyMGgyMHYyMEg4MHpNMTAwIDQwaDIwdjIwaC0yMHpNODAgNzBoMzB2MjBIODB6TTEzMCA4MGgyMHYzMGgtMjB6TTgwIDExMGg0MHYyMEg4MHpNMTQwIDEyMGgzMHYyMGgtMzB6TTkwIDE0MGgzMHY0MEg5MHpNMTQwIDE1MGg0MHYzMGgtNDB6IiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iMTAwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzAwNjZGRiI+WEVORElUIFFSSVM8L3RleHQ+PC9zdmc+",
+      "merchant_name": "BABYIEL STORE OFFICIAL (XENDIT)",
+      "stock_id": "STK-1082",
+      "created_at": "2026-07-31T07:00:55.013Z",
+      "expires_at": "2026-07-31T07:15:55.013Z",
+      "paid_at": null,
+      "completed_at": null
+    },
+    {
+      "id": "BYL-20260731-K3YT",
+      "product_id": "prod-netflix",
+      "product_name": "Netflix Premium",
+      "package_name": "1 Bulan Ultra HD (1 Screen) (Standard)",
+      "price": 15000,
+      "customer_name": "Budi Test Mayar",
+      "customer_wa": "081299998888",
+      "customer_email": "budi@gmail.com",
+      "payment_status": "PENDING",
+      "order_status": "PENDING_PAYMENT",
+      "payment_reference": "REF-BYL-20260731-K3YT",
+      "qris_string": "some-random-qr-string",
+      "qris_url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0yMCAyMGg1MHY1MEgyMHpNMzAgMzB2MzBoMzBWMzB6TTQwIDQwaDEwdjEwSDQwek0xMzAgMjBoNTB2NTBoLTUwek0xNDAgMzB2MzBoMzBWMzB6TTE1MCA0MGgxMHYxMGgtMTB6TTIwIDEzMGg1MHY1MEgyMHpNMzAgMTQwdjMwaDMwdi0zMHpNNDAgMTUwaDEwdjEwSDQwek04MCAyMGgyMHYyMEg4MHpNMTAwIDQwaDIwdjIwaC0yMHpNODAgNzBoMzB2MjBIODB6TTEzMCA4MGgyMHYzMGgtMjB6TTgwIDExMGg0MHYyMEg4MHpNMTQwIDEyMGgzMHYyMGgtMzB6TTkwIDE0MGgzMHY0MEg5MHpNMTQwIDE1MGg0MHYzMGgtNDB6IiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iMTAwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzAwNjZGRiI+WEVORElUIFFSSVM8L3RleHQ+PC9zdmc+",
+      "merchant_name": "BABYIEL STORE OFFICIAL (XENDIT)",
+      "stock_id": "STK-1073",
+      "created_at": "2026-07-31T06:54:49.203Z",
+      "expires_at": "2026-07-31T07:09:49.203Z",
+      "paid_at": null,
+      "completed_at": null
+    },
     {
       "id": "BYL-20260724-6T4S",
       "product_id": "prod-netflix",
@@ -2535,6 +2682,32 @@
   ],
   "notifications": [
     {
+      "id": "notif-1785481312216",
+      "title": "🛒 Pembelian Website Berhasil",
+      "message": "Order BYL-20260731-MOFW: Netflix Premium (7 Hari (💎 Sharing 1P1U)) dibeli oleh dianP (0813131414). Stok terpotong!",
+      "type": "SALE",
+      "order_id": "BYL-20260731-MOFW",
+      "customer_name": "dianP",
+      "customer_wa": "0813131414",
+      "product_name": "Netflix Premium",
+      "price": 14000,
+      "created_at": "2026-07-31T07:01:52.215Z",
+      "read": false
+    },
+    {
+      "id": "notif-1785481279628",
+      "title": "🛒 Pembelian Website Berhasil",
+      "message": "Order BYL-20260731-O76Q: Netflix Premium (1 Bulan Ultra HD (1 Screen) (Standard)) dibeli oleh Budi Test Flow (081299998888). Stok terpotong!",
+      "type": "SALE",
+      "order_id": "BYL-20260731-O76Q",
+      "customer_name": "Budi Test Flow",
+      "customer_wa": "081299998888",
+      "product_name": "Netflix Premium",
+      "price": 15000,
+      "created_at": "2026-07-31T07:01:19.628Z",
+      "read": false
+    },
+    {
       "id": "notif-1784899549019",
       "title": "🛒 Pembelian Website Berhasil",
       "message": "Order BYL-20260724-6T4S: Netflix Premium (1 Bulan (💎 Sharing 1P1U)) dibeli oleh dianP (0813131414). Stok terpotong!",
@@ -2615,6 +2788,18 @@
   ],
   "logs": [
     {
+      "id": "log-1785481312216",
+      "type": "sale",
+      "activity": "Penjualan Otomatis Website: Netflix Premium (7 Hari (💎 Sharing 1P1U)) dibeli oleh dianP (0813131414) [Stok ID: STK-1100]",
+      "created_at": "2026-07-31T07:01:52.215Z"
+    },
+    {
+      "id": "log-1785481279628",
+      "type": "sale",
+      "activity": "Penjualan Otomatis Website: Netflix Premium (1 Bulan Ultra HD (1 Screen) (Standard)) dibeli oleh Budi Test Flow (081299998888) [Stok ID: STK-1091]",
+      "created_at": "2026-07-31T07:01:19.628Z"
+    },
+    {
       "id": "log-1784899549019",
       "type": "sale",
       "activity": "Penjualan Otomatis Website: Netflix Premium (1 Bulan (💎 Sharing 1P1U)) dibeli oleh dianP (0813131414) [Stok ID: STK-1064]",
@@ -2651,7 +2836,25 @@
       "created_at": "2026-07-24T12:57:37.438Z"
     }
   ],
-  "webhook_logs": [],
+  "webhook_logs": [
+    {
+      "id": "wh-1785481279630",
+      "reference_id": "BYL-20260731-O76Q",
+      "gateway_status": "PAID",
+      "payload": {
+        "event": "payment.received",
+        "data": {
+          "id": "MYR-PAY-1785481279619",
+          "status": "PAID",
+          "amount": 15000,
+          "description": "Pembayaran Order BYL-20260731-O76Q",
+          "transactionId": "TX-MAYAR-74615"
+        }
+      },
+      "allocated_stock_id": "STK-1091",
+      "processed_at": "2026-07-31T07:01:19.630Z"
+    }
+  ],
   "settings": {
     "store_title": "Babyiel Store",
     "support_phone": "085775335453",
