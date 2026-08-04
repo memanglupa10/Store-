@@ -445,6 +445,7 @@ async function createMidtransQRISCode(orderId, amount, customerInfo = {}) {
       return {
         qr_string: qrString,
         qris_url: finalQrUrl,
+        qris_image_url: qrCodeUrl || finalQrUrl,
         midtrans_id: data.transaction_id || orderId,
         merchant_name: 'BABYIEL STORE OFFICIAL (MIDTRANS)'
       };
@@ -813,6 +814,7 @@ async function handleRequest(req, res) {
       payment_reference: `REF-${orderId}`,
       qris_string: qrisInfo.qr_string,
       qris_url: qrisInfo.qris_url,
+      qris_image_url: qrisInfo.qris_image_url || qrisInfo.qris_url,
       merchant_name: qrisInfo.merchant_name,
       stock_id: availableStock.id,
       created_at: now.toISOString(),
@@ -841,6 +843,7 @@ async function handleRequest(req, res) {
         payment_status: newOrder.payment_status,
         order_status: newOrder.order_status,
         qris_url: newOrder.qris_url,
+        qris_image_url: newOrder.qris_image_url,
         merchant_name: newOrder.merchant_name,
         expires_at: newOrder.expires_at,
         created_at: newOrder.created_at

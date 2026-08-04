@@ -588,6 +588,10 @@ const App = {
           if (elOrderId) elOrderId.textContent = `Order ID: ${res.order.id}`;
           if (elTotalAmount && res.order.price) elTotalAmount.textContent = `Rp ${res.order.price.toLocaleString('id-ID')}`;
           if (qrisImg && res.order.qris_url) qrisImg.src = res.order.qris_url;
+          const inputUrl = document.getElementById('input-qris-image-url');
+          if (inputUrl) {
+            inputUrl.value = res.order.qris_image_url || res.order.qris_url || res.order.qris_string || '';
+          }
           
           this.startQRISPolling(res.order.id);
         }
@@ -607,6 +611,11 @@ const App = {
     const qrisImg = document.getElementById('qris-image-display');
     if (qrisImg) qrisImg.src = order.qris_url;
 
+    const inputUrl = document.getElementById('input-qris-image-url');
+    if (inputUrl) {
+      inputUrl.value = order.qris_image_url || order.qris_url || order.qris_string || '';
+    }
+
     // Start 15-minute countdown
     this.startQRISCountdown(15 * 60);
 
@@ -614,6 +623,14 @@ const App = {
     this.startQRISPolling(order.id);
 
     modal.classList.add('active');
+  },
+
+  copyQRISImageUrl() {
+    const input = document.getElementById('input-qris-image-url');
+    if (input && input.value) {
+      navigator.clipboard.writeText(input.value);
+      this.showToast('Tersalin!', 'Link QR Code berhasil disalin. Siap di-paste ke Simulator Midtrans.', 'success');
+    }
   },
 
   closeQRISModal() {
