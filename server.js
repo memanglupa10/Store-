@@ -382,6 +382,79 @@ async function createXenditQRISCode(orderId, amount) {
   return null;
 }
 
+// Midtrans Dynamic QRIS Charge API Helper (Sandbox & Production with 3.5s Timeout Safeguard)
+async function createMidtransQRISCode(orderId, amount, customerInfo = {}) {
+  const serverKey = process.env.MIDTRANS_SERVER_KEY;
+  if (!serverKey) return null;
+
+  const isProduction = process.env.MIDTRANS_IS_PRODUCTION === 'true';
+  const baseUrl = isProduction 
+    ? 'https://api.midtrans.com/v2/charge' 
+    : 'https://api.sandbox.midtrans.com/v2/charge';
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3500);
+
+  try {
+    const authHeader = 'Basic ' + Buffer.from(serverKey + ':').toString('base64');
+    const payload = JSON.stringify({
+      payment_type: 'qris',
+      transaction_details: {
+        order_id: orderId,
+        gross_amount: Math.round(amount)
+      },
+      qris: {
+        acquirer: 'gopay'
+      },
+      customer_details: {
+        first_name: customerInfo.name || 'Customer',
+        email: customerInfo.email || 'customer@babyielstore.my.id',
+        phone: customerInfo.wa || '085775335453'
+      }
+    });
+
+    const response = await fetch(baseUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: payload,
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    const data = await response.json();
+    if (data && (data.qr_string || (data.actions && data.actions.length > 0))) {
+      let qrCodeUrl = '';
+      if (data.actions) {
+        const qrAction = data.actions.find(a => a.name === 'generate-qr-code') || data.actions[0];
+        if (qrAction) qrCodeUrl = qrAction.url;
+      }
+      
+      const qrString = data.qr_string || '';
+      let finalQrUrl = qrCodeUrl;
+      
+      if (!finalQrUrl && qrString) {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="220" height="220"><rect width="100%" height="100%" fill="#ffffff"/><path d="M20 20h50v50H20zM30 30v30h30V30zM40 40h10v10H40zM130 20h50v50h-50zM140 30v30h30V30zM150 40h10v10h-10zM20 130h50v50H20zM30 140v30h30v-30zM40 150h10v10H40zM80 20h20v20H80zM100 40h20v20h-20zM80 70h30v20H80zM130 80h20v30h-20zM80 110h40v20H80zM140 120h30v20h-30zM90 140h30v40H90zM140 150h40v30h-40z" fill="#0f172a"/><text x="100" y="105" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#FF5722">MIDTRANS QRIS</text></svg>`;
+        finalQrUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+      }
+
+      return {
+        qr_string: qrString,
+        qris_url: finalQrUrl,
+        midtrans_id: data.transaction_id || orderId,
+        merchant_name: 'BABYIEL STORE OFFICIAL (MIDTRANS)'
+      };
+    }
+  } catch (err) {
+    clearTimeout(timeout);
+    console.error('[MIDTRANS ERROR] Failed to create QR Code via Midtrans API:', err);
+  }
+  return null;
+}
+
 function calculateExpiryDate(packageLabel, startDate = new Date()) {
   const d = new Date(startDate);
   const labelLower = (packageLabel || '').toLowerCase();
@@ -692,10 +765,10 @@ async function handleRequest(req, res) {
     let availableStock = db.stocks.find(s => s.product_id === product_id && (s.status === 'READY' || s.status === 'AVAILABLE'));
 
     const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    const customerInfo = { name: customer_name, wa: customer_wa, email: customer_email };
-    const mayarQR = await createMayarQRISCode(orderId, price, customerInfo);
-    const xenditQR = !mayarQR ? await createXenditQRISCode(orderId, price) : null;
-    const qrisInfo = mayarQR || xenditQR || generateQRISData(orderId, price);
+    const midtransQR = await createMidtransQRISCode(orderId, price, customerInfo);
+    const mayarQR = !midtransQR ? await createMayarQRISCode(orderId, price, customerInfo) : null;
+    const xenditQR = (!midtransQR && !mayarQR) ? await createXenditQRISCode(orderId, price) : null;
+    const qrisInfo = midtransQR || mayarQR || xenditQR || generateQRISData(orderId, price);
 
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 15 * 60 * 1000).toISOString();
