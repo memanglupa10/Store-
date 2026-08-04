@@ -762,6 +762,7 @@ async function handleRequest(req, res) {
     let availableStock = db.stocks.find(s => s.product_id === product_id && (s.status === 'READY' || s.status === 'AVAILABLE'));
 
     const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    const customerInfo = { name: customer_name, wa: customer_wa, email: customer_email };
     const midtransQR = await createMidtransQRISCode(orderId, price, customerInfo);
     const mayarQR = !midtransQR ? await createMayarQRISCode(orderId, price, customerInfo) : null;
     const xenditQR = (!midtransQR && !mayarQR) ? await createXenditQRISCode(orderId, price) : null;
