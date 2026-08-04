@@ -530,41 +530,28 @@ const App = {
   async handleProcessCheckout(e) {
     if (e) e.preventDefault();
 
-    const name = document.getElementById('checkout-cust-name').value.trim();
-    const wa = document.getElementById('checkout-cust-wa').value.trim();
-    const email = document.getElementById('checkout-cust-email') ? document.getElementById('checkout-cust-email').value.trim() : '';
+    const nameInput = document.getElementById('checkout-cust-name');
+    const waInput = document.getElementById('checkout-cust-wa');
+    const emailInput = document.getElementById('checkout-cust-email');
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const wa = waInput ? waInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim() : '';
 
     if (!name || !wa) {
       this.showToast('Input Kurang', 'Nama dan Nomor WhatsApp wajib diisi!', 'warning');
       return;
     }
 
-    const { prod, label, price } = this.selectedPackageData || {};
-    const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="220" height="220"><rect width="100%" height="100%" fill="#ffffff"/><path d="M20 20h50v50H20zM30 30v30h30V30zM40 40h10v10H40zM130 20h50v50h-50zM140 30v30h30V30zM150 40h10v10h-10zM20 130h50v50H20zM30 140v30h30v-30zM40 150h10v10H40zM80 20h20v20H80zM100 40h20v20h-20zM80 70h30v20H80zM130 80h20v30h-20zM80 110h40v20H80zM140 120h30v20h-30zM90 140h30v40H90zM140 150h40v30h-40z" fill="#0f172a"/><text x="100" y="105" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#7c3aed">QRIS BYL</text></svg>`;
-    
-    const rawPrice = price || 10000;
-    const finalPriceWithFee = Math.ceil((rawPrice * 1.05) / 500) * 500;
+    const submitBtn = document.querySelector('#form-checkout button[type="submit"]') || document.querySelector('#modal-checkout-form button[type="submit"]');
+    const origBtnText = submitBtn ? submitBtn.innerHTML : 'Lanjut Pembayaran';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menghubungi Midtrans...';
+    }
 
-    const instantOrderObj = {
-      id: orderId,
-      product_name: prod ? prod.name : 'Produk Digital',
-      package_name: label || 'Standard',
-      price: finalPriceWithFee,
-      customer_name: name,
-      customer_wa: wa,
-      payment_status: 'PENDING',
-      order_status: 'PENDING_PAYMENT',
-      qris_url: `data:image/svg+xml;base64,${btoa(svg)}`,
-      created_at: new Date().toISOString()
-    };
+    const { prod, label } = this.selectedPackageData || {};
 
-    // OPEN QRIS MODAL INSTANTLY FOR 0MS LATENCY USER EXPERIENCE
-    this.currentActiveOrder = instantOrderObj;
-    this.closeCheckoutModal();
-    this.openQRISModal(instantOrderObj);
-
-    // Asynchronously sync with backend server / Xendit API
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
@@ -578,26 +565,28 @@ const App = {
         })
       });
 
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origBtnText;
+      }
+
       if (response.ok) {
         const res = await response.json();
         if (res && res.success && res.order) {
           this.currentActiveOrder = res.order;
-          const elOrderId = document.getElementById('qris-order-id');
-          const elTotalAmount = document.getElementById('qris-total-amount');
-          const qrisImg = document.getElementById('qris-image-display');
-          if (elOrderId) elOrderId.textContent = `Order ID: ${res.order.id}`;
-          if (elTotalAmount && res.order.price) elTotalAmount.textContent = `Rp ${res.order.price.toLocaleString('id-ID')}`;
-          if (qrisImg && res.order.qris_url) qrisImg.src = res.order.qris_url;
-          const inputUrl = document.getElementById('input-qris-image-url');
-          if (inputUrl) {
-            inputUrl.value = res.order.qris_image_url || res.order.qris_url || res.order.qris_string || '';
-          }
-          
-          this.startQRISPolling(res.order.id);
+          this.closeCheckoutModal();
+          this.openQRISModal(res.order);
+          return;
         }
       }
+      this.showToast('Gagal Checkout', 'Gagal memproses pembayaran QRIS. Silakan coba lagi.', 'error');
     } catch (err) {
-      console.warn('Async checkout sync completed with local order:', err);
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origBtnText;
+      }
+      console.error('Checkout error:', err);
+      this.showToast('Error', 'Terjadi kesalahan saat memproses checkout.', 'error');
     }
   },
 
