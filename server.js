@@ -1103,7 +1103,7 @@ async function handleRequest(req, res) {
   // STATIC FILE SERVER & SPA FALLBACK
   // =========================================================
   let reqUrl = pathname;
-  if (reqUrl === '/') reqUrl = '/index.html';
+  if (reqUrl === '/' || reqUrl === '/login' || reqUrl === '/admin' || reqUrl === '/katalog') reqUrl = '/index.html';
 
   let filePath = path.join(PUBLIC_DIR, decodeURIComponent(reqUrl));
 

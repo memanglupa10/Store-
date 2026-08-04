@@ -52,45 +52,68 @@ const App = {
   },
 
   handleRoute() {
-    const rawHash = (location.hash || '').replace('#', '').trim();
-    if (rawHash === 'katalog' || rawHash === 'storefront' || rawHash === 'publik' || rawHash === 'store') {
+    const rawHash = (location.hash || '').replace('#', '').trim().toLowerCase();
+    const pathname = (location.pathname || '').trim().toLowerCase();
+
+    const isLoginRoute = pathname === '/login' || pathname === '/admin' || rawHash === 'login' || rawHash === 'admin';
+    const isCatalogRoute = rawHash === 'katalog' || rawHash === 'storefront' || rawHash === 'publik' || rawHash === 'store' || pathname === '/katalog';
+
+    if (isLoginRoute) {
+      const auth = db.getAuth();
+      if (!auth) {
+        this.showLoginScreen();
+      } else {
+        this.navigate('dashboard');
+      }
+    } else if (isCatalogRoute) {
       this.goToStorefront();
     } else if (['dashboard', 'stock', 'products', 'catalog', 'report', 'activity', 'settings'].includes(rawHash)) {
-      this.navigate(rawHash);
-    } else if (rawHash === 'login') {
       const auth = db.getAuth();
       if (!auth) {
-        const storefront = document.getElementById('storefront-screen');
-        const loginWrapper = document.getElementById('login-screen');
-        const mainApp = document.getElementById('app-main');
-        if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
-        if (mainApp) { mainApp.classList.remove('active'); mainApp.style.display = 'none'; }
-        if (loginWrapper) { loginWrapper.classList.add('active'); loginWrapper.style.display = 'flex'; }
+        this.showLoginScreen();
       } else {
-        this.navigate('dashboard');
+        this.navigate(rawHash);
       }
-    } else if (!rawHash) {
+    } else {
       const auth = db.getAuth();
-      if (!auth) {
+      if (rawHash) {
+        if (!auth) {
+          this.showLoginScreen();
+        } else {
+          this.navigate(rawHash);
+        }
+      } else {
         this.goToStorefront();
-      } else {
-        this.navigate('dashboard');
       }
+    }
+  },
+
+  showLoginScreen() {
+    this.closeMobileSidebar();
+    const storefront = document.getElementById('storefront-screen');
+    const loginWrapper = document.getElementById('login-screen');
+    const mainApp = document.getElementById('app-main');
+
+    if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
+    if (mainApp) { mainApp.classList.remove('active'); mainApp.style.display = 'none'; }
+    if (loginWrapper) { loginWrapper.classList.add('active'); loginWrapper.style.display = 'flex'; }
+
+    if (location.pathname !== '/login' && location.hash !== '#login') {
+      history.replaceState(null, '', '/login');
     }
   },
 
   checkAuth() {
     const auth = db.getAuth();
     const loginWrapper = document.getElementById('login-screen');
-    const mainApp = document.getElementById('app-main');
-    const storefront = document.getElementById('storefront-screen');
-    const rawHash = (location.hash || '').replace('#', '').trim();
+    const rawHash = (location.hash || '').replace('#', '').trim().toLowerCase();
+    const pathname = (location.pathname || '').trim().toLowerCase();
+
+    const isLoginRoute = pathname === '/login' || pathname === '/admin' || rawHash === 'login' || rawHash === 'admin';
 
     if (!auth) {
-      if (rawHash === 'login') {
-        if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
-        if (mainApp) { mainApp.classList.remove('active'); mainApp.style.display = 'none'; }
-        if (loginWrapper) { loginWrapper.classList.add('active'); loginWrapper.style.display = 'flex'; }
+      if (isLoginRoute) {
+        this.showLoginScreen();
       } else {
         this.goToStorefront();
       }
@@ -123,9 +146,6 @@ const App = {
 
   goToStorefront() {
     this.closeMobileSidebar();
-    if (location.hash !== '#katalog') {
-      history.replaceState(null, '', '#katalog');
-    }
     const storefront = document.getElementById('storefront-screen');
     const loginWrapper = document.getElementById('login-screen');
     const mainApp = document.getElementById('app-main');
@@ -160,12 +180,15 @@ const App = {
     const waFloat = document.getElementById('wa-float-btn');
     if (waHero) waHero.href = waLink;
     if (waFloat) waFloat.href = waLink;
+
+    if (location.pathname !== '/' && location.pathname !== '') {
+      history.replaceState(null, '', '/');
+    }
   },
 
   handleStorefrontNavAuth() {
     const auth = db.getAuth();
     if (auth) {
-      // User is already logged in, return to dashboard without logging out!
       const storefront = document.getElementById('storefront-screen');
       const mainApp = document.getElementById('app-main');
       if (storefront) {
@@ -178,17 +201,7 @@ const App = {
       }
       this.navigate('dashboard');
     } else {
-      // User is guest, show login screen
-      const storefront = document.getElementById('storefront-screen');
-      const loginWrapper = document.getElementById('login-screen');
-      if (storefront) {
-        storefront.classList.remove('active');
-        storefront.style.display = 'none';
-      }
-      if (loginWrapper) {
-        loginWrapper.classList.add('active');
-        loginWrapper.style.display = 'flex';
-      }
+      this.showLoginScreen();
     }
   },
 
@@ -325,19 +338,6 @@ const App = {
   renderStorefront() {
     const container = document.getElementById('storefront-grid-container');
     if (!container) return;
-
-    // Update Nav Auth Button based on login session
-    const navAuthBtn = document.getElementById('storefront-nav-auth-btn');
-    const auth = db.getAuth();
-    if (navAuthBtn) {
-      if (auth) {
-        navAuthBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard';
-        navAuthBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-      } else {
-        navAuthBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login Admin';
-        navAuthBtn.style.background = 'linear-gradient(135deg, var(--brand-purple), var(--brand-pink))';
-      }
-    }
 
     const settings = db.getSettings();
 
@@ -543,11 +543,14 @@ const App = {
     const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="220" height="220"><rect width="100%" height="100%" fill="#ffffff"/><path d="M20 20h50v50H20zM30 30v30h30V30zM40 40h10v10H40zM130 20h50v50h-50zM140 30v30h30V30zM150 40h10v10h-10zM20 130h50v50H20zM30 140v30h30v-30zM40 150h10v10H40zM80 20h20v20H80zM100 40h20v20h-20zM80 70h30v20H80zM130 80h20v30h-20zM80 110h40v20H80zM140 120h30v20h-30zM90 140h30v40H90zM140 150h40v30h-40z" fill="#0f172a"/><text x="100" y="105" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#7c3aed">QRIS BYL</text></svg>`;
     
+    const rawPrice = price || 10000;
+    const finalPriceWithFee = Math.ceil((rawPrice * 1.05) / 500) * 500;
+
     const instantOrderObj = {
       id: orderId,
       product_name: prod ? prod.name : 'Produk Digital',
       package_name: label || 'Standard',
-      price: price || 10000,
+      price: finalPriceWithFee,
       customer_name: name,
       customer_wa: wa,
       payment_status: 'PENDING',
@@ -580,8 +583,10 @@ const App = {
         if (res && res.success && res.order) {
           this.currentActiveOrder = res.order;
           const elOrderId = document.getElementById('qris-order-id');
+          const elTotalAmount = document.getElementById('qris-total-amount');
           const qrisImg = document.getElementById('qris-image-display');
           if (elOrderId) elOrderId.textContent = `Order ID: ${res.order.id}`;
+          if (elTotalAmount && res.order.price) elTotalAmount.textContent = `Rp ${res.order.price.toLocaleString('id-ID')}`;
           if (qrisImg && res.order.qris_url) qrisImg.src = res.order.qris_url;
           
           this.startQRISPolling(res.order.id);
@@ -1209,7 +1214,7 @@ const App = {
           'Apakah Anda yakin ingin keluar dari aplikasi?',
           () => {
             db.logout();
-            this.checkAuth();
+            this.showLoginScreen();
             this.showToast('Logout', 'Anda telah keluar dari aplikasi.', 'info');
           }
         );
