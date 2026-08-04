@@ -435,17 +435,12 @@ async function createMidtransQRISCode(orderId, amount, customerInfo = {}) {
       }
       
       const qrString = data.qr_string || '';
-      let finalQrUrl = qrCodeUrl;
-      
-      if (!finalQrUrl && qrString) {
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="220" height="220"><rect width="100%" height="100%" fill="#ffffff"/><path d="M20 20h50v50H20zM30 30v30h30V30zM40 40h10v10H40zM130 20h50v50h-50zM140 30v30h30V30zM150 40h10v10h-10zM20 130h50v50H20zM30 140v30h30v-30zM40 150h10v10H40zM80 20h20v20H80zM100 40h20v20h-20zM80 70h30v20H80zM130 80h20v30h-20zM80 110h40v20H80zM140 120h30v20h-30zM90 140h30v40H90zM140 150h40v30h-40z" fill="#0f172a"/><text x="100" y="105" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#FF5722">MIDTRANS QRIS</text></svg>`;
-        finalQrUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
-      }
+      const realQrImageUrl = qrString ? `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}` : (qrCodeUrl || finalQrUrl);
 
       return {
         qr_string: qrString,
-        qris_url: finalQrUrl,
-        qris_image_url: qrCodeUrl || finalQrUrl,
+        qris_url: realQrImageUrl,
+        qris_image_url: realQrImageUrl,
         midtrans_id: data.transaction_id || orderId,
         merchant_name: 'BABYIEL STORE OFFICIAL (MIDTRANS)'
       };
