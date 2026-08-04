@@ -418,7 +418,8 @@ async function createMidtransQRISCode(orderId, amount, customerInfo = {}) {
       headers: {
         'Authorization': authHeader,
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'X-Override-Notification-Url': 'https://babyielstore.my.id/api/webhook/midtrans'
       },
       body: payload,
       signal: controller.signal
