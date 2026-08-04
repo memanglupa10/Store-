@@ -602,7 +602,12 @@ const App = {
 
     const inputUrl = document.getElementById('input-qris-image-url');
     if (inputUrl) {
-      inputUrl.value = order.qris_image_url || order.qris_url || order.qris_string || '';
+      inputUrl.value = order.qris_image_url || order.qris_url || '';
+    }
+
+    const inputStr = document.getElementById('input-qris-string');
+    if (inputStr) {
+      inputStr.value = order.qris_string || '';
     }
 
     // Start 15-minute countdown
@@ -618,7 +623,15 @@ const App = {
     const input = document.getElementById('input-qris-image-url');
     if (input && input.value) {
       navigator.clipboard.writeText(input.value);
-      this.showToast('Tersalin!', 'Link QR Code berhasil disalin. Siap di-paste ke Simulator Midtrans.', 'success');
+      this.showToast('Tersalin!', 'Link URL Gambar QR berhasil disalin. Siap di-paste ke Simulator Midtrans.', 'success');
+    }
+  },
+
+  copyQRISString() {
+    const input = document.getElementById('input-qris-string');
+    if (input && input.value) {
+      navigator.clipboard.writeText(input.value);
+      this.showToast('Tersalin!', 'QR String EMVCo berhasil disalin. Siap di-paste ke kolom QR String Simulator Midtrans.', 'success');
     }
   },
 

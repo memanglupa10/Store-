@@ -22,7 +22,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=11.0">
+  <link rel="stylesheet" href="css/style.css?v=12.0">
 </head>
 <body>
 
@@ -322,16 +322,30 @@
           <img id="qris-image-display" src="" alt="QRIS Payment" style="width: 200px; height: 200px; object-fit: contain; display: block; margin: 0 auto;">
           <div style="font-size: 0.72rem; font-weight: 800; color: #0f172a; margin-top: 0.5rem; letter-spacing: 0.05em;">NMP: BABYIEL STORE OFFICIAL</div>
 
-          <!-- Direct URL Copy for Midtrans Sandbox Simulator -->
-          <div style="margin-top: 0.85rem; text-align: left; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.65rem;">
-            <label style="font-size: 0.72rem; font-weight: 800; color: #475569; display: block; margin-bottom: 0.3rem;">
-              <i class="fa-solid fa-link" style="color: #7c3aed;"></i> QR Code Image URL (Untuk Midtrans Simulator):
-            </label>
-            <div style="display: flex; gap: 0.4rem;">
-              <input type="text" id="input-qris-image-url" readonly class="form-input no-icon" style="font-size: 0.75rem; font-family: monospace; padding: 0.4rem 0.6rem; background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 700;" placeholder="https://api.sandbox.midtrans.com/v2/qris/...">
-              <button type="button" onclick="App.copyQRISImageUrl()" class="btn btn-primary btn-sm" style="font-size: 0.75rem; white-space: nowrap; font-weight: 800; background: #7c3aed; border: none; border-radius: 6px;">
-                <i class="fa-solid fa-copy"></i> Salin Link
-              </button>
+          <!-- Direct URL & QR String Copy for Midtrans Sandbox Simulator -->
+          <div style="margin-top: 0.85rem; text-align: left; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.65rem; display: flex; flex-direction: column; gap: 0.6rem;">
+            <div>
+              <label style="font-size: 0.72rem; font-weight: 800; color: #475569; display: block; margin-bottom: 0.3rem;">
+                <i class="fa-solid fa-link" style="color: #7c3aed;"></i> Opsi 1: QR Code Image URL (Midtrans Simulator):
+              </label>
+              <div style="display: flex; gap: 0.4rem;">
+                <input type="text" id="input-qris-image-url" readonly class="form-input no-icon" style="font-size: 0.75rem; font-family: monospace; padding: 0.4rem 0.6rem; background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 700;" placeholder="https://api.sandbox.midtrans.com/v2/qris/...">
+                <button type="button" onclick="App.copyQRISImageUrl()" class="btn btn-primary btn-sm" style="font-size: 0.75rem; white-space: nowrap; font-weight: 800; background: #7c3aed; border: none; border-radius: 6px;">
+                  <i class="fa-solid fa-copy"></i> Salin URL
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size: 0.72rem; font-weight: 800; color: #475569; display: block; margin-bottom: 0.3rem;">
+                <i class="fa-solid fa-qrcode" style="color: #0284c7;"></i> Opsi 2: QR String EMVCo (Midtrans Simulator):
+              </label>
+              <div style="display: flex; gap: 0.4rem;">
+                <input type="text" id="input-qris-string" readonly class="form-input no-icon" style="font-size: 0.75rem; font-family: monospace; padding: 0.4rem 0.6rem; background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 700;" placeholder="00020101021226620014COM.GO-JEK...">
+                <button type="button" onclick="App.copyQRISString()" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; white-space: nowrap; font-weight: 800; background: #0284c7; color: #ffffff; border: none; border-radius: 6px;">
+                  <i class="fa-solid fa-copy"></i> Salin String
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1851,8 +1865,8 @@
   <!-- Application Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/database.js?v=10.0"></script>
-  <script src="js/app.js?v=10.0"></script>
+  <script src="js/database.js?v=12.0"></script>
+  <script src="js/app.js?v=12.0"></script>
 
   <!-- EMERGENCY INLINE LOGIN FAILSAFE — runs even if app.js has errors -->
   <script>
