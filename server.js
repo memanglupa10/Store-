@@ -838,6 +838,7 @@ async function handleRequest(req, res) {
         customer_wa: newOrder.customer_wa,
         payment_status: newOrder.payment_status,
         order_status: newOrder.order_status,
+        qris_string: newOrder.qris_string,
         qris_url: newOrder.qris_url,
         qris_image_url: newOrder.qris_image_url,
         merchant_name: newOrder.merchant_name,
