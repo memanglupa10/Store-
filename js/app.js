@@ -619,19 +619,72 @@ const App = {
     modal.classList.add('active');
   },
 
+  copyTextToClipboard(text, successMsg) {
+    if (!text) return;
+    const input = document.activeElement;
+
+    // Try modern Clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.showToast('Tersalin!', successMsg, 'success');
+      }).catch(() => {
+        this.fallbackCopyText(text, successMsg);
+      });
+      return;
+    }
+
+    this.fallbackCopyText(text, successMsg);
+  },
+
+  fallbackCopyText(text, successMsg) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.top = '0';
+    textArea.style.left = '0';
+    textArea.style.width = '2em';
+    textArea.style.height = '2em';
+    textArea.style.padding = '0';
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none';
+    textArea.style.background = 'transparent';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        this.showToast('Tersalin!', successMsg, 'success');
+      } else {
+        this.showToast('Tersalin', 'Kode telah disalin ke clipboard.', 'success');
+      }
+    } catch (err) {
+      console.warn('Fallback copy warning:', err);
+      this.showToast('Tersalin', 'Kode telah disalin.', 'success');
+    }
+
+    document.body.removeChild(textArea);
+  },
+
   copyQRISImageUrl() {
     const input = document.getElementById('input-qris-image-url');
     if (input && input.value) {
-      navigator.clipboard.writeText(input.value);
-      this.showToast('Tersalin!', 'Link URL Gambar QR berhasil disalin. Siap di-paste ke Simulator Midtrans.', 'success');
+      input.select();
+      this.copyTextToClipboard(input.value, 'Link URL Gambar QR berhasil disalin! Siap di-paste ke Simulator Midtrans.');
+    } else {
+      this.showToast('Info', 'Link URL Gambar belum tersedia.', 'warning');
     }
   },
 
   copyQRISString() {
     const input = document.getElementById('input-qris-string');
     if (input && input.value) {
-      navigator.clipboard.writeText(input.value);
-      this.showToast('Tersalin!', 'QR String EMVCo berhasil disalin. Siap di-paste ke kolom QR String Simulator Midtrans.', 'success');
+      input.select();
+      this.copyTextToClipboard(input.value, 'QR String EMVCo berhasil disalin! Siap di-paste ke kolom QR String Simulator Midtrans.');
+    } else {
+      this.showToast('Info', 'QR String belum tersedia.', 'warning');
     }
   },
 
