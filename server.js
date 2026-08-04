@@ -440,7 +440,7 @@ async function createMidtransQRISCode(orderId, amount, customerInfo = {}) {
       return {
         qr_string: qrString,
         qris_url: realQrImageUrl,
-        qris_image_url: realQrImageUrl,
+        qris_image_url: qrCodeUrl || realQrImageUrl,
         midtrans_id: data.transaction_id || orderId,
         merchant_name: 'BABYIEL STORE OFFICIAL (MIDTRANS)'
       };
