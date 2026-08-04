@@ -860,6 +860,34 @@ async function handleRequest(req, res) {
       return sendJSON({ success: false, message: 'Order tidak ditemukan.' }, 404);
     }
 
+    // Active Midtrans Direct API Status Check Safeguard
+    if (order.payment_status !== 'PAID' && process.env.MIDTRANS_SERVER_KEY) {
+      try {
+        const authHeader = 'Basic ' + Buffer.from(process.env.MIDTRANS_SERVER_KEY + ':').toString('base64');
+        const isProduction = process.env.MIDTRANS_IS_PRODUCTION === 'true';
+        const midtransStatusUrl = isProduction 
+          ? `https://api.midtrans.com/v2/${order.id}/status` 
+          : `https://api.sandbox.midtrans.com/v2/${order.id}/status`;
+
+        const midRes = await fetch(midtransStatusUrl, {
+          headers: { 'Authorization': authHeader, 'Accept': 'application/json' }
+        });
+
+        if (midRes.ok) {
+          const midData = await midRes.json();
+          const midStatus = (midData.transaction_status || '').toUpperCase();
+          if (['SETTLEMENT', 'CAPTURE', 'SUCCESS'].includes(midStatus)) {
+            order.payment_status = 'PAID';
+            order.paid_at = new Date().toISOString();
+            await lockAndAllocateStock(db, order);
+            saveDB(db);
+          }
+        }
+      } catch (me) {
+        console.warn('[MIDTRANS ACTIVE POLL WARNING]:', me);
+      }
+    }
+
     let accountData = null;
     if (order.payment_status === 'PAID' || order.order_status === 'COMPLETED') {
       const stock = db.stocks.find(s => s.id === order.stock_id || s.order_id === order.id);
