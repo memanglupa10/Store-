@@ -960,8 +960,8 @@ async function handleRequest(req, res) {
     });
   }
 
-  // 4. POST /api/webhook/qris, /api/webhooks/payment, & /api/webhook/mayar (Universal Payment Gateway, Mayar, & Xendit Webhook Handler)
-  if ((pathname === '/api/webhooks/payment' || pathname === '/api/webhook/qris' || pathname === '/api/webhook/payment' || pathname === '/api/webhook/mayar') && method === 'POST') {
+  // 4. POST /api/webhook/qris, /api/webhooks/payment, /api/webhook/mayar, & /api/webhook/midtrans (Universal Payment Gateway Webhook Handler)
+  if ((pathname === '/api/webhooks/payment' || pathname === '/api/webhook/qris' || pathname === '/api/webhook/payment' || pathname === '/api/webhook/mayar' || pathname === '/api/webhook/midtrans') && method === 'POST') {
     const body = await parseBody(req);
     
     // Support Mayar, Xendit, Tripay, Midtrans, Paydisini, & Custom QRIS payload formats:
