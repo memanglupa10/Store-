@@ -690,7 +690,10 @@ const App = {
 
   closeQRISModal() {
     const modal = document.getElementById('modal-checkout-qris');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.display = 'none';
+    }
     this.stopQRISPolling();
     this.stopQRISCountdown();
   },
@@ -731,15 +734,16 @@ const App = {
     this.qrisPollTimer = setInterval(async () => {
       try {
         const res = await fetch(`/api/orders/${orderId}/status`);
-        const data = await res.json();
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && (data.payment_status === 'PAID' || data.order_status === 'COMPLETED')) {
+            this.stopQRISPolling();
+            this.stopQRISCountdown();
+            this.closeQRISModal();
 
-        if (data.success && data.payment_status === 'PAID') {
-          this.stopQRISPolling();
-          this.stopQRISCountdown();
-          this.closeQRISModal();
-
-          // Fetch full account credentials & show fulfillment modal
-          this.fetchAndDisplayFulfillment(orderId);
+            // Fetch full account credentials & show fulfillment modal
+            this.fetchAndDisplayFulfillment(orderId);
+          }
         }
       } catch (err) {
         console.warn('Polling status error:', err);
@@ -1007,7 +1011,10 @@ const App = {
         formattedEl.textContent = data.single_format || `${data.product_name}\nEmail: ${data.account.email}\nPassword: ${data.account.password}\nLogin By: ${data.account.login_by || 'Email & Password / OTP WA'}\nProfil: ${data.account.profile || 'Profil 1'}\nPIN: ${data.account.pin || '1234'}`;
       }
 
-      if (modal) modal.classList.add('active');
+      if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+      }
       this.startFulfillmentLockTimer();
 
       this.showToast('🎉 Pembayaran Diterima!', `Akun ${data.product_name} Anda telah diserahkan!`, 'success');
