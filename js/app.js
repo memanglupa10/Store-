@@ -282,7 +282,7 @@ const App = {
     if (!container) return;
 
     let products = db.getProducts().filter(p => p.is_active_catalog !== false);
-    // Take top 4 best sellers (Netflix, Canva, ChatGPT, Spotify, etc.)
+    // Take top 4 best sellers (Netflix, Canva, ChatGPT, Spotify/Disney)
     const bestsellers = products.slice(0, 4);
 
     const tagBadges = ['🔥 BEST SELLER', '⭐ POPULAR', '⚡ TRENDING', '🏆 TOP CHOICE'];
@@ -290,41 +290,31 @@ const App = {
     let html = bestsellers.map((p, idx) => {
       const hasImg = p.image_url && p.image_url.trim() !== '';
       const iconHtml = hasImg
-        ? `<div class="bestseller-app-icon"><img src="${p.image_url}" alt="${p.name}"></div>`
-        : `<div class="bestseller-app-icon" style="background: ${p.color || '#7c3aed'};"><i class="fa-solid ${p.icon || 'fa-fire'}" style="color: #fff; font-size: 1.4rem;"></i></div>`;
+        ? `<div class="sf-bs-app-icon"><img src="${p.image_url}" alt="${p.name}"></div>`
+        : `<div class="sf-bs-app-icon" style="background: ${p.color || '#7c3aed'};"><i class="fa-solid ${p.icon || 'fa-fire'}" style="color: #fff; font-size: 1.3rem;"></i></div>`;
 
       const lowestPrice = this.getLowestPrice(p);
       const priceText = lowestPrice > 0 ? `Mulai Rp ${lowestPrice.toLocaleString('id-ID')}` : 'Lihat Paket';
       const badgeText = tagBadges[idx % tagBadges.length];
 
       return `
-        <div class="bestseller-card-featured" style="--brand-accent: ${p.color || '#7c3aed'};">
-          <div>
-            <div class="bestseller-card-top">
-              ${iconHtml}
-              <span class="bestseller-tag-badge">${badgeText}</span>
-            </div>
-
-            <div class="bestseller-card-body">
-              <div class="bestseller-card-name">${p.name}</div>
-              <div class="bestseller-benefit-line">
-                <i class="fa-solid fa-bolt" style="color: #f59e0b; font-size: 0.7rem;"></i> Proses 1-5 Mnt &bull; ${p.garansi || 'Full Garansi'}
+        <div class="sf-bs-card">
+          <div class="sf-bs-content-wrap">
+            ${iconHtml}
+            <div class="sf-bs-details">
+              <div class="sf-bs-title-row">
+                <span class="sf-bs-name">${p.name}</span>
+                <span class="sf-bs-tag-badge">${badgeText}</span>
+              </div>
+              <div class="sf-bs-sub-info">
+                <i class="fa-solid fa-bolt" style="color:#f59e0b;font-size:0.7rem;"></i> Proses 1-5 Mnt &bull; <i class="fa-solid fa-shield-check" style="color:#10b981;font-size:0.7rem;"></i> ${p.garansi || 'Garansi Resmi'}
               </div>
             </div>
           </div>
 
-          <div>
-            <div class="bestseller-price-box" style="margin-bottom: 0.85rem;">
-              <div>
-                <div class="bestseller-price-sub">Harga Spesial</div>
-                <div class="bestseller-price-val">${priceText}</div>
-              </div>
-              <span style="color: #10b981; font-weight: 700; font-size: 0.72rem; display: flex; align-items: center; gap: 0.25rem;">
-                <i class="fa-solid fa-circle-check" style="font-size: 0.65rem;"></i> Ready
-              </span>
-            </div>
-
-            <button class="bestseller-cta-btn" onclick="App.openCatalogPackagesModal('${p.id}')">
+          <div class="sf-bs-bottom-bar">
+            <div class="sf-bs-price-tag">${priceText}</div>
+            <button class="sf-bs-action-btn" onclick="App.openCatalogPackagesModal('${p.id}')">
               <i class="fa-solid fa-box-open"></i> Lihat Paket
             </button>
           </div>

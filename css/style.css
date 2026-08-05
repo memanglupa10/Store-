@@ -77,8 +77,8 @@ a { text-decoration: none; color: inherit; }
 /* ══════════════════════════════════════
    ② NAVBAR
 ═══════════════════════ */
-.sf-navbar { background: #fff; border-bottom: 1px solid rgba(200,180,230,0.2); box-shadow: 0 2px 16px rgba(124,92,191,0.07); display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 2rem; position: sticky; top: 0; z-index: 900; gap: 1rem; }
-.sf-nav-logo-img { height: 62px; max-height: 65px; width: auto; object-fit: contain; mix-blend-mode: multiply; }
+.sf-navbar { background: #fff9f6; border-bottom: 1px solid rgba(200,180,230,0.2); box-shadow: 0 2px 16px rgba(124,92,191,0.07); display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 2rem; position: sticky; top: 0; z-index: 900; gap: 1rem; }
+.sf-nav-logo-img { height: 76px; max-height: 80px; width: auto; object-fit: contain; mix-blend-mode: multiply; }
 .sf-nav-menu { display: flex; align-items: center; gap: 0.15rem; flex: 1; justify-content: center; }
 .sf-nav-link { font-family: 'Nunito', sans-serif; font-size: 0.875rem; font-weight: 700; color: #5a4a72; text-decoration: none; padding: 0.38rem 0.9rem; border-radius: 99px; transition: all 0.2s; white-space: nowrap; }
 .sf-nav-link:hover { background: #f3e8ff; color: #7c5cbf; }
@@ -99,7 +99,7 @@ a { text-decoration: none; color: inherit; }
    ③ HERO SECTION
 ═══════════════════════ */
 .sf-hero-wrapper { padding: 1.5rem 2rem 0; max-width: 1200px; margin: 0 auto; }
-.sf-hero-card { background: #fff9f6 url('../assets/hero_banner.png?v=19.0') no-repeat center right / cover; border-radius: 24px; border: 1.5px solid rgba(200,180,230,0.35); display: flex; align-items: center; justify-content: space-between; padding: 2.8rem 3.2rem; gap: 2rem; position: relative; overflow: hidden; box-shadow: 0 8px 40px rgba(124,92,191,0.08); min-height: 350px; }
+.sf-hero-card { background: #fff9f6 url('../assets/hero_banner.png?v=20.0') no-repeat center right / cover; border-radius: 24px; border: 1.5px solid rgba(200,180,230,0.35); display: flex; align-items: center; justify-content: space-between; padding: 2.8rem 3.2rem; gap: 2rem; position: relative; overflow: hidden; box-shadow: 0 8px 40px rgba(124,92,191,0.08); min-height: 350px; }
 .sf-hero-left { flex: 1; max-width: 520px; z-index: 2; }
 .sf-hero-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: #fef9c3; color: #92400e; font-size: 0.7rem; font-weight: 800; padding: 0.28rem 0.85rem; border-radius: 99px; border: 1px solid #fde68a; margin-bottom: 0.85rem; letter-spacing: 0.03em; }
 .sf-hero-title { font-family: 'Poppins', sans-serif; font-size: 2.5rem; font-weight: 800; color: #1e1b2e; line-height: 1.15; margin: 0 0 0.75rem; letter-spacing: -0.02em; }
@@ -130,7 +130,7 @@ a { text-decoration: none; color: inherit; }
 @media (max-width: 640px) { .sf-reseller-card { flex-direction: column; text-align: center; } }
 
 /* ══════════════════════════════════════
-   ⑤⑥ SECTION HEADERS + GRIDS
+   ⑤⑥ PRODUK TERLARIS (IMAGE 4 COMPACT HORIZONTAL CARDS)
 ═══════════════════════ */
 .sf-bestsellers-section, .sf-netflix-section { padding: 1.5rem 2rem; max-width: 1200px; margin: 0 auto; }
 .sf-section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.25rem; gap: 1rem; flex-wrap: wrap; }
@@ -139,27 +139,42 @@ a { text-decoration: none; color: inherit; }
 .sf-section-sub { font-size: 0.8rem; color: #6e5e82; margin: 0; font-weight: 500; }
 .sf-see-all-btn { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 800; color: #7c5cbf; background: none; border: 1.5px solid #c4b5fd; padding: 0.38rem 0.9rem; border-radius: 99px; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
 .sf-see-all-btn:hover { background: #f3e8ff; }
-.sf-bestsellers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.sf-bestsellers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+
+.sf-bs-card { background: #fff; border: 1.5px solid rgba(200,180,230,0.35); border-radius: 18px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 18px rgba(124,92,191,0.06); transition: all 0.2s ease; }
+.sf-bs-card:hover { transform: translateY(-3px); border-color: #c4b5fd; box-shadow: 0 8px 24px rgba(124,92,191,0.12); }
+.sf-bs-content-wrap { display: flex; align-items: flex-start; gap: 0.8rem; margin-bottom: 0.85rem; }
+.sf-bs-app-icon { width: 50px; height: 50px; border-radius: 14px; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.sf-bs-app-icon img { width: 100%; height: 100%; object-fit: cover; }
+.sf-bs-details { flex: 1; min-width: 0; }
+.sf-bs-title-row { display: flex; align-items: center; justify-content: space-between; gap: 0.3rem; margin-bottom: 0.25rem; }
+.sf-bs-name { font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 800; color: #1e1b2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sf-bs-tag-badge { font-size: 0.58rem; font-weight: 800; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; padding: 2px 6px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; }
+.sf-bs-sub-info { font-size: 0.72rem; color: #6e5e82; font-weight: 600; line-height: 1.3; }
+.sf-bs-bottom-bar { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px dashed rgba(200,180,230,0.3); }
+.sf-bs-price-tag { font-family: 'Poppins', sans-serif; font-size: 0.92rem; font-weight: 800; color: #7c5cbf; }
+.sf-bs-action-btn { display: inline-flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 800; padding: 0.42rem 0.9rem; border-radius: 99px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(124,58,237,0.3); transition: all 0.2s; white-space: nowrap; }
+.sf-bs-action-btn:hover { background: linear-gradient(135deg, #7c3aed, #6d28d9); transform: scale(1.03); }
 
 /* ══════════════════════════════════════
-   ⑦ NETFLIX MOVIE SLIDER
+   ⑦ NETFLIX MOVIE SLIDER & POPCORN MASCOT (IMAGE 5)
 ═══════════════════════ */
 .sf-netflix-wrap { position: relative; display: flex; align-items: center; gap: 0.5rem; }
 .sf-netflix-strip { display: flex; gap: 0.85rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 0.5rem 0.25rem 1rem; flex: 1; }
 .sf-netflix-strip::-webkit-scrollbar { display: none; }
-.sf-nf-card { flex-shrink: 0; width: 140px; scroll-snap-align: start; cursor: pointer; transition: transform 0.2s; position: relative; }
+.sf-nf-card { flex-shrink: 0; width: 165px; scroll-snap-align: start; cursor: pointer; transition: transform 0.2s; position: relative; }
 .sf-nf-card:hover { transform: translateY(-4px) scale(1.02); }
 .sf-nf-badge { position: absolute; top: 6px; left: 6px; font-size: 0.58rem; font-weight: 900; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.04em; z-index: 2; }
 .sf-nf-badge.top10 { background: #e50914; color: #fff; } .sf-nf-badge.new { background: #22c55e; color: #fff; } .sf-nf-badge.trending { background: #f59e0b; color: #fff; }
-.sf-nf-poster { width: 140px; height: 200px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; box-shadow: 0 6px 20px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
-.sf-nf-poster-emoji { font-size: 3.5rem; z-index: 1; }
+.sf-nf-poster { width: 165px; height: 105px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 0.4rem; box-shadow: 0 4px 16px rgba(0,0,0,0.25); position: relative; overflow: hidden; text-align: center; padding: 0.5rem; }
+.sf-nf-poster-title { font-family: 'Poppins', sans-serif; font-size: 0.75rem; font-weight: 900; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.8); line-height: 1.1; margin-top: 0.2rem; }
 .sf-nf-info { padding: 0 2px; }
 .sf-nf-title { font-size: 0.76rem; font-weight: 800; color: #1e1b2e; line-height: 1.3; margin-bottom: 0.15rem; }
 .sf-nf-genre { font-size: 0.66rem; color: #6e5e82; font-weight: 600; }
 .sf-nf-arrow { flex-shrink: 0; width: 34px; height: 34px; background: #fff; border: 1.5px solid #e9d5ff; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #7c5cbf; font-size: 0.82rem; box-shadow: 0 2px 10px rgba(124,92,191,0.15); transition: all 0.2s; }
 .sf-nf-arrow:hover { background: #f3e8ff; }
-.sf-nf-bunny { flex-shrink: 0; width: 105px; display: flex; align-items: flex-end; justify-content: center; }
-.sf-nf-bunny-img { width: 105px; height: 105px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(124,92,191,0.2)); animation: mascotFloat 3.5s ease-in-out infinite; }
+.sf-nf-bunny { flex-shrink: 0; width: 130px; display: flex; align-items: center; justify-content: center; padding-left: 0.4rem; }
+.sf-nf-bunny-img { width: 125px; height: auto; object-fit: contain; filter: drop-shadow(0 6px 16px rgba(124,92,191,0.15)); animation: mascotFloat 3.5s ease-in-out infinite; }
 
 /* ──────── TICKER BAR ──────── */
 .storefront-ticker-bar {
