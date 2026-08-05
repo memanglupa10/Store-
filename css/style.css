@@ -77,8 +77,8 @@ a { text-decoration: none; color: inherit; }
 /* ══════════════════════════════════════
    ② NAVBAR
 ═══════════════════════ */
-.sf-navbar { background: #fff; border-bottom: 1px solid rgba(200,180,230,0.2); box-shadow: 0 2px 16px rgba(124,92,191,0.07); display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 2rem; position: sticky; top: 0; z-index: 900; gap: 1rem; }
-.sf-nav-logo-img { height: 48px; max-height: 48px; width: auto; object-fit: contain; mix-blend-mode: multiply; }
+.sf-navbar { background: #fff; border-bottom: 1px solid rgba(200,180,230,0.2); box-shadow: 0 2px 16px rgba(124,92,191,0.07); display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 2rem; position: sticky; top: 0; z-index: 900; gap: 1rem; }
+.sf-nav-logo-img { height: 62px; max-height: 65px; width: auto; object-fit: contain; mix-blend-mode: multiply; }
 .sf-nav-menu { display: flex; align-items: center; gap: 0.15rem; flex: 1; justify-content: center; }
 .sf-nav-link { font-family: 'Nunito', sans-serif; font-size: 0.875rem; font-weight: 700; color: #5a4a72; text-decoration: none; padding: 0.38rem 0.9rem; border-radius: 99px; transition: all 0.2s; white-space: nowrap; }
 .sf-nav-link:hover { background: #f3e8ff; color: #7c5cbf; }
@@ -99,9 +99,8 @@ a { text-decoration: none; color: inherit; }
    ③ HERO SECTION
 ═══════════════════════ */
 .sf-hero-wrapper { padding: 1.5rem 2rem 0; max-width: 1200px; margin: 0 auto; }
-.sf-hero-card { background: linear-gradient(135deg, #fff8f2 0%, #f5f0ff 50%, #f0f8ff 100%); border-radius: 24px; border: 1.5px solid rgba(200,180,230,0.3); display: flex; align-items: center; justify-content: space-between; padding: 2.2rem 2.8rem; gap: 2rem; position: relative; overflow: hidden; box-shadow: 0 8px 40px rgba(124,92,191,0.08); min-height: 320px; }
-.sf-hero-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 50%, rgba(200,180,255,0.15) 0%, transparent 60%); pointer-events: none; }
-.sf-hero-left { flex: 1; max-width: 520px; }
+.sf-hero-card { background: #fff9f6 url('../assets/hero_banner.png?v=19.0') no-repeat center right / cover; border-radius: 24px; border: 1.5px solid rgba(200,180,230,0.35); display: flex; align-items: center; justify-content: space-between; padding: 2.8rem 3.2rem; gap: 2rem; position: relative; overflow: hidden; box-shadow: 0 8px 40px rgba(124,92,191,0.08); min-height: 350px; }
+.sf-hero-left { flex: 1; max-width: 520px; z-index: 2; }
 .sf-hero-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: #fef9c3; color: #92400e; font-size: 0.7rem; font-weight: 800; padding: 0.28rem 0.85rem; border-radius: 99px; border: 1px solid #fde68a; margin-bottom: 0.85rem; letter-spacing: 0.03em; }
 .sf-hero-title { font-family: 'Poppins', sans-serif; font-size: 2.5rem; font-weight: 800; color: #1e1b2e; line-height: 1.15; margin: 0 0 0.75rem; letter-spacing: -0.02em; }
 .sf-hero-title-pink { color: #e879a0; font-style: italic; display: block; }
@@ -112,11 +111,9 @@ a { text-decoration: none; color: inherit; }
 .sf-btn-wa { display: inline-flex; align-items: center; gap: 0.5rem; background: #25d366; color: #fff; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.88rem; padding: 0.65rem 1.4rem; border-radius: 99px; text-decoration: none; box-shadow: 0 6px 20px rgba(37,211,102,0.35); transition: all 0.2s; }
 .sf-btn-wa:hover { background: #1da851; transform: translateY(-2px); }
 .sf-hero-stats { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-.sf-hero-stat { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: #5a4a72; background: rgba(255,255,255,0.75); border: 1px solid rgba(200,180,230,0.4); padding: 0.28rem 0.7rem; border-radius: 99px; }
-.sf-hero-right { flex-shrink: 0; width: 440px; display: flex; align-items: center; justify-content: center; }
-.sf-hero-illustration-img { width: 100%; max-width: 440px; height: auto; object-fit: contain; mix-blend-mode: multiply; filter: drop-shadow(0 6px 16px rgba(124,92,191,0.08)); animation: mascotFloat 3.5s ease-in-out infinite; }
-@keyframes mascotFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-@media (max-width: 900px) { .sf-hero-card { flex-direction: column; padding: 2rem 1.5rem; text-align: center; } .sf-hero-right { width: 100%; } .sf-hero-ctas, .sf-hero-stats { justify-content: center; } .sf-hero-title { font-size: 2rem; } .sf-hero-illustration-img { max-width: 320px; } }
+.sf-hero-stat { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: #5a4a72; background: rgba(255,255,255,0.85); border: 1px solid rgba(200,180,230,0.4); padding: 0.28rem 0.7rem; border-radius: 99px; backdrop-filter: blur(4px); }
+.sf-hero-right { display: none; }
+@media (max-width: 900px) { .sf-hero-card { background: #fff9f6; padding: 2rem 1.5rem; text-align: center; } .sf-hero-ctas, .sf-hero-stats { justify-content: center; } .sf-hero-title { font-size: 2rem; } }
 
 /* ══════════════════════════════════════
    ④ RESELLER CARD
