@@ -1025,6 +1025,7 @@ async function handleRequest(req, res) {
       }
     }
 
+    const db = loadDB();
     let order = db.orders.find(o => o.id === targetOrderId || o.payment_reference === targetOrderId || (o.qris_info && o.qris_info.mayar_id === targetOrderId));
 
     if (!order) {
