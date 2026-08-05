@@ -584,6 +584,9 @@ const App = {
     const modal = document.getElementById('modal-checkout-qris');
     if (!modal || !order) return;
 
+    this.currentActiveOrder = order;
+    try { sessionStorage.setItem('babyiel_active_qris_order', JSON.stringify(order)); } catch (e) {}
+
     document.getElementById('qris-order-id').textContent = `Order ID: ${order.id}`;
     document.getElementById('qris-total-amount').textContent = `Rp ${order.price.toLocaleString('id-ID')}`;
 
@@ -678,11 +681,46 @@ const App = {
     }
   },
 
+  async downloadQRISImage() {
+    const imgEl = document.getElementById('qris-image-display');
+    const orderId = (this.currentActiveOrder && this.currentActiveOrder.id) || 'QRIS';
+    if (!imgEl || !imgEl.src) {
+      this.showToast('Gagal', 'Gambar QRIS belum dimuat.', 'warning');
+      return;
+    }
+
+    try {
+      const response = await fetch(imgEl.src);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `QRIS_BabyielStore_${orderId}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
+
+      this.showToast('Berhasil Diunduh!', 'Gambar QRIS telah tersimpan di HP Anda! Buka aplikasi e-Wallet untuk scan gambar.', 'success');
+    } catch (err) {
+      const link = document.createElement('a');
+      link.href = imgEl.src;
+      link.target = '_blank';
+      link.download = `QRIS_BabyielStore_${orderId}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      this.showToast('Info', 'Gambar QRIS dibuka. Tekan dan tahan gambar untuk menyimpannya ke HP.', 'info');
+    }
+  },
+
   closeQRISModal() {
     this.stopQRISPolling();
     this.stopQRISCountdown();
     if (this.activeQRISPollInterval) clearInterval(this.activeQRISPollInterval);
     if (this.activeQRISTimerInterval) clearInterval(this.activeQRISTimerInterval);
+    try { sessionStorage.removeItem('babyiel_active_qris_order'); } catch (e) {}
 
     ['modal-checkout-qris', 'modal-qris-checkout', 'modal-checkout-form', 'modal-catalog-packages'].forEach(id => {
       const modal = document.getElementById(id);
