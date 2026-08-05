@@ -1032,7 +1032,15 @@ async function handleRequest(req, res) {
       return sendJSON({ success: false, message: `Order reference '${targetOrderId}' not found.` }, 404);
     }
 
-    // Webhook Signature Verification (If HMAC header provided)
+    // Webhook Signature Verification (If HMAC / Midtrans SHA512 header provided)
+    if (body.signature_key && process.env.MIDTRANS_SERVER_KEY) {
+      const rawSigStr = `${body.order_id || targetOrderId}${body.status_code || ''}${body.gross_amount || ''}${process.env.MIDTRANS_SERVER_KEY}`;
+      const expectedMidtransSig = crypto.createHash('sha512').update(rawSigStr).digest('hex');
+      if (body.signature_key !== expectedMidtransSig) {
+        console.warn(`[MIDTRANS WEBHOOK WARNING] Signature Mismatch for order ${targetOrderId}.`);
+      }
+    }
+
     const signature = req.headers['x-callback-signature'] || req.headers['x-webhook-signature'] || req.headers['x-tripay-signature'] || req.headers['x-mayar-signature'];
     if (signature && process.env.WEBHOOK_SECRET) {
       const expectedSig = crypto.createHmac('sha256', process.env.WEBHOOK_SECRET).update(JSON.stringify(body)).digest('hex');
@@ -1052,6 +1060,7 @@ async function handleRequest(req, res) {
     }
 
     const isPaidStatus = ['PAID', 'SUCCESS', 'SETTLEMENT', 'CAPTURE', 'BERHASIL', 'COMPLETED', 'SUCCEEDED', 'PAYMENT.RECEIVED', 'PAYMENT_RECEIVED'].includes(paymentStatusRaw);
+    const isExpiredStatus = ['EXPIRE', 'EXPIRED', 'CANCEL', 'CANCELLED', 'DENY', 'DENIED', 'FAILURE', 'FAILED'].includes(paymentStatusRaw);
 
     if (isPaidStatus) {
       order.payment_status = 'PAID';
@@ -1072,13 +1081,20 @@ async function handleRequest(req, res) {
 
       return sendJSON({
         success: true,
-        message: 'Pembayaran terdeteksi otomatis! Stok terpotong dan akun digital berhasil dikirim.',
+        message: 'Pembayaran Midtrans/QRIS terdeteksi otomatis! Status diupdate ke PAID & akun digital berhasil dikirim.',
         order_id: order.id,
+        payment_status: 'PAID',
         stock_allocated: allocRes.stock ? allocRes.stock.id : null
       });
     }
 
-    return sendJSON({ success: true, message: `Webhook received for order ${targetOrderId} (Status: ${paymentStatusRaw}).` });
+    if (isExpiredStatus && order.payment_status !== 'PAID') {
+      order.payment_status = 'EXPIRED';
+      saveDB(db);
+      return sendJSON({ success: true, message: `Status order ${targetOrderId} diupdate ke EXPIRED.`, payment_status: 'EXPIRED' });
+    }
+
+    return sendJSON({ success: true, message: `Webhook Midtrans diterima untuk order ${targetOrderId} (Status: ${paymentStatusRaw}).` });
   }
 
   // 5. POST /api/simulations/pay-order (Sandbox Testing Simulator Endpoint)
