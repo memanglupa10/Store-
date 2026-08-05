@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Babyiel Store Inventory - Digital Stock SaaS</title>
-  <meta name="description" content="Sistem manajemen stok akun digital modern untuk Disney+, Netflix, Spotify, YouTube Premium, Canva, ChatGPT, dan lainnya.">
-  
+  <title>Babyiel Store - Akun Premium Terpercaya</title>
+  <meta name="description" content="Toko akun digital premium terpercaya: Netflix, Disney+, Spotify, Canva, ChatGPT dan lainnya. Proses 1-5 menit, Full Garansi Resmi.">
+
   <!-- Favicon & Icons -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico?v=15.0">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png?v=15.0">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/logo.png?v=15.0">
-  <link rel="apple-touch-icon" href="assets/logo.png?v=15.0">
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=16.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png?v=16.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/logo.png?v=16.0">
+  <link rel="apple-touch-icon" href="assets/logo.png?v=16.0">
 
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=15.0">
+  <link rel="stylesheet" href="css/style.css?v=16.0">
 </head>
 <body>
 
@@ -30,217 +30,177 @@
        STOREFRONT PUBLIC PAGE (No login required)
        ========================================================= -->
   <div id="storefront-screen">
-    <!-- Running Ticker Bar -->
-    <div class="storefront-ticker-bar">
-      <div class="ticker-text">⚡ PROMO SPESIAL HARI INI: PROSES CEPAT 1-5 MENIT &bull; FULL GARANSI RESMI &bull; READY AKUN PREMIUM POPULER ⚡ DISKON RESELLER UP TO 50% ⚡ PROMO SPESIAL HARI INI: PROSES CEPAT 1-5 MENIT &bull; FULL GARANSI RESMI ⚡</div>
+
+    <!-- ① ANNOUNCEMENT BAR -->
+    <div class="sf-announce-bar">
+      <div class="sf-announce-inner">
+        <span class="sf-ann-item"><i class="fa-solid fa-fire"></i> Promo Spesial Hari Ini!</span>
+        <span class="sf-ann-divider">|</span>
+        <span class="sf-ann-item"><i class="fa-solid fa-bolt"></i> Proses Cepat 1-5 Menit</span>
+        <span class="sf-ann-divider">|</span>
+        <span class="sf-ann-item"><i class="fa-solid fa-shield-halved"></i> Full Garansi Resmi</span>
+        <span class="sf-ann-divider">|</span>
+        <span class="sf-ann-item"><i class="fa-solid fa-heart"></i> Diskon Reseller up to 50%</span>
+      </div>
+      <a href="https://wa.me/6285775335453?text=Halo%20Admin%20Babyiel%20Store%2C%20saya%20tertarik%20ingin%20jadi%20Reseller%20%F0%9F%9A%80" target="_blank" class="sf-ann-btn">Join Reseller</a>
     </div>
 
-    <!-- Navigation Bar -->
-    <nav class="storefront-nav-bar">
-      <div style="display: flex; align-items: center; gap: 0.6rem;">
-        <img src="assets/logo.png?v=15.0" alt="Babyiel Logo" style="width: 28px; height: 28px; border-radius: 6px; object-fit: cover;">
-        <span class="storefront-brand-name">Babyiel Store</span>
-        <span style="font-size: 0.7rem; background: rgba(124,58,237,0.3); border: 1px solid rgba(192,132,252,0.4); padding: 2px 8px; border-radius: 99px; color: #e9d5ff; font-weight: 800; text-transform: uppercase;">Official</span>
+    <!-- ② NAVBAR -->
+    <nav class="sf-navbar">
+      <div class="sf-nav-logo">
+        <img src="assets/logo.png?v=17.0" alt="Babyiel Store Logo" class="sf-nav-logo-img">
       </div>
 
-      <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-        <button onclick="document.getElementById('storefront-catalog-section').scrollIntoView({behavior: 'smooth'})" class="btn btn-secondary btn-sm" style="border-radius: 99px; font-size: 0.8rem;">
-          <i class="fa-solid fa-layer-group"></i> Lihat Produk
-        </button>
-        <button onclick="App.openTrackOrderModal()" class="btn btn-secondary btn-sm" style="border-radius: 99px; font-size: 0.8rem; background: rgba(124,58,237,0.18); color: #c084fc; border: 1px solid rgba(124,58,237,0.35); font-weight: 700;">
-          <i class="fa-solid fa-magnifying-glass"></i> Cek Pesanan
-        </button>
-        <a id="wa-nav-btn" href="https://wa.me/6285775335453" target="_blank" class="btn btn-success btn-sm" style="border-radius: 99px; font-size: 0.8rem; background: #25d366; color: #fff;">
-          <i class="fa-brands fa-whatsapp"></i> Chat WA
+      <div class="sf-nav-menu">
+        <a href="#" class="sf-nav-link active" onclick="return false;">Beranda</a>
+        <a href="#" class="sf-nav-link" onclick="document.getElementById('storefront-catalog-section').scrollIntoView({behavior:'smooth'}); return false;">Produk</a>
+        <a href="#" class="sf-nav-link" onclick="document.getElementById('storefront-catalog-section').scrollIntoView({behavior:'smooth'}); return false;">Lihat Paket</a>
+        <a href="https://wa.me/6285775335453?text=Halo%20Admin%20Babyiel%20Store%2C%20saya%20tertarik%20ingin%20jadi%20Reseller%20%F0%9F%9A%80" target="_blank" class="sf-nav-link">Reseller</a>
+        <a href="https://wa.me/6285775335453" target="_blank" class="sf-nav-link">Bantuan</a>
+      </div>
+
+      <div class="sf-nav-right">
+        <div class="sf-nav-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="sf-nav-search-input" placeholder="Cari produk..." oninput="document.getElementById('storefront-search-input').value=this.value; App.renderStorefront();">
+          <button class="sf-nav-search-btn" onclick="document.getElementById('storefront-catalog-section').scrollIntoView({behavior:'smooth'});"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+        <a id="wa-nav-btn" href="https://wa.me/6285775335453" target="_blank" class="sf-nav-wa-btn">
+          <i class="fa-brands fa-whatsapp"></i> Chat WhatsApp
         </a>
+        <button class="sf-nav-hamburger" onclick="document.querySelector('.sf-nav-menu').classList.toggle('open')">
+          <i class="fa-solid fa-bars"></i>
+        </button>
       </div>
     </nav>
 
-    <!-- HERO SECTION -->
-    <div class="storefront-hero">
-      <div class="storefront-hero-badge">
-        <i class="fa-solid fa-fire" style="color: #f59e0b;"></i> AKUN DIGITAL PREMIUM #1 TERPERCAYA
-      </div>
-      <h1 class="storefront-title">
-        AKUN PREMIUM <span>TANPA RIBET.</span>
-      </h1>
-      <p class="storefront-subtitle">
-        Streaming, produktivitas &amp; hiburan premium dengan harga hemat.
-      </p>
-
-      <!-- HERO CTA BUTTONS -->
-      <div style="display: flex; align-items: center; justify-content: center; gap: 0.85rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-        <button onclick="document.getElementById('storefront-catalog-section').scrollIntoView({behavior: 'smooth'})" class="hero-cta-btn primary">
-          <i class="fa-solid fa-bag-shopping"></i> Lihat Produk
-        </button>
-        <a id="wa-hero-link" href="https://wa.me/6285775335453?text=Halo%20Babyiel%20Store%2C%20saya%20mau%20tanya%20produk%20premium" target="_blank" class="hero-cta-btn wa">
-          <i class="fa-brands fa-whatsapp"></i> Chat WhatsApp
-        </a>
-      </div>
-
-      <!-- HERO HIGHLIGHTS STATS BAR -->
-      <div class="storefront-contact-bar">
-        <div class="storefront-contact-item">
-          <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> <b>1-5 Menit</b> Proses Kilat
-        </div>
-        <div class="storefront-contact-item">
-          <i class="fa-solid fa-shield-halved" style="color: #10b981;"></i> <b>Full Garansi</b> Anti-Hold
-        </div>
-        <div class="storefront-contact-item">
-          <i class="fa-solid fa-headset" style="color: #ec4899;"></i> <b>24/7 CS</b> Fast Response
-        </div>
-      </div>
-
-      <!-- RESELLER WELCOMING CARD -->
-      <div class="reseller-hero-card">
-        <div class="reseller-hero-content">
-          <div class="reseller-badge">🔥 OPEN RESELLER &amp; DROPSHIP</div>
-          <h2>Ingin Dapat Cuan Tambahan Harian? 🚀</h2>
-          <p>Dapatkan harga khusus reseller super murah, garansi prioritas, &amp; bantuan grup stok!</p>
-        </div>
-        <a href="https://wa.me/6285775335453?text=Halo%20Admin%20Babyiel%20Store%2C%20saya%20tertarik%20ingin%20jadi%20Reseller%20%F0%9F%9A%80" target="_blank" class="reseller-hero-btn">
-          <i class="fa-brands fa-whatsapp"></i> Join Reseller Sekarang
-        </a>
-      </div>
-    </div>
-
-    <!-- ============================================================
-         NETFLIX PROMO BANNER — LAGI TAYANG DI NETFLIX
-         ============================================================ -->
-    <div class="netflix-promo-section">
-      <div class="netflix-promo-card">
-        <div class="netflix-promo-top">
-          <div>
-            <div class="netflix-promo-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5.398 0v.006c3.028 8.556 5.37 15.175 8.348 23.596 2.344.058 4.85.398 4.854.398-2.8-7.924-5.923-16.747-8.487-24zm8.489 0v9.63L18.6 22.951c-.043-7.86-.004-15.71.002-22.95zM5.398 1.05V24c1.873-.225 2.81-.312 4.715-.398v-9.22z"/></svg>
-              Lagi Tayang di Netflix
-            </div>
-            <div class="netflix-promo-title">🎬 Now Streaming — Tonton Sekarang!</div>
-            <div class="netflix-promo-sub">Dapatkan akun Netflix Premium dengan harga terjangkau. Nikmati ribuan konten tanpa batas! ✨</div>
+    <!-- ③ HERO SECTION -->
+    <div class="sf-hero-wrapper">
+      <div class="sf-hero-card">
+        <div class="sf-hero-left">
+          <div class="sf-hero-badge">
+            <i class="fa-solid fa-star" style="color:#f59e0b;"></i>
+            AKUN DIGITAL PREMIUM #1 TERPERCAYA
           </div>
-          <button class="netflix-promo-cta" onclick="document.getElementById('storefront-catalog-section').scrollIntoView({behavior:'smooth'})">
-            <i class="fa-solid fa-play"></i> Lihat Akun Netflix
-          </button>
+          <h1 class="sf-hero-title">
+            Akun Premium<br>
+            <span class="sf-hero-title-pink">Tanpa Ribet.</span>
+          </h1>
+          <p class="sf-hero-subtitle">Streaming, produktivitas &amp; hiburan premium dengan harga hemat.</p>
+
+          <div class="sf-hero-ctas">
+            <button onclick="document.getElementById('storefront-catalog-section').scrollIntoView({behavior:'smooth'})" class="sf-btn-primary">
+              <i class="fa-solid fa-bag-shopping"></i> Lihat Produk
+            </button>
+            <a id="wa-hero-link" href="https://wa.me/6285775335453?text=Halo%20Babyiel%20Store%2C%20saya%20mau%20tanya%20produk%20premium" target="_blank" class="sf-btn-wa">
+              <i class="fa-brands fa-whatsapp"></i> Chat WhatsApp
+            </a>
+          </div>
+
+          <div class="sf-hero-stats">
+            <div class="sf-hero-stat"><i class="fa-solid fa-bolt" style="color:#f59e0b;"></i> <span><b>Proses 1-5 Menit</b></span></div>
+            <div class="sf-hero-stat"><i class="fa-solid fa-shield-halved" style="color:#10b981;"></i> <span><b>Full Garansi Resmi</b></span></div>
+            <div class="sf-hero-stat"><i class="fa-solid fa-headset" style="color:#e879a0;"></i> <span><b>24/7 CS</b> Fast Response</span></div>
+          </div>
         </div>
 
-        <!-- Movie Cards Strip -->
-        <div class="netflix-movies-strip">
-          <!-- Squid Game -->
-          <div class="netflix-movie-card">
-            <div class="nf-poster" style="background: linear-gradient(160deg, #e91e63 0%, #880e4f 100%);">
-              🦑
-              <div class="netflix-movie-overlay">
-                <div class="netflix-movie-name">Squid Game</div>
-                <div class="netflix-movie-tag">🔥 Season 3</div>
-              </div>
+        <div class="sf-hero-right">
+          <div class="sf-hero-mascot-wrap">
+            <div class="sf-app-icon" style="top:4%;left:10%;animation-delay:0s;">
+              <div style="background:#e50914;width:100%;height:100%;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;font-weight:900;">N</div>
             </div>
-          </div>
-          <!-- Wednesday -->
-          <div class="netflix-movie-card">
-            <div class="nf-poster" style="background: linear-gradient(160deg, #7b1fa2 0%, #311b92 100%);">
-              🖤
-              <div class="netflix-movie-overlay">
-                <div class="netflix-movie-name">Wednesday</div>
-                <div class="netflix-movie-tag">🎭 Drama</div>
-              </div>
+            <div class="sf-app-icon" style="top:6%;right:8%;animation-delay:0.4s;">
+              <div style="background:#00C4CC;width:100%;height:100%;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;font-weight:900;">Canva</div>
             </div>
-          </div>
-          <!-- Stranger Things -->
-          <div class="netflix-movie-card">
-            <div class="nf-poster" style="background: linear-gradient(160deg, #1a237e 0%, #0d47a1 100%);">
-              🌌
-              <div class="netflix-movie-overlay">
-                <div class="netflix-movie-name">Stranger Things</div>
-                <div class="netflix-movie-tag">👾 Sci-Fi</div>
-              </div>
+            <div class="sf-app-icon" style="bottom:28%;left:2%;animation-delay:0.8s;">
+              <div style="background:#1DB954;width:100%;height:100%;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;">♪</div>
             </div>
-          </div>
-          <!-- Bridgerton -->
-          <div class="netflix-movie-card">
-            <div class="nf-poster" style="background: linear-gradient(160deg, #f48fb1 0%, #c2185b 100%);">
-              💐
-              <div class="netflix-movie-overlay">
-                <div class="netflix-movie-name">Bridgerton</div>
-                <div class="netflix-movie-tag">💕 Romance</div>
-              </div>
+            <div class="sf-app-icon" style="bottom:18%;right:4%;animation-delay:1.2s;">
+              <div style="background:#FF0000;width:100%;height:100%;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;">▶</div>
             </div>
-          </div>
-          <!-- The Crown -->
-          <div class="netflix-movie-card">
-            <div class="nf-poster" style="background: linear-gradient(160deg, #f9a825 0%, #e65100 100%);">
-              👑
-              <div class="netflix-movie-overlay">
-                <div class="netflix-movie-name">The Crown</div>
-                <div class="netflix-movie-tag">🏰 History</div>
-              </div>
+            <div class="sf-app-icon sf-icon-sm" style="bottom:42%;right:0%;animation-delay:0.6s;">
+              <div style="background:#0f3fa8;width:100%;height:100%;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.6rem;font-weight:900;text-align:center;line-height:1.1;">Disney+</div>
             </div>
-          </div>
-          <!-- Outer Banks -->
-          <div class="netflix-movie-card">
-            <div class="nf-poster" style="background: linear-gradient(160deg, #43a047 0%, #1b5e20 100%);">
-              🏄
-              <div class="netflix-movie-overlay">
-                <div class="netflix-movie-name">Outer Banks</div>
-                <div class="netflix-movie-tag">🌊 Adventure</div>
-              </div>
-            </div>
-          </div>
-          <!-- Emily in Paris -->
-          <div class="netflix-movie-card">
-            <div class="nf-poster" style="background: linear-gradient(160deg, #ef9a9a 0%, #b71c1c 100%);">
-              🗼
-              <div class="netflix-movie-overlay">
-                <div class="netflix-movie-name">Emily in Paris</div>
-                <div class="netflix-movie-tag">✨ Comedy</div>
-              </div>
-            </div>
-          </div>
-          <!-- Money Heist -->
-          <div class="netflix-movie-card">
-            <div class="nf-poster" style="background: linear-gradient(160deg, #d32f2f 0%, #4a0000 100%);">
-              💰
-              <div class="netflix-movie-overlay">
-                <div class="netflix-movie-name">Money Heist</div>
-                <div class="netflix-movie-tag">🎭 Thriller</div>
-              </div>
-            </div>
+            <img src="assets/icon.png?v=17.0" alt="Babyiel Bunny Mascot" class="sf-hero-mascot-img">
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SECTION: PRODUK TERLARIS (FEATURED BESTSELLERS) -->
-    <div class="storefront-bestsellers-section">
-      <div class="bestsellers-header-wrap">
+    <!-- ④ RESELLER CARD -->
+    <div class="sf-reseller-section">
+      <div class="sf-reseller-card">
+        <div class="sf-reseller-icon-wrap">
+          <div class="sf-reseller-icon">🎁</div>
+        </div>
+        <div class="sf-reseller-text">
+          <div class="sf-reseller-label">OPEN RESELLER &amp; DROPSHIP</div>
+          <h3 class="sf-reseller-title">Ingin Dapat Cuan Tambahan Harian? 🚀</h3>
+          <p class="sf-reseller-sub">Dapatkan harga khusus reseller super murah, garansi prioritas, &amp; bantuan grup stok!</p>
+        </div>
+        <a href="https://wa.me/6285775335453?text=Halo%20Admin%20Babyiel%20Store%2C%20saya%20tertarik%20ingin%20jadi%20Reseller%20%F0%9F%9A%80" target="_blank" class="sf-reseller-btn">
+          <i class="fa-solid fa-users"></i> Join Reseller Sekarang
+        </a>
+      </div>
+    </div>
+
+    <!-- ⑤ PRODUK TERLARIS -->
+    <div class="sf-bestsellers-section">
+      <div class="sf-section-header">
         <div>
-          <div class="bestseller-badge-header">
-            <i class="fa-solid fa-fire" style="color: var(--p-peach);"></i> CURATED RECOMMENDATION
-          </div>
-          <h2 class="bestseller-title-header">🔥 Produk Terlaris Pilihan</h2>
-          <p class="bestseller-subtitle-header">Rekomendasi akun digital favorit paling dicari dengan garansi &amp; harga terhemat.</p>
+          <div class="sf-section-eyebrow"><i class="fa-solid fa-fire" style="color:#f59e0b;"></i> PRODUK TERLARIS</div>
+          <h2 class="sf-section-title">Produk Terlaris Pilihan</h2>
+          <p class="sf-section-sub">Rekomendasi akun digital favorit paling dicari dengan garansi &amp; harga terhemat.</p>
         </div>
-        <span class="storefront-section-tag"><i class="fa-solid fa-star"></i> Paling Populer</span>
+        <button onclick="document.getElementById('storefront-catalog-section').scrollIntoView({behavior:'smooth'})" class="sf-see-all-btn">Lihat Semua <i class="fa-solid fa-chevron-right"></i></button>
       </div>
-
-      <div class="storefront-bestsellers-grid" id="storefront-bestsellers-container">
+      <div class="sf-bestsellers-grid" id="storefront-bestsellers-container">
         <!-- Dynamic JS Best Seller Cards -->
       </div>
     </div>
 
-    <!-- MAIN CATALOG SECTION WITH CATEGORY FILTERS & SEARCH -->
+    <!-- ⑥ LAGI TAYANG DI NETFLIX -->
+    <div class="sf-netflix-section">
+      <div class="sf-section-header">
+        <div>
+          <div class="sf-section-eyebrow" style="color:#e50914;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#e50914"><path d="M5.398 0v.006c3.028 8.556 5.37 15.175 8.348 23.596 2.344.058 4.85.398 4.854.398-2.8-7.924-5.923-16.747-8.487-24zm8.489 0v9.63L18.6 22.951c-.043-7.86-.004-15.71.002-22.95zM5.398 1.05V24c1.873-.225 2.81-.312 4.715-.398v-9.22z"/></svg>
+            LAGI TAYANG DI NETFLIX
+          </div>
+          <h2 class="sf-section-title">Film &amp; Tontonan Populer Minggu Ini</h2>
+          <p class="sf-section-sub">Rekomendasi terbaik yang lagi ramai ditonton di Netflix.</p>
+        </div>
+        <button onclick="document.getElementById('storefront-catalog-section').scrollIntoView({behavior:'smooth'})" class="sf-see-all-btn">Lihat Semua Film <i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+
+      <div class="sf-netflix-wrap">
+        <button class="sf-nf-arrow sf-nf-prev" onclick="document.getElementById('sf-nf-strip').scrollBy({left:-280,behavior:'smooth'})"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="sf-netflix-strip" id="sf-nf-strip">
+          <div class="sf-nf-card"><div class="sf-nf-badge top10">TOP 10</div><div class="sf-nf-poster" style="background:linear-gradient(160deg,#1a0a0a,#5c1a1a);"><div class="sf-nf-poster-emoji">👻</div></div><div class="sf-nf-info"><div class="sf-nf-title">Danur: The Last Chapter</div><div class="sf-nf-genre">Horor</div></div></div>
+          <div class="sf-nf-card"><div class="sf-nf-badge new">NEW</div><div class="sf-nf-poster" style="background:linear-gradient(160deg,#1a1206,#7a5c00);"><div class="sf-nf-poster-emoji">🧙‍♀️</div></div><div class="sf-nf-info"><div class="sf-nf-title">Suzzanna: Witchcraft</div><div class="sf-nf-genre">Horor</div></div></div>
+          <div class="sf-nf-card"><div class="sf-nf-badge top10">TOP 10</div><div class="sf-nf-poster" style="background:linear-gradient(160deg,#0a0a2e,#8b0000);"><div class="sf-nf-poster-emoji">⚔️</div></div><div class="sf-nf-info"><div class="sf-nf-title">Demon Slayer: Infinity Castle I</div><div class="sf-nf-genre">Anime, Aksi</div></div></div>
+          <div class="sf-nf-card"><div class="sf-nf-badge trending">TRENDING</div><div class="sf-nf-poster" style="background:linear-gradient(160deg,#0a1628,#1e3a6e);"><div class="sf-nf-poster-emoji">🌂</div></div><div class="sf-nf-info"><div class="sf-nf-title">The Umbrella Academy</div><div class="sf-nf-genre">Sci-Fi, Komedi</div></div></div>
+          <div class="sf-nf-card"><div class="sf-nf-badge new">NEW</div><div class="sf-nf-poster" style="background:linear-gradient(160deg,#0d0d0d,#3d1a00);"><div class="sf-nf-poster-emoji">🔫</div></div><div class="sf-nf-info"><div class="sf-nf-title">Hit Man</div><div class="sf-nf-genre">Komedi, Kriminal</div></div></div>
+          <div class="sf-nf-card"><div class="sf-nf-badge top10">TOP 10</div><div class="sf-nf-poster" style="background:linear-gradient(160deg,#1a1200,#5c4a00);"><div class="sf-nf-poster-emoji">👑</div></div><div class="sf-nf-info"><div class="sf-nf-title">The Crown</div><div class="sf-nf-genre">Drama, Sejarah</div></div></div>
+          <div class="sf-nf-card"><div class="sf-nf-badge top10">TOP 10</div><div class="sf-nf-poster" style="background:linear-gradient(160deg,#1a0017,#8b0057);"><div class="sf-nf-poster-emoji">🦑</div></div><div class="sf-nf-info"><div class="sf-nf-title">Squid Game</div><div class="sf-nf-genre">Thriller, Drama</div></div></div>
+          <div class="sf-nf-card"><div class="sf-nf-badge trending">TRENDING</div><div class="sf-nf-poster" style="background:linear-gradient(160deg,#0a0a0a,#2d1b5e);"><div class="sf-nf-poster-emoji">🖤</div></div><div class="sf-nf-info"><div class="sf-nf-title">Wednesday</div><div class="sf-nf-genre">Drama, Misteri</div></div></div>
+        </div>
+        <button class="sf-nf-arrow sf-nf-next" onclick="document.getElementById('sf-nf-strip').scrollBy({left:280,behavior:'smooth'})"><i class="fa-solid fa-chevron-right"></i></button>
+        <div class="sf-nf-bunny">
+          <img src="assets/icon.png?v=17.0" alt="Babyiel watching Netflix" class="sf-nf-bunny-img">
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑦ MAIN CATALOG SECTION -->
     <div class="storefront-products-section" id="storefront-catalog-section">
-      <!-- CATALOG HEADER -->
       <div class="catalog-section-header">
         <div class="catalog-header-text">
-          <div class="catalog-header-badge">
-            <i class="fa-solid fa-layer-group"></i> Katalog Resmi
-          </div>
+          <div class="catalog-header-badge"><i class="fa-solid fa-layer-group"></i> Katalog Resmi</div>
           <h2 class="catalog-header-title">Katalog Produk Digital</h2>
           <p class="catalog-header-subtitle">Jelajahi akun premium garansi 100% resmi dengan proses aktivasi serba kilat 1–5 menit.</p>
         </div>
-
         <div class="catalog-controls-wrapper">
-          <!-- Category Filter Pills -->
           <div class="storefront-category-pills">
             <button class="cat-pill active" onclick="App.filterStorefrontCategory('Semua', this)">Semua</button>
             <button class="cat-pill" onclick="App.filterStorefrontCategory('Streaming', this)">🎬 Streaming</button>
@@ -248,67 +208,37 @@
             <button class="cat-pill" onclick="App.filterStorefrontCategory('Produktivitas', this)">💼 Produktivitas</button>
             <button class="cat-pill" onclick="App.filterStorefrontCategory('Entertainment', this)">🎮 Entertainment</button>
           </div>
-
-          <!-- Modern Search Bar -->
           <div class="storefront-search-box">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
             <input type="text" id="storefront-search-input" placeholder="Cari aplikasi (Netflix, Canva, Spotify)..." oninput="App.renderStorefront()">
           </div>
         </div>
       </div>
-
-      <!-- MAIN COMPACT PRODUCT GRID -->
       <div class="storefront-grid" id="storefront-grid-container">
         <!-- Dynamic JS Compact Cards -->
       </div>
     </div>
 
-    <!-- SECTION: KENAPA BABYIEL STORE? (BENEFIT CARDS) -->
+    <!-- ⑧ WHY BABYIEL -->
     <div class="storefront-why-section">
-      <div class="storefront-section-title" style="justify-content: center; margin-bottom: 1.5rem; font-size: 1.4rem;">
-        💡 Kenapa Belanja di <span style="background: linear-gradient(135deg, var(--p-purple), var(--p-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-left: 0.35rem; font-weight: 900;">Babyiel Store?</span>
+      <div class="storefront-section-title" style="justify-content:center;margin-bottom:1.5rem;font-size:1.4rem;">
+        💡 Kenapa Belanja di <span style="background:linear-gradient(135deg,var(--p-purple),var(--p-pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-left:0.35rem;font-weight:900;">Babyiel Store?</span>
       </div>
-
       <div class="storefront-why-grid">
-        <div class="why-card">
-          <div class="why-icon" style="background: linear-gradient(135deg, rgba(255,224,178,0.6), rgba(255,204,188,0.6)); color: var(--p-peach);">
-            <i class="fa-solid fa-bolt"></i>
-          </div>
-          <h3>Proses Cepat</h3>
-          <p>Pengiriman data akun kilat 1-5 menit secara otomatis setelah pembayaran terverifikasi.</p>
-        </div>
-
-        <div class="why-card">
-          <div class="why-icon" style="background: linear-gradient(135deg, rgba(200,230,201,0.6), rgba(178,223,219,0.6)); color: var(--p-green);">
-            <i class="fa-solid fa-shield-check"></i>
-          </div>
-          <h3>Garansi Sesuai S&amp;K</h3>
-          <p>Jaminan garansi replacement 100% full durasi jika akun bermasalah selama masa garansi.</p>
-        </div>
-
-        <div class="why-card">
-          <div class="why-icon" style="background: rgba(37,211,102,0.1); color: #25d366;">
-            <i class="fa-brands fa-whatsapp"></i>
-          </div>
-          <h3>Support WhatsApp</h3>
-          <p>Customer service ramah &amp; responsif siap membantu pertanyaan &amp; pengerjaan 24/7.</p>
-        </div>
-
-        <div class="why-card">
-          <div class="why-icon" style="background: linear-gradient(135deg, rgba(209,196,233,0.6), rgba(248,187,208,0.6)); color: var(--p-purple);">
-            <i class="fa-solid fa-rotate-right"></i>
-          </div>
-          <h3>Perpanjangan Mudah</h3>
-          <p>Dapat memperpanjang masa aktif akun yang sama tanpa perlu ganti profil atau email baru.</p>
-        </div>
+        <div class="why-card"><div class="why-icon" style="background:linear-gradient(135deg,rgba(255,224,178,0.6),rgba(255,204,188,0.6));color:var(--p-peach);"><i class="fa-solid fa-bolt"></i></div><h3>Proses Cepat</h3><p>Pengiriman data akun kilat 1-5 menit secara otomatis setelah pembayaran terverifikasi.</p></div>
+        <div class="why-card"><div class="why-icon" style="background:linear-gradient(135deg,rgba(200,230,201,0.6),rgba(178,223,219,0.6));color:var(--p-green);"><i class="fa-solid fa-shield-check"></i></div><h3>Garansi Sesuai S&amp;K</h3><p>Jaminan garansi replacement 100% full durasi jika akun bermasalah selama masa garansi.</p></div>
+        <div class="why-card"><div class="why-icon" style="background:rgba(37,211,102,0.1);color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div><h3>Support WhatsApp</h3><p>Customer service ramah &amp; responsif siap membantu pertanyaan &amp; pengerjaan 24/7.</p></div>
+        <div class="why-card"><div class="why-icon" style="background:linear-gradient(135deg,rgba(209,196,233,0.6),rgba(248,187,208,0.6));color:var(--p-purple);"><i class="fa-solid fa-rotate-right"></i></div><h3>Perpanjangan Mudah</h3><p>Dapat memperpanjang masa aktif akun yang sama tanpa perlu ganti profil atau email baru.</p></div>
       </div>
     </div>
 
-    <!-- FOOTER -->
+    <!-- ⑨ FOOTER -->
     <footer class="storefront-footer">
-      <div style="margin-bottom: 0.5rem; font-size: 1rem; font-weight: 900; color: var(--p-text);">⚡ Babyiel Store Official</div>
-      <p style="font-size: 0.8rem; color: var(--p-sub);">Sistem Penyediaan Akun Digital Premium &amp; Manajemen Stok Terpercaya.</p>
-      <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--p-muted);">
+      <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-bottom:0.5rem;">
+        <img src="assets/logo.png?v=17.0" alt="Logo" style="height:36px;object-fit:contain;">
+      </div>
+      <p style="font-size:0.8rem;color:var(--p-sub);">Sistem Penyediaan Akun Digital Premium &amp; Manajemen Stok Terpercaya.</p>
+      <div style="margin-top:1rem;font-size:0.8rem;color:var(--p-muted);">
         &copy; 2026 <span class="highlight">Babyiel Store</span> — All Rights Reserved.
       </div>
     </footer>
