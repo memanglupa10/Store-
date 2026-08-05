@@ -1065,7 +1065,6 @@ async function handleRequest(req, res) {
     }
 
     // Amount Verification (if provided in payload)
-    const payloadAmount = body.amount || (body.data && body.data.amount) || body.total_amount || body.gross_amount;
     if (payloadAmount && Number(payloadAmount) !== Number(order.price)) {
       console.warn(`[WEBHOOK WARNING] Amount mismatch for order ${targetOrderId}: Expected ${order.price}, got ${payloadAmount}`);
     }
