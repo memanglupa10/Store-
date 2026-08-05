@@ -972,6 +972,7 @@ const App = {
 
   async fetchAndDisplayFulfillment(orderId) {
     try {
+      this.closeQRISModal();
       const res = await fetch(`/api/orders/${orderId}/fulfillment`);
       const data = await res.json();
 
