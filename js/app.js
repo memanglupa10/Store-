@@ -679,13 +679,18 @@ const App = {
   },
 
   closeQRISModal() {
-    const modal = document.getElementById('modal-checkout-qris');
-    if (modal) {
-      modal.classList.remove('active');
-      modal.style.display = 'none';
-    }
     this.stopQRISPolling();
     this.stopQRISCountdown();
+    if (this.activeQRISPollInterval) clearInterval(this.activeQRISPollInterval);
+    if (this.activeQRISTimerInterval) clearInterval(this.activeQRISTimerInterval);
+
+    ['modal-checkout-qris', 'modal-qris-checkout', 'modal-checkout-form', 'modal-catalog-packages'].forEach(id => {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+      }
+    });
   },
 
   startQRISCountdown(durationSeconds) {
@@ -4030,15 +4035,7 @@ const App = {
     }
   },
 
-  closeQRISModal() {
-    if (this.activeQRISPollInterval) clearInterval(this.activeQRISPollInterval);
-    if (this.activeQRISTimerInterval) clearInterval(this.activeQRISTimerInterval);
-    const modal = document.getElementById('modal-qris-checkout');
-    if (modal) {
-      modal.style.display = 'none';
-      modal.classList.remove('active');
-    }
-  },
+
 
   openDigitalAccountDeliveryModal(orderData) {
     const acc = orderData.account || {};
