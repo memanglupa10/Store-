@@ -1169,7 +1169,25 @@ const App = {
 
   closeFulfillmentModal() {
     const modal = document.getElementById('modal-order-fulfillment');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.display = 'none';
+    }
+
+    // Close any residual modals
+    this.stopQRISPolling();
+    this.stopQRISCountdown();
+    this.stopFulfillmentLockTimer();
+    this.closeQRISModal();
+    this.closeModal();
+
+    // Smooth scroll back to Product Catalog
+    const catalogEl = document.getElementById('katalog') || document.getElementById('catalog') || document.querySelector('.products-section');
+    if (catalogEl) {
+      catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   },
 
   copyFulfillmentField(elementId, labelName) {
