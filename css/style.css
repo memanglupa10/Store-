@@ -115,17 +115,17 @@ a { text-decoration: none; color: inherit; }
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  height: 52px !important;
-  max-height: 54px !important;
+  height: 92px !important;
+  max-height: 92px !important;
   flex-shrink: 0 !important;
   position: relative !important;
   z-index: 1000 !important;
 }
 .sf-nav-logo-img {
-  height: 46px !important;
-  max-height: 48px !important;
+  height: 92px !important;
+  max-height: 92px !important;
   width: auto !important;
-  max-width: 210px !important;
+  max-width: 420px !important;
   object-fit: contain !important;
   margin: 0 !important;
   display: block !important;
