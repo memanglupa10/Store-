@@ -89,6 +89,7 @@ const App = {
   },
 
   showLoginScreen() {
+    db.logout();
     this.closeMobileSidebar();
     const storefront = document.getElementById('storefront-screen');
     const loginWrapper = document.getElementById('login-screen');
@@ -101,25 +102,29 @@ const App = {
 
   checkAuth() {
     const auth = db.getAuth();
-    const loginWrapper = document.getElementById('login-screen');
     const rawHash = (location.hash || '').replace('#', '').trim().toLowerCase();
     const pathname = (location.pathname || '').trim().toLowerCase();
-
     const isLoginRoute = pathname === '/login' || pathname === '/admin' || rawHash === 'login' || rawHash === 'admin';
 
     if (!auth) {
-      if (isLoginRoute) {
-        this.showLoginScreen();
-      } else {
-        this.goToStorefront();
-      }
+      this.showLoginScreen();
+      return;
+    }
+
+    const loginWrapper = document.getElementById('login-screen');
+    const storefront = document.getElementById('storefront-screen');
+    const mainApp = document.getElementById('app-main');
+
+    if (loginWrapper) { loginWrapper.classList.remove('active'); loginWrapper.style.display = 'none'; }
+    if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
+    if (mainApp) { mainApp.classList.add('active'); mainApp.style.display = 'flex'; }
+
+    this.updateAdminHeader(auth);
+    this.updateNotificationBadge();
+
+    if (isLoginRoute && (!rawHash || rawHash === 'login' || rawHash === 'admin')) {
+      this.navigate('dashboard');
     } else {
-      if (loginWrapper) {
-        loginWrapper.classList.remove('active');
-        loginWrapper.style.display = 'none';
-      }
-      this.updateAdminHeader(auth);
-      this.updateNotificationBadge();
       this.handleRoute();
     }
   },
@@ -1341,6 +1346,24 @@ const App = {
     return false;
   },
 
+  handleLogout() {
+    this.showConfirm(
+      'Konfirmasi Logout',
+      'Apakah Anda yakin ingin keluar dari aplikasi?',
+      () => {
+        db.logout();
+        if (window.history && window.history.pushState) {
+          window.history.pushState('', document.title, window.location.pathname);
+        } else {
+          location.hash = '';
+        }
+        this.showLoginScreen();
+        this.showToast('Logout', 'Anda telah keluar dari aplikasi.', 'info');
+      },
+      'danger'
+    );
+  },
+
   quickLogin(username, password) {
     const userInput = document.getElementById('login-username');
     const passInput = document.getElementById('login-password');
@@ -1359,16 +1382,9 @@ const App = {
     // Logout Button
     const logoutBtn = document.getElementById('btn-logout');
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        this.showConfirm(
-          'Konfirmasi Logout',
-          'Apakah Anda yakin ingin keluar dari aplikasi?',
-          () => {
-            db.logout();
-            this.showLoginScreen();
-            this.showToast('Logout', 'Anda telah keluar dari aplikasi.', 'info');
-          }
-        );
+      logoutBtn.addEventListener('click', (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        this.handleLogout();
       });
     }
 

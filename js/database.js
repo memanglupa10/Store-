@@ -877,6 +877,8 @@ class StoreDB {
       this.logActivity(`User (${auth.username}) logout dari sistem`, 'login');
     }
     localStorage.removeItem(DB_KEYS.AUTH);
+    localStorage.removeItem('babyiel_auth_token');
+    localStorage.removeItem('babyiel_auth_session');
   }
 
   getProducts() {
