@@ -455,9 +455,24 @@ class StoreDB {
     }
   }
 
-  updateSupabaseStatusBadge(isConnected) {
+  async updateSupabaseStatusBadge(isConnected) {
     const badge = document.getElementById('supabase-status-badge');
     if (!badge) return;
+
+    try {
+      const res = await fetch('/api/health');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.database && data.database.includes('MySQL')) {
+          badge.className = 'supabase-badge';
+          badge.innerHTML = '<span class="badge-dot"></span> MySQL Connected';
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Backend health status check:', e.message);
+    }
+
     if (isConnected) {
       badge.className = 'supabase-badge';
       badge.innerHTML = '<span class="badge-dot"></span> Supabase Connected';
