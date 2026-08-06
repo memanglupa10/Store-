@@ -1,6 +1,6 @@
 -- =========================================================
 -- Babyiel Store - Enterprise Inventory & QRIS Database Schema
--- Compatible with PostgreSQL (Supabase Cloud) & MySQL
+-- Optimized for cPanel MySQL (phpMyAdmin) & PostgreSQL
 -- =========================================================
 
 -- ---------------------------------------------------------
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(100) NOT NULL,
   role VARCHAR(20) DEFAULT 'Member', -- 'Admin' or 'Member'
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------
 -- 2. PRODUCTS TABLE (Catalog Products & Price Tiers)
@@ -22,15 +22,15 @@ CREATE TABLE IF NOT EXISTS products (
   id VARCHAR(50) PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   icon VARCHAR(50) DEFAULT 'fa-box',
-  image_url TEXT DEFAULT '',
+  image_url TEXT,
   color VARCHAR(20) DEFAULT '#A76CF5',
   duration VARCHAR(50) DEFAULT '1 Bulan',
-  garansi VARCHAR(100) DEFAULT '✅ Full Garansi Resmi 30 Hari',
+  garansi VARCHAR(100) DEFAULT 'Full Garansi Resmi 30 Hari',
   prices_json TEXT,
   template TEXT,
   is_active_catalog BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------
 -- 3. STOCKS TABLE (Digital Account Inventory)
@@ -53,11 +53,10 @@ CREATE TABLE IF NOT EXISTS stocks (
   activated_at TIMESTAMP NULL DEFAULT NULL,
   expires_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX IF NOT EXISTS idx_stocks_product_status ON stocks (product_id, status);
-CREATE INDEX IF NOT EXISTS idx_stocks_status ON stocks (status);
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_stocks_product_status (product_id, status),
+  INDEX idx_stocks_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------
 -- 4. ORDERS TABLE (Automated QRIS Checkout & Transactions)
@@ -82,25 +81,23 @@ CREATE TABLE IF NOT EXISTS orders (
   account_login_by VARCHAR(50) DEFAULT NULL,
   account_note TEXT DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  paid_at TIMESTAMP NULL DEFAULT NULL
-);
-
-CREATE INDEX IF NOT EXISTS idx_orders_status ON orders (status);
-CREATE INDEX IF NOT EXISTS idx_orders_payment_ref ON orders (payment_ref);
+  paid_at TIMESTAMP NULL DEFAULT NULL,
+  INDEX idx_orders_status (status),
+  INDEX idx_orders_payment_ref (payment_ref)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------
 -- 5. WEBHOOK_LOGS TABLE (Idempotent QRIS Webhook Audit)
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS webhook_logs (
-  id SERIAL PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   event_type VARCHAR(50) DEFAULT 'QRIS_PAYMENT',
   payment_ref VARCHAR(100) NOT NULL,
   payload_json TEXT NOT NULL,
   status VARCHAR(50) DEFAULT 'PROCESSED',
-  received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX IF NOT EXISTS idx_webhook_logs_ref ON webhook_logs (payment_ref);
+  received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_webhook_logs_ref (payment_ref)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------
 -- 6. ACTIVITY_LOGS TABLE (System Audit Trail)
@@ -110,7 +107,7 @@ CREATE TABLE IF NOT EXISTS activity_logs (
   type VARCHAR(50) DEFAULT 'info',
   activity TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------
 -- 7. NOTIFICATIONS TABLE (System & Expiration Alerts)
@@ -121,35 +118,32 @@ CREATE TABLE IF NOT EXISTS notifications (
   title VARCHAR(150) NOT NULL,
   message TEXT NOT NULL,
   is_read BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX IF NOT EXISTS idx_notifications_user_read ON notifications (username, is_read);
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_notifications_user_read (username, is_read)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------
 -- 8. SETTINGS TABLE (Store Metadata & Configuration)
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS settings (
-  key VARCHAR(50) PRIMARY KEY,
-  value TEXT NOT NULL
-);
+  `key` VARCHAR(50) PRIMARY KEY,
+  `value` TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =========================================================
 -- INITIAL SEED DATA
 -- =========================================================
 
 -- Default Users
-INSERT INTO users (id, username, password, name, role) VALUES
+INSERT IGNORE INTO users (id, username, password, name, role) VALUES
   ('usr-admin-1', 'admin', '123', 'Super Admin Babyiel', 'Admin'),
-  ('usr-member-1', 'member1', '123', 'Budi Santoso', 'Member')
-ON CONFLICT (id) DO NOTHING;
+  ('usr-member-1', 'member1', '123', 'Budi Santoso', 'Member');
 
 -- Default Store Settings
-INSERT INTO settings (key, value) VALUES
+INSERT IGNORE INTO settings (`key`, `value`) VALUES
   ('store_title', 'Babyiel Store'),
   ('support_phone', '085775335453'),
-  ('store_subtitle', 'Akun Digital Premium • Terpercaya & Bergaransi 🛡️'),
-  ('ticker_text', '⚡ PROMO SPESIAL HARI INI: PROSES CEPAT 1-5 MENIT • FULL GARANSI RESMI • READY AKUN PREMIUM POPULER ⚡ DISKON RESELLER UP TO 50% ⚡'),
+  ('store_subtitle', 'Akun Digital Premium Terpercaya & Bergaransi'),
+  ('ticker_text', 'PROMO SPESIAL HARI INI: PROSES CEPAT 1-5 MENIT • FULL GARANSI RESMI • READY AKUN PREMIUM POPULER DISKON RESELLER UP TO 50%'),
   ('qris_merchant_name', 'BABYIEL STORE OFFICIAL'),
-  ('qris_merchant_id', 'ID1029384756')
-ON CONFLICT (key) DO NOTHING;
+  ('qris_merchant_id', 'ID1029384756');
