@@ -122,9 +122,10 @@ a { text-decoration: none; color: inherit; }
   z-index: 1000;
 }
 .sf-nav-logo-img {
-  height: 44px;
-  max-height: 48px;
+  height: 40px;
+  max-height: 44px;
   width: auto;
+  max-width: 160px;
   object-fit: contain;
   margin: 0;
   display: block;
@@ -1898,7 +1899,7 @@ a { text-decoration: none; color: inherit; }
 @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .login-header { text-align: center; margin-bottom: 1.75rem; }
 .login-logo { display: flex; align-items: center; justify-content: center; margin-bottom: 0.85rem; }
-.login-logo-img { height: 52px; width: auto; object-fit: contain; mix-blend-mode: multiply; }
+.login-logo-img { height: 40px; max-height: 44px; width: auto; max-width: 160px; object-fit: contain; mix-blend-mode: multiply; }
 .login-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; color: #1F1F38; margin-bottom: 0.25rem; }
 .login-subtitle { font-size: 0.85rem; color: #6A6A8C; font-weight: 500; }
 .login-submit-btn { margin-top: 1.25rem; height: 48px !important; border-radius: 12px !important; background: linear-gradient(135deg, #A76CF5, #F97DBB) !important; font-size: 0.95rem !important; font-weight: 700 !important; box-shadow: 0 4px 16px rgba(167,108,245,0.3) !important; transition: all 0.2s ease !important; }
@@ -1956,7 +1957,7 @@ a { text-decoration: none; color: inherit; }
 .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); z-index: 99; }
 .sidebar-overlay.active { display: block; }
 .sidebar-brand { height: var(--header-height); display: flex; align-items: center; gap: 0.75rem; padding: 0 1.35rem; border-bottom: 1.5px solid var(--border-subtle); background: #FFFFFF; }
-.sidebar-logo-img { height: 38px; width: auto; object-fit: contain; mix-blend-mode: multiply; }
+.sidebar-logo-img { height: 40px; max-height: 44px; width: auto; max-width: 160px; object-fit: contain; mix-blend-mode: multiply; }
 .brand-text h2 { font-family: 'Plus Jakarta Sans', 'Nunito', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); line-height: 1.1; }
 .brand-text span { font-size: 0.65rem; color: var(--brand-purple); font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
 .sidebar-menu { padding: 1.1rem 0.85rem; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.25rem; }
