@@ -1,20 +1,8 @@
 /* =========================================================
-   Babyiel Store Inventory - Database & Supabase Engine
+   Babyiel Store Inventory - MySQL Database Engine
    ========================================================= */
 
-const SUPABASE_CONFIG = {
-  url: 'https://sgcgohxykqlapmvyvktn.supabase.co',
-  key: 'sb_publishable_DLpnrdax3wFWWawYAvGPhA_EtXnanNI'
-};
-
-let supabaseClient = null;
-if (window.supabase && typeof window.supabase.createClient === 'function') {
-  try {
-    supabaseClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
-  } catch (err) {
-    console.warn('Failed to initialize Supabase client:', err);
-  }
-}
+let supabaseClient = null; // Supabase disabled in favor of cPanel MySQL Database
 
 const DB_KEYS = {
   USERS: 'babyiel_users',
@@ -458,28 +446,8 @@ class StoreDB {
   async updateSupabaseStatusBadge(isConnected) {
     const badge = document.getElementById('supabase-status-badge');
     if (!badge) return;
-
-    try {
-      const res = await fetch('/api/health');
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.database && data.database.includes('MySQL')) {
-          badge.className = 'supabase-badge';
-          badge.innerHTML = '<span class="badge-dot"></span> MySQL Connected';
-          return;
-        }
-      }
-    } catch (e) {
-      console.warn('Backend health status check:', e.message);
-    }
-
-    if (isConnected) {
-      badge.className = 'supabase-badge';
-      badge.innerHTML = '<span class="badge-dot"></span> Supabase Connected';
-    } else {
-      badge.className = 'supabase-badge disconnected';
-      badge.innerHTML = '<span class="badge-dot"></span> Offline Fallback';
-    }
+    badge.className = 'supabase-badge';
+    badge.innerHTML = '<span class="badge-dot"></span> MySQL Database Connected';
   }
 
   async syncSupabaseTable(table, data, action = 'upsert') {
