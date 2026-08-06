@@ -1,16 +1,14 @@
-const handleRequest = require('../server');
+/**
+ * api/index.js
+ * Vercel Serverless Function Handler for Express App
+ * Babyiel Store - Enterprise Inventory & QRIS Database System
+ */
 
-module.exports = async (req, res) => {
-  try {
-    if (req.headers && req.headers['x-forwarded-url']) {
-      req.url = req.headers['x-forwarded-url'];
-    }
-    return await handleRequest(req, res);
-  } catch (err) {
-    console.error('[SERVERLESS ERROR index.js]:', err);
-    if (!res.headersSent) {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-    }
-    res.end(JSON.stringify({ success: false, message: err.message || 'Internal Server Error' }));
+const app = require('../server');
+
+module.exports = (req, res) => {
+  if (req.headers && req.headers['x-forwarded-url']) {
+    req.url = req.headers['x-forwarded-url'];
   }
+  return app(req, res);
 };
