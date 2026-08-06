@@ -2071,10 +2071,10 @@ const App = {
                   <button class="act-btn act-btn-sold" onclick="App.openMarkSoldModal('${item.id}')" title="Jual Langsung ke Customer">
                     <i class="fa-solid fa-cart-shopping"></i> Jual
                   </button>
-                  <button class="act-btn act-btn-transfer" onclick="App.openAssignStockModal('${item.id}')" title="Assign ke Reseller" style="background: rgba(124, 58, 237, 0.1); color: #7c3aed; border-color: rgba(124, 58, 237, 0.3);">
+                  <button class="act-btn act-btn-transfer" onclick="App.openAssignStockModal('${item.id}')" title="Assign ke Reseller" style="background: #F3EAFF; color: #A76CF5; border-color: #E9E7F3;">
                     <i class="fa-solid fa-user-plus"></i> Assign
                   </button>
-                  <button class="act-btn act-btn-copy" onclick="App.openEditStockModal('${item.id}')" title="Edit Data Akun Stok" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-color: rgba(59, 130, 246, 0.3);">
+                  <button class="act-btn" onclick="App.openEditStockModal('${item.id}')" title="Edit Data Akun Stok" style="background: #F8F7FC; color: #1F1F38; border-color: #E9E7F3;">
                     <i class="fa-solid fa-pen-to-square"></i> Edit
                   </button>
                   <button class="act-btn act-btn-copy" onclick="App.copyTemplate('${item.id}')" title="Copy Template WA">
@@ -3808,7 +3808,7 @@ const App = {
 
       html += `
         <tr>
-          <td style="font-weight: 700; color: #fff;">${u.username} ${isSelf ? '<small style="color: var(--primary);">(Anda)</small>' : ''}</td>
+          <td style="font-weight: 700; color: #1F1F38;">${u.username} ${isSelf ? '<small style="color: var(--primary);">(Anda)</small>' : ''}</td>
           <td>${u.name || u.username}</td>
           <td>
             <span class="badge-status ${badgeClass}">
