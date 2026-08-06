@@ -117,18 +117,20 @@ a { text-decoration: none; color: inherit; }
   justify-content: center;
   height: 64px;
   flex-shrink: 0;
+  overflow: visible;
   position: relative;
   z-index: 1000;
 }
 .sf-nav-logo-img {
-  height: 54px;
-  max-height: 58px;
+  height: 160px;
+  max-height: 170px;
   width: auto;
-  max-width: 280px;
+  max-width: 420px;
   object-fit: contain;
   margin: 0;
   display: block;
-  filter: drop-shadow(0 2px 8px rgba(124,92,191,0.1));
+  mix-blend-mode: multiply;
+  filter: contrast(108%) drop-shadow(0 4px 12px rgba(124,92,191,0.15));
   transition: transform 0.2s ease;
 }
 .sf-nav-logo-img:hover { transform: scale(1.03); }
