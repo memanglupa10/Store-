@@ -22,7 +22,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=1200.0">
+  <link rel="stylesheet" href="css/style.css?v=2000.0">
 </head>
 <body>
 
@@ -877,66 +877,84 @@
         </section>
 
         <!-- =========================================================
-             PAGE 3.5: KELOLA KATALOG PUBLIK (ADMIN ONLY)
+             PAGE 3.5: KELOLA KATALOG PUBLIK (/login#catalog)
              ========================================================= -->
         <section id="page-catalog" class="view-page" style="display: none;">
-          <!-- CARD 1: PENGATURAN HERO & BANNER KATALOG -->
+          
+          <!-- SECTION 1: STORE INFORMATION -->
           <div class="card" style="margin-bottom: 1.5rem;">
             <div class="card-header">
               <div class="card-title">
-                <i class="fa-solid fa-sliders" style="color: var(--primary);"></i> Pengaturan Storefront &amp; Banner Katalog Pembeli
+                <i class="fa-solid fa-sliders"></i> Informasi Toko &amp; Announcement
               </div>
-              <button class="btn btn-secondary btn-sm" onclick="App.goToStorefront()">
-                <i class="fa-solid fa-eye"></i> Buka Tampilan Live Katalog Pembeli
-              </button>
             </div>
             <div class="card-body">
               <form id="catalog-settings-form">
-                <div class="grid-2" style="margin-bottom: 1rem;">
-                  <div class="form-group" style="margin-bottom: 0;">
+                <div class="grid-2">
+                  <div class="form-group">
                     <label class="form-label" for="catalog-store-title">Nama Toko / Judul Storefront</label>
                     <input type="text" id="catalog-store-title" class="form-input no-icon" placeholder="Babyiel Store" value="Babyiel Store">
                   </div>
-                  <div class="form-group" style="margin-bottom: 0;">
+                  <div class="form-group">
                     <label class="form-label" for="catalog-support-phone">Nomor Support WhatsApp Order</label>
                     <input type="text" id="catalog-support-phone" class="form-input no-icon" placeholder="085775335453" value="085775335453">
                   </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 1rem;">
-                  <label class="form-label" for="catalog-store-subtitle">Subtitle / Hero Tagline Storefront</label>
-                  <input type="text" id="catalog-store-subtitle" class="form-input no-icon" placeholder="Akun Digital Premium • Terpercaya &amp; Bergaransi 🛡️" value="Akun Digital Premium • Terpercaya &amp; Bergaransi 🛡️">
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label" for="catalog-store-subtitle">Subtitle / Hero Tagline Storefront</label>
+                    <input type="text" id="catalog-store-subtitle" class="form-input no-icon" placeholder="Akun Digital Premium • Terpercaya &amp; Bergaransi 🛡️" value="Akun Digital Premium • Terpercaya &amp; Bergaransi 🛡️">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="catalog-ticker-text">Teks Running Announcement Ticker (Promo Berjalan)</label>
+                    <input type="text" id="catalog-ticker-text" class="form-input no-icon" placeholder="⚡ PROMO SPESIAL..." value="⚡ PROMO SPESIAL HARI INI: PROSES CEPAT 1-5 MENIT &bull; FULL GARANSI RESMI &bull; READY AKUN PREMIUM POPULER ⚡ DISKON RESELLER UP TO 50% ⚡">
+                  </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 1.25rem;">
-                  <label class="form-label" for="catalog-ticker-text">Teks Running Announcement Ticker (Promo Berjalan)</label>
-                  <input type="text" id="catalog-ticker-text" class="form-input no-icon" placeholder="⚡ PROMO SPESIAL..." value="⚡ PROMO SPESIAL HARI INI: PROSES CEPAT 1-5 MENIT &bull; FULL GARANSI RESMI &bull; READY AKUN PREMIUM POPULER ⚡ DISKON RESELLER UP TO 50% ⚡">
+                <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+                  <button type="submit" class="btn btn-primary" style="height: 46px; padding: 0 1.5rem;">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Header &amp; Announcement Katalog
+                  </button>
                 </div>
-
-                <button type="submit" class="btn btn-primary btn-sm">
-                  <i class="fa-solid fa-floppy-disk"></i> Simpan Header &amp; Announcement Katalog
-                </button>
               </form>
             </div>
           </div>
 
-          <!-- CARD 2: MANAJEMEN PRODUK & HARGA KATALOG -->
+          <!-- SECTION 2: LIVE CATALOG PREVIEW CTA -->
+          <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-body" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+              <div>
+                <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; color: #1F1F38; margin-bottom: 0.25rem;">
+                  <i class="fa-solid fa-store" style="color: #A76CF5;"></i> Tampilan Live Katalog Pembeli
+                </h3>
+                <p style="font-size: 0.85rem; color: #6A6A8C; margin: 0;">
+                  Buka dan pratinjau langsung tampilan katalog publik yang dilihat oleh calon pelanggan Anda.
+                </p>
+              </div>
+              <button class="btn btn-primary" style="height: 46px; padding: 0 1.75rem; font-size: 0.92rem;" onclick="App.goToStorefront()">
+                <i class="fa-solid fa-eye"></i> Open Live Catalog
+              </button>
+            </div>
+          </div>
+
+          <!-- SECTION 3: PRODUCT CATALOG -->
           <div class="card">
             <div class="card-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
               <div>
                 <div class="card-title">
-                  <i class="fa-solid fa-store" style="color: var(--primary);"></i> Daftar Produk &amp; Harga Paket Katalog Pembeli
+                  <i class="fa-solid fa-boxes-stacked"></i> Produk Katalog &amp; Harga Paket
                 </div>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+                <p style="font-size: 0.82rem; color: #6A6A8C; margin-top: 0.2rem;">
                   Kelola visibilitas, daftar paket, harga Rp, garansi, dan benefit produk yang dilihat oleh pembeli.
                 </p>
               </div>
-              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                <div class="search-box" style="position: relative; width: 220px;">
-                  <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 0.8rem;"></i>
-                  <input type="text" id="catalog-search-input" class="form-input" style="padding: 0.42rem 0.8rem 0.42rem 2.2rem; font-size: 0.82rem;" placeholder="Cari produk katalog...">
+              <div class="filter-group" style="display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
+                <div class="search-box" style="width: 320px; min-width: 240px;">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="catalog-search-input" placeholder="Cari produk katalog..." oninput="App.renderCatalogProducts()">
                 </div>
-                <button class="btn btn-primary btn-sm" onclick="App.openAddProductModal()">
+                <button class="btn btn-primary" style="height: 46px;" onclick="App.openAddProductModal()">
                   <i class="fa-solid fa-plus"></i> Tambah Produk Katalog Baru
                 </button>
               </div>
@@ -1917,8 +1935,8 @@
   <!-- Application Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/database.js?v=14.0"></script>
-  <script src="js/app.js?v=14.0"></script>
+  <script src="js/database.js?v=2000.0"></script>
+  <script src="js/app.js?v=2000.0"></script>
 
   <!-- EMERGENCY INLINE LOGIN FAILSAFE — runs even if app.js has errors -->
   <script>

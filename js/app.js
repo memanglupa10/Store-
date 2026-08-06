@@ -3046,63 +3046,73 @@ const App = {
     let html = '';
     products.forEach(p => {
       const hasImg = p.image_url && p.image_url.trim() !== '';
+      const readyStocks = typeof db.getStocksByProduct === 'function' ? db.getStocksByProduct(p.id).filter(s => s.status === 'READY') : [];
+      const readyCount = readyStocks.length;
+
       const prodIconHtml = hasImg
-        ? `<img src="${p.image_url}" alt="${p.name}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: contain; background: #fff; padding: 2px; border: 1px solid #e2e8f0; flex-shrink: 0;">`
-        : `<div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(124, 58, 237, 0.12); border: 1px solid rgba(124, 58, 237, 0.3); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: ${p.color || '#7c3aed'}; flex-shrink: 0;">
+        ? `<img src="${p.image_url}" alt="${p.name}" style="width: 48px; height: 48px; border-radius: 12px; object-fit: contain; background: #ffffff; padding: 2px; border: 1.5px solid #E9E7F3; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">`
+        : `<div style="width: 48px; height: 48px; border-radius: 12px; background: #F8F7FC; border: 1.5px solid #E9E7F3; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: ${p.color || '#A76CF5'}; flex-shrink: 0;">
              <i class="fa-solid ${p.icon || 'fa-box'}"></i>
            </div>`;
 
       const isCatalogActive = p.is_active_catalog !== false;
       const catalogBadgeHtml = isCatalogActive
-        ? `<span class="badge badge-success" style="font-size: 0.72rem; padding: 3px 8px;"><i class="fa-solid fa-eye"></i> Tampil di Katalog</span>`
-        : `<span class="badge badge-danger" style="font-size: 0.72rem; padding: 3px 8px;"><i class="fa-solid fa-eye-slash"></i> Disembunyikan</span>`;
+        ? `<span class="status-badge ready" style="font-size: 0.72rem; padding: 0.25rem 0.65rem;"><i class="fa-solid fa-eye"></i> Tampil</span>`
+        : `<span class="status-badge sold" style="font-size: 0.72rem; padding: 0.25rem 0.65rem;"><i class="fa-solid fa-eye-slash"></i> Sembunyi</span>`;
+
+      const stockBadgeHtml = readyCount > 0
+        ? `<span style="font-size: 0.72rem; font-weight: 700; color: #22C55E; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); padding: 0.2rem 0.6rem; border-radius: 9999px;">Ready ${readyCount} Akun</span>`
+        : `<span style="font-size: 0.72rem; font-weight: 700; color: #EF4444; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); padding: 0.2rem 0.6rem; border-radius: 9999px;">Stok Habis</span>`;
 
       let priceSummaryHtml = '';
       if (p.prices && p.prices.length > 0) {
         priceSummaryHtml = p.prices.map(pr => `
-          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; border-bottom: 1px dashed var(--border-subtle); padding: 0.2rem 0;">
-            <span style="color: var(--text-main); font-weight: 600;">• ${pr.label} <small style="color:var(--text-muted);">(${pr.category || 'Member'})</small></span>
-            <span style="font-weight: 800; color: var(--primary);">Rp ${(pr.price || 0).toLocaleString('id-ID')}</span>
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; border-bottom: 1px dashed #E9E7F3; padding: 0.3rem 0;">
+            <span style="color: #1F1F38; font-weight: 600;">• ${pr.label} <small style="color:#6A6A8C;">(${pr.category || 'Member'})</small></span>
+            <span style="font-weight: 800; color: #A76CF5;">Rp ${(pr.price || 0).toLocaleString('id-ID')}</span>
           </div>
         `).join('');
       } else {
-        priceSummaryHtml = `<div style="font-size: 0.78rem; color: var(--text-muted); text-align: center; padding: 0.3rem 0;">Belum ada opsi harga katalog</div>`;
+        priceSummaryHtml = `<div style="font-size: 0.78rem; color: #6A6A8C; text-align: center; padding: 0.4rem 0;">Belum ada opsi harga</div>`;
       }
 
       html += `
-        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; border: 1.5px solid ${isCatalogActive ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};">
-          <div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
-              <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; border: 1.5px solid #E9E7F3; border-radius: 20px; box-shadow: 0 4px 20px rgba(167,108,245,0.04);">
+          <div style="padding: 1.5rem;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; gap: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.85rem;">
                 ${prodIconHtml}
                 <div>
-                  <h3 style="font-size: 1.05rem; color: var(--text-main); font-weight: 900; margin: 0;">${p.name}</h3>
-                  <span style="font-size: 0.78rem; color: var(--primary); font-weight: 700;">Durasi: ${p.duration || '1 Bulan'}</span>
+                  <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; color: #1F1F38; font-weight: 800; margin: 0; line-height: 1.2;">${p.name}</h3>
+                  <div style="display: flex; gap: 0.35rem; align-items: center; margin-top: 0.35rem; flex-wrap: wrap;">
+                    <span style="font-size: 0.72rem; color: #A76CF5; background: #F3EAFF; border: 1px solid #E9E7F3; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 9999px;">${p.duration || '1 Bulan'}</span>
+                    ${stockBadgeHtml}
+                  </div>
                 </div>
               </div>
               <div>${catalogBadgeHtml}</div>
             </div>
 
-            <div style="background: var(--bg-body); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.75rem 0.85rem; margin-bottom: 0.85rem;">
-              <div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: space-between;">
-                <span><i class="fa-solid fa-tags"></i> Opsi Paket &amp; Harga (Pembeli)</span>
-                <span style="color: #10b981; font-weight: 700;">${p.garansi || 'Garansi Resmi ✓'}</span>
+            <div style="background: #F8F7FC; border: 1.5px solid #E9E7F3; border-radius: 14px; padding: 0.9rem 1rem; margin-bottom: 0.5rem;">
+              <div style="font-size: 0.73rem; font-weight: 800; text-transform: uppercase; color: #6A6A8C; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+                <span><i class="fa-solid fa-tags" style="color:#A76CF5;"></i> Opsi Paket &amp; Harga</span>
+                <span style="color: #22C55E; font-weight: 700;">${p.garansi || 'Garansi Resmi ✓'}</span>
               </div>
-              <div style="display: flex; flex-direction: column; gap: 0.2rem; max-height: 120px; overflow-y: auto;">
+              <div style="display: flex; flex-direction: column; gap: 0.25rem; max-height: 130px; overflow-y: auto;">
                 ${priceSummaryHtml}
               </div>
-              ${p.note ? `<div style="margin-top: 0.45rem; font-size: 0.75rem; color: var(--brand-purple); font-weight: 700; background: rgba(124,58,237,0.06); padding: 0.3rem 0.5rem; border-radius: 4px;">${p.note}</div>` : ''}
+              ${p.note ? `<div style="margin-top: 0.5rem; font-size: 0.76rem; color: #A76CF5; font-weight: 700; background: #F3EAFF; padding: 0.35rem 0.65rem; border-radius: 8px; border: 1px solid #E9E7F3;">${p.note}</div>` : ''}
             </div>
           </div>
 
-          <div style="display: flex; gap: 0.4rem; padding-top: 0.85rem; border-top: 1px solid var(--border-color); flex-wrap: wrap;">
-            <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="App.openEditProductModal('${p.id}')" title="Edit Produk &amp; Harga Paket">
-              <i class="fa-solid fa-pen-to-square"></i> Edit Produk &amp; Harga
+          <div style="display: flex; gap: 0.5rem; padding: 1rem 1.5rem; border-top: 1.5px solid #E9E7F3; background: #ffffff; border-radius: 0 0 20px 20px;">
+            <button class="btn btn-secondary btn-sm" style="flex: 1; border-radius: 10px; height: 38px;" onclick="App.openEditProductModal('${p.id}')" title="Edit Produk &amp; Harga Paket">
+              <i class="fa-solid fa-pen-to-square"></i> Edit
             </button>
-            <button class="btn ${isCatalogActive ? 'btn-warning' : 'btn-success'} btn-sm" onclick="App.toggleCatalogStatus('${p.id}')" title="Toggle Tampil/Sembunyi di Katalog">
+            <button class="btn ${isCatalogActive ? 'btn-secondary' : 'btn-primary'} btn-sm" style="border-radius: 10px; height: 38px;" onclick="App.toggleCatalogStatus('${p.id}')" title="Toggle Tampil/Sembunyi">
               <i class="fa-solid ${isCatalogActive ? 'fa-eye-slash' : 'fa-eye'}"></i> ${isCatalogActive ? 'Sembunyikan' : 'Tampilkan'}
             </button>
-            <button class="btn btn-danger btn-sm" onclick="App.deleteProduct('${p.id}')" title="Hapus Produk dari Katalog">
+            <button class="btn btn-danger btn-sm" style="border-radius: 10px; height: 38px;" onclick="App.deleteProduct('${p.id}')" title="Hapus Produk">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
