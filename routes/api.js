@@ -187,7 +187,14 @@ router.post('/checkout', asyncHandler(async (req, res) => {
   const rawPriceWithFee = catalogPrice * 1.05;
   const price = catalogPrice > 0 ? Math.ceil(rawPriceWithFee / 500) * 500 : 0;
 
-  let availableStock = db.stocks.find(s => s.product_id === product_id && (s.status === 'READY' || s.status === 'AVAILABLE'));
+  let availableStock = db.stocks.find(s => (s.product_id === product_id || s.product_name === prod.name) && (s.status === 'READY' || s.status === 'AVAILABLE'));
+
+  if (!availableStock) {
+    return res.status(400).json({
+      success: false,
+      message: `Maaf, stok untuk produk "${prod.name}" sedang habis! Silakan pilih paket atau produk lain yang masih ready stok.`
+    });
+  }
 
   const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
   const customerInfo = { name: customer_name, wa: customer_wa, email: customer_email };
@@ -199,29 +206,9 @@ router.post('/checkout', asyncHandler(async (req, res) => {
   const now = new Date();
   const expiresAt = new Date(now.getTime() + 15 * 60 * 1000).toISOString();
 
-  if (availableStock) {
-    availableStock.status = 'RESERVED';
-    availableStock.order_id = orderId;
-    availableStock.reserved_until = expiresAt;
-  } else {
-    const newStockId = `STK-${Date.now().toString().slice(-6)}`;
-    availableStock = {
-      id: newStockId,
-      product_id: product_id,
-      product_name: prod.name,
-      email: `${product_id.replace('prod-', '')}.ready${Math.floor(Math.random()*900+100)}@babyiel.com`,
-      password: encryptCredential(`pass${Math.floor(Math.random()*899999+100000)}`),
-      login_by: 'Email & Password / OTP WA',
-      profile: `Profil ${Math.floor(Math.random()*4+1)}`,
-      pin: encryptCredential(`${Math.floor(Math.random()*8999+1000)}`),
-      note: 'Garansi Resmi Full 100%',
-      status: 'RESERVED',
-      order_id: orderId,
-      reserved_until: expiresAt,
-      created_at: new Date().toISOString()
-    };
-    db.stocks.push(availableStock);
-  }
+  availableStock.status = 'RESERVED';
+  availableStock.order_id = orderId;
+  availableStock.reserved_until = expiresAt;
 
   const newOrder = {
     id: orderId,

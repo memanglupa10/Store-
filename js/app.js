@@ -488,13 +488,33 @@ const App = {
     const msg = encodeURIComponent(`Halo Babyiel Store, saya mau pesan ${prod.name} paket ${label}${priceText}. Apakah ready stok? 🙏`);
     const waUrl = `https://wa.me/${waBase}?text=${msg}`;
 
-    footerEl.innerHTML = `
-      <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+    const stocks = db.getStocks();
+    const readyCount = stocks.filter(s => (s.product_id === prod.id || s.product_name === prod.name) && (s.status === 'READY' || s.status === 'AVAILABLE')).length;
+    const isOut = readyCount === 0;
+
+    let checkoutBtnHtml = '';
+    if (isOut) {
+      checkoutBtnHtml = `
+        <button type="button" disabled style="display: flex; align-items: center; justify-content: center; gap: 0.55rem; background: #94a3b8; color: #ffffff; font-size: 0.95rem; font-weight: 800; padding: 0.85rem 1.25rem; border-radius: 12px; border: none; cursor: not-allowed;">
+          <i class="fa-solid fa-ban" style="font-size: 1.15rem;"></i> Stok Habis (Pilih Paket Lain)
+        </button>
+        <div style="font-size: 0.78rem; color: #ef4444; font-weight: 700; text-align: center;">
+          <i class="fa-solid fa-triangle-exclamation"></i> Maaf, stok paket/produk ini sedang habis! Silakan pilih produk/paket lain.
+        </div>
+      `;
+    } else {
+      checkoutBtnHtml = `
         <button type="button" onclick="App.openCheckoutModal()" style="display: flex; align-items: center; justify-content: center; gap: 0.55rem; background: #7c3aed; color: #ffffff; font-size: 0.95rem; font-weight: 800; padding: 0.85rem 1.25rem; border-radius: 12px; border: none; box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3); cursor: pointer; transition: all 0.2s ease;">
           <i class="fa-solid fa-qrcode" style="font-size: 1.15rem;"></i> Bayar Otomatis QRIS${priceText}
         </button>
+      `;
+    }
+
+    footerEl.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+        ${checkoutBtnHtml}
         <a href="${waUrl}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 0.4rem; background: #f1f5f9; color: #16a34a; font-size: 0.82rem; font-weight: 700; padding: 0.55rem; border-radius: 10px; border: 1px solid #cbd5e1; text-decoration: none; transition: all 0.2s ease;">
-          <i class="fa-brands fa-whatsapp"></i> Atau Pesan Manual via WhatsApp
+          <i class="fa-brands fa-whatsapp"></i> Atau Tanya Stok Manual via WhatsApp
         </a>
       </div>
     `;
@@ -504,9 +524,17 @@ const App = {
   openCheckoutModal() {
     if (!this.selectedPackageData) return;
 
+    const { prod, label, price } = this.selectedPackageData;
+    const stocks = db.getStocks();
+    const readyCount = stocks.filter(s => (s.product_id === prod.id || s.product_name === prod.name) && (s.status === 'READY' || s.status === 'AVAILABLE')).length;
+    
+    if (readyCount === 0) {
+      this.showToast('Stok Habis!', `Maaf, stok untuk paket/produk "${prod.name}" sedang habis! Silakan pilih paket atau produk lain yang masih ready.`, 'error');
+      return;
+    }
+
     this.closeCatalogPackagesModal();
 
-    const { prod, label, price } = this.selectedPackageData;
     const modal = document.getElementById('modal-checkout-form');
 
     const summaryProd = document.getElementById('checkout-summary-prod');
@@ -579,9 +607,15 @@ const App = {
           this.closeCheckoutModal();
           this.openQRISModal(res.order);
           return;
+        } else if (res && res.message) {
+          this.showToast('Stok Habis!', res.message, 'error');
+          return;
         }
       }
-      this.showToast('Gagal Checkout', 'Gagal memproses pembayaran QRIS. Silakan coba lagi.', 'error');
+
+      const errJson = await response.json().catch(() => ({}));
+      const errMsg = (errJson && errJson.message) ? errJson.message : 'Maaf, stok untuk paket ini sedang habis! Silakan pilih paket lain.';
+      this.showToast('Stok Habis!', errMsg, 'error');
     } catch (err) {
       if (submitBtn) {
         submitBtn.disabled = false;
