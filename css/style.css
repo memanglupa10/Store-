@@ -180,18 +180,6 @@ a { text-decoration: none; color: inherit; }
    📱 RESPONSIVE MOBILE & TABLET BREAKPOINTS
 ═══════════════════════ */
 @media (max-width: 900px) {
-  .sf-navbar {
-    min-height: 64px;
-    padding: 0.4rem 1.2rem;
-    gap: 0.75rem;
-  }
-  .sf-nav-logo {
-    height: 52px;
-  }
-  .sf-nav-logo-img {
-    height: 52px;
-    max-height: 56px;
-  }
   .sf-nav-menu {
     display: none;
     flex-direction: column;
@@ -208,79 +196,441 @@ a { text-decoration: none; color: inherit; }
   .sf-nav-menu.open {
     display: flex;
   }
+}
+
+/* ══════════════════════════════════════
+   📱 OPTIMIZED MOBILE STOREFRONT EXPERIENCE
+   Design Direction: Minimalist, Premium, Soft Shadows, Large Rounded Corners (16-20px),
+   Inspired by Apple, Vercel, Stripe, Linear & Notion Mobile Interfaces.
+═══════════════════════ */
+@media (max-width: 768px) {
+  /* ① ANNOUNCEMENT BAR */
+  .sf-announce-bar {
+    padding: 6px 12px !important;
+    font-size: 0.72rem !important;
+    gap: 6px !important;
+    background: #181824 !important;
+  }
+  .sf-ann-divider { display: none !important; }
+  .sf-announce-inner {
+    gap: 8px !important;
+    font-size: 0.7rem !important;
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    width: calc(100% - 90px) !important;
+    scrollbar-width: none !important;
+  }
+  .sf-announce-inner::-webkit-scrollbar { display: none !important; }
+  .sf-ann-btn {
+    padding: 3px 10px !important;
+    font-size: 0.68rem !important;
+    right: 8px !important;
+    border-radius: 999px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12) !important;
+  }
+
+  /* ② NAVBAR - Compact sticky header with Apple-like glassmorphic blur */
+  .sf-navbar {
+    min-height: 52px !important;
+    padding: 6px 12px !important;
+    gap: 8px !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 900 !important;
+    background: rgba(255, 245, 247, 0.85) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(200, 180, 230, 0.25) !important;
+    box-shadow: 0 4px 16px rgba(124, 92, 191, 0.05) !important;
+  }
+  .sf-nav-logo {
+    height: 40px !important;
+  }
+  .sf-nav-logo-img {
+    height: 40px !important;
+    max-height: 44px !important;
+  }
+  .sf-nav-right {
+    gap: 6px !important;
+  }
   .sf-nav-search {
-    min-width: 110px;
+    min-width: 110px !important;
+    max-width: 150px !important;
+    height: 38px !important;
+    padding: 4px 10px !important;
+    border-radius: 999px !important;
+    background: rgba(248, 244, 255, 0.9) !important;
+    border: 1px solid rgba(233, 213, 255, 0.8) !important;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
+  }
+  .sf-nav-search input {
+    font-size: 0.78rem !important;
+  }
+  .sf-nav-wa-btn {
+    height: 38px !important;
+    padding: 4px 10px !important;
+    font-size: 0.76rem !important;
+    border-radius: 999px !important;
+    box-shadow: 0 3px 10px rgba(37,211,102,0.25) !important;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .sf-nav-wa-btn:active {
+    transform: scale(0.95) !important;
   }
   .sf-nav-hamburger {
-    display: flex;
+    display: flex !important;
+    padding: 4px 6px !important;
+    font-size: 1.1rem !important;
   }
 
+  /* ③ HERO SECTION - Shorter, compact, faster access to catalog */
+  .sf-hero-wrapper {
+    padding: 12px 12px 0 !important;
+  }
   .sf-hero-card {
-    flex-direction: column;
-    padding: 2rem 1.5rem;
-    text-align: center;
-    min-height: auto;
+    flex-direction: column !important;
+    padding: 18px 16px !important;
+    text-align: center !important;
+    min-height: auto !important;
+    gap: 12px !important;
+    border-radius: 20px !important; /* Large rounded corner */
+    background: linear-gradient(145deg, #fff8f5 0%, #fdf2f8 50%, #f5f3ff 100%) !important;
+    border: 1px solid rgba(200, 180, 230, 0.3) !important;
+    box-shadow: 0 6px 24px rgba(124, 92, 191, 0.06), 0 1px 3px rgba(0,0,0,0.02) !important; /* Soft shadow */
   }
   .sf-hero-left {
-    max-width: 100%;
+    max-width: 100% !important;
   }
-  .sf-hero-right {
-    width: 100%;
-    max-width: 280px;
-    margin-top: 1rem;
-  }
-  .sf-hero-illustration-img {
-    max-width: 280px;
-  }
-  .sf-hero-ctas, .sf-hero-stats {
-    justify-content: center;
+  .sf-hero-badge {
+    font-size: 0.7rem !important;
+    padding: 4px 10px !important;
+    margin-bottom: 8px !important;
+    letter-spacing: 0.02em !important;
+    border-radius: 999px !important;
+    background: #fef9c3 !important;
+    border: 1px solid #fde68a !important;
   }
   .sf-hero-title {
-    font-size: 2rem;
+    font-size: 1.75rem !important; /* 28px heading */
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+    margin: 0 0 8px 0 !important;
+    letter-spacing: -0.02em !important;
+  }
+  .sf-hero-subtitle {
+    font-size: 0.875rem !important; /* 14px body */
+    line-height: 1.5 !important;
+    margin: 0 0 12px 0 !important;
+    color: #6e5e82 !important;
+  }
+  .sf-hero-ctas {
+    justify-content: center !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+  .sf-btn-primary, .sf-btn-wa {
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+    height: 42px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 999px !important;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease !important;
+  }
+  .sf-btn-primary {
+    box-shadow: 0 4px 14px rgba(91, 62, 166, 0.25) !important;
+  }
+  .sf-btn-wa {
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25) !important;
+  }
+  .sf-btn-primary:active, .sf-btn-wa:active {
+    transform: scale(0.96) !important;
+  }
+  .sf-hero-stats {
+    justify-content: center !important;
+    gap: 6px !important;
+  }
+  .sf-hero-stat {
+    font-size: 0.75rem !important;
+    padding: 4px 10px !important;
+    border-radius: 999px !important;
+    background: rgba(255,255,255,0.9) !important;
+    border: 1px solid rgba(200,180,230,0.35) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+  }
+  .sf-hero-right {
+    width: 100% !important;
+    max-width: 180px !important; /* 25% smaller mascot illustration */
+    margin-top: 4px !important;
+  }
+  .sf-hero-illustration-img {
+    max-width: 180px !important;
+    max-height: 150px !important;
   }
 
+  /* ④ RESELLER BANNER */
+  .sf-reseller-section {
+    padding: 12px 12px !important;
+  }
+  .sf-reseller-card {
+    flex-direction: column !important;
+    text-align: center !important;
+    padding: 14px 16px !important;
+    gap: 8px !important;
+    border-radius: 18px !important; /* 18px rounded corner */
+    background: linear-gradient(135deg, #ede9fe 0%, #fce7f3 100%) !important;
+    border: 1px solid rgba(200,180,230,0.45) !important;
+    box-shadow: 0 4px 16px rgba(124,92,191,0.06) !important;
+  }
+  .sf-reseller-icon { font-size: 1.5rem !important; }
+  .sf-reseller-title {
+    font-size: 1rem !important;
+    margin: 0 0 4px 0 !important;
+    font-weight: 800 !important;
+    color: #2d1b5e !important;
+  }
+  .sf-reseller-sub {
+    font-size: 0.8125rem !important;
+    margin-bottom: 8px !important;
+    color: #6e5e82 !important;
+  }
+  .sf-reseller-btn {
+    width: 100% !important;
+    height: 40px !important;
+    justify-content: center !important;
+    font-size: 0.82rem !important;
+    padding: 0 16px !important;
+    border-radius: 999px !important;
+    box-shadow: 0 3px 12px rgba(37,211,102,0.25) !important;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .sf-reseller-btn:active {
+    transform: scale(0.96) !important;
+  }
+
+  /* ⑤ PRODUK TERLARIS */
+  .sf-bestsellers-section, .sf-netflix-section, .storefront-bestsellers-section {
+    padding: 16px 12px !important;
+  }
+  .sf-section-header, .bestsellers-header-wrap {
+    margin-bottom: 12px !important;
+    gap: 8px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .sf-section-title, .bestseller-title-header, .catalog-header-title {
+    font-size: 1.375rem !important; /* 22px section title */
+    font-weight: 800 !important;
+    margin: 0 0 4px 0 !important;
+    letter-spacing: -0.015em !important;
+  }
+  .sf-section-sub, .bestseller-subtitle-header, .catalog-header-subtitle {
+    font-size: 0.875rem !important; /* 14px body */
+    color: #6e5e82 !important;
+  }
+  .sf-bestsellers-grid, .storefront-bestsellers-grid, .storefront-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .sf-bs-card, .bestseller-card-featured, .storefront-compact-card {
+    padding: 14px 16px !important;
+    gap: 10px !important;
+    border-radius: 18px !important; /* 18px rounded corner */
+    background: rgba(255,255,255,0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(209,196,233,0.4) !important;
+    box-shadow: 0 4px 16px rgba(156,111,224,0.06), 0 1px 3px rgba(0,0,0,0.02) !important; /* Soft ambient shadow */
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease !important;
+  }
+  .sf-bs-card:active, .bestseller-card-featured:active, .storefront-compact-card:active {
+    transform: scale(0.985) !important; /* Smooth touch micro-interaction */
+  }
+  .sf-bs-app-icon, .bestseller-app-icon, .catalog-app-icon-wrap {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(209,196,233,0.4) !important;
+    box-shadow: 0 2px 8px rgba(156,111,224,0.1) !important;
+  }
+  .sf-bs-name, .bestseller-card-name, .catalog-card-title {
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    color: #1e1b2e !important;
+  }
+  .sf-bs-action-btn, .bestseller-cta-btn, .storefront-view-pkg-btn {
+    height: 40px !important;
+    padding: 0 14px !important;
+    font-size: 0.82rem !important;
+    border-radius: 12px !important;
+    box-shadow: 0 3px 10px rgba(124,58,237,0.2) !important;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .sf-bs-action-btn:active, .bestseller-cta-btn:active, .storefront-view-pkg-btn:active {
+    transform: scale(0.96) !important;
+  }
+
+  /* ⑥ LAGI TAYANG DI NETFLIX (TRENDING MOVIES) */
+  .sf-netflix-wrap {
+    gap: 8px !important;
+  }
+  .sf-netflix-strip {
+    gap: 12px !important;
+    padding: 4px 0 12px !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .sf-nf-card {
+    width: 125px !important;
+    scroll-snap-align: start !important;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .sf-nf-card:active {
+    transform: scale(0.96) !important;
+  }
+  .sf-nf-poster {
+    width: 125px !important;
+    height: 175px !important;
+    border-radius: 14px !important;
+    margin-bottom: 6px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  }
+  .sf-nf-title {
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+  }
+  .sf-nf-genre {
+    font-size: 0.7rem !important;
+  }
   .sf-nf-bunny-left {
-    width: 75px;
-    padding-right: 0.4rem;
-    margin-right: 0.2rem;
+    width: 60px !important;
+    padding-right: 4px !important;
+    margin-right: 2px !important;
   }
   .sf-nf-bunny-img {
-    height: 75px;
-    max-height: 80px;
+    height: 65px !important;
+    max-height: 70px !important;
+  }
+  .sf-nf-arrow {
+    display: none !important;
+  }
+
+  /* ⑦ CATALOG SECTION - CATEGORY PILLS & SEARCH BAR */
+  .storefront-products-section {
+    padding: 0 12px 24px !important;
+  }
+  .catalog-controls-wrapper {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .storefront-category-pills {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 4px 0 !important;
+    margin-bottom: 4px !important;
+  }
+  .cat-pill {
+    height: 40px !important;
+    padding: 0 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    border-radius: 999px !important;
+    font-size: 0.8125rem !important; /* 13px label */
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    background: rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(209,196,233,0.5) !important;
+    box-shadow: 0 2px 6px rgba(156,111,224,0.05) !important;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .cat-pill:active {
+    transform: scale(0.95) !important;
+  }
+  .cat-pill.active {
+    background: linear-gradient(135deg, var(--p-purple), var(--p-pink)) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 12px rgba(156,111,224,0.3) !important;
+  }
+  .storefront-search-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin-bottom: 12px !important;
+  }
+  .storefront-search-box input {
+    height: 44px !important;
+    padding: 0 14px 0 40px !important;
+    border-radius: 999px !important;
+    font-size: 0.85rem !important;
+    background: rgba(255,255,255,0.9) !important;
+    border: 1px solid rgba(209,196,233,0.5) !important;
+    box-shadow: 0 2px 8px rgba(156,111,224,0.06) !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  }
+  .storefront-search-box input:focus {
+    border-color: var(--p-purple) !important;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15) !important;
+  }
+  .storefront-search-box .search-icon {
+    left: 14px !important;
+  }
+
+  /* ⑧ WHY SECTION & FOOTER */
+  .storefront-why-section {
+    padding: 24px 12px 16px !important;
+  }
+  .storefront-why-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .why-card {
+    padding: 16px 14px !important;
+    border-radius: 18px !important;
+    background: rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(209,196,233,0.4) !important;
+    box-shadow: 0 4px 16px rgba(156,111,224,0.05) !important;
+  }
+  .storefront-footer {
+    padding: 24px 12px 80px !important;
+  }
+
+  /* ⑨ FLOATING WHATSAPP BUTTON */
+  .wa-float {
+    width: 54px !important;
+    height: 54px !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    font-size: 1.5rem !important;
+    z-index: 999 !important;
+    box-shadow: 0 6px 20px rgba(37,211,102,0.38) !important;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .wa-float:active {
+    transform: scale(0.92) !important;
   }
 }
 
-@media (max-width: 640px) {
-  .sf-hero-wrapper, .sf-reseller-section, .sf-bestsellers-section, .sf-netflix-section {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  .sf-reseller-card {
-    flex-direction: column;
-    text-align: center;
-  }
-  .sf-hero-title {
-    font-size: 1.75rem;
-  }
-  .sf-nav-logo-img {
-    height: 44px;
-    max-height: 48px;
+@media (max-width: 480px) {
+  .sf-navbar {
+    min-height: 48px !important;
+    padding: 4px 10px !important;
   }
   .sf-nav-logo {
-    height: 44px;
+    height: 36px !important;
   }
-  .sf-navbar {
-    min-height: 58px;
-    padding: 0.35rem 0.85rem;
+  .sf-nav-logo-img {
+    height: 36px !important;
   }
-  .sf-nf-bunny-left {
-    width: 65px;
-    padding-right: 0.2rem;
-    margin-right: 0.1rem;
-  }
-  .sf-nf-bunny-img {
-    height: 65px;
-    max-height: 70px;
+  .sf-hero-title {
+    font-size: 1.6rem !important;
   }
 }
 
