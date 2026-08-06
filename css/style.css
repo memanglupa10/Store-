@@ -115,21 +115,21 @@ a { text-decoration: none; color: inherit; }
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  height: 64px;
+  height: 56px;
   flex-shrink: 0;
   overflow: visible;
   position: relative;
   z-index: 1000;
 }
 .sf-nav-logo-img {
-  height: 72px;
-  max-height: 80px;
+  height: 44px;
+  max-height: 48px;
   width: auto;
   object-fit: contain;
   margin: 0;
   display: block;
   mix-blend-mode: multiply;
-  filter: contrast(105%) drop-shadow(0 2px 8px rgba(124,92,191,0.12));
+  filter: contrast(105%) drop-shadow(0 2px 6px rgba(124,92,191,0.1));
   transition: transform 0.2s ease;
 }
 .sf-nav-logo-img:hover { transform: scale(1.02); }
