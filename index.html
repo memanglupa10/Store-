@@ -22,7 +22,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=2000.0">
+  <link rel="stylesheet" href="css/style.css?v=4000.0">
 </head>
 <body>
 
@@ -153,7 +153,7 @@
           <h2 class="sf-section-title">Film &amp; Tontonan Populer Minggu Ini</h2>
           <p class="sf-section-sub">Rekomendasi terbaik yang lagi ramai ditonton di Netflix.</p>
         </div>
-        <button onclick="document.getElementById('storefront-catalog-section').scrollIntoView({behavior:'smooth'})" class="sf-see-all-btn">Lihat Semua Film <i class="fa-solid fa-chevron-right"></i></button>
+        <button onclick="App.openNetflixModal()" class="sf-see-all-btn">Lihat Semua Film <i class="fa-solid fa-chevron-right"></i></button>
       </div>
 
       <div class="sf-netflix-wrap">
@@ -162,32 +162,32 @@
         </div>
         <button class="sf-nf-arrow sf-nf-prev" onclick="document.getElementById('sf-nf-strip').scrollBy({left:-280,behavior:'smooth'})"><i class="fa-solid fa-chevron-left"></i></button>
         <div class="sf-netflix-strip" id="sf-nf-strip">
-          <div class="sf-nf-card">
+          <div class="sf-nf-card" onclick="App.openNetflixModal()" style="cursor: pointer;" title="Klik untuk lihat paket Netflix Premium">
             <div class="sf-nf-badge top10">TOP 10</div>
             <div class="sf-nf-poster"><img src="assets/movies/danur.png?v=25.0" alt="Squid Game: Season 2" class="sf-nf-poster-img"></div>
             <div class="sf-nf-info"><div class="sf-nf-title">Squid Game: Season 2</div><div class="sf-nf-genre">Thriller, Drama</div></div>
           </div>
-          <div class="sf-nf-card">
+          <div class="sf-nf-card" onclick="App.openNetflixModal()" style="cursor: pointer;" title="Klik untuk lihat paket Netflix Premium">
             <div class="sf-nf-badge new">NEW</div>
             <div class="sf-nf-poster"><img src="assets/movies/suzzanna.png?v=25.0" alt="Wednesday: Season 2" class="sf-nf-poster-img"></div>
             <div class="sf-nf-info"><div class="sf-nf-title">Wednesday: Season 2</div><div class="sf-nf-genre">Drama, Misteri</div></div>
           </div>
-          <div class="sf-nf-card">
+          <div class="sf-nf-card" onclick="App.openNetflixModal()" style="cursor: pointer;" title="Klik untuk lihat paket Netflix Premium">
             <div class="sf-nf-badge top10">TOP 10</div>
             <div class="sf-nf-poster"><img src="assets/movies/demon_slayer.png?v=25.0" alt="Stranger Things 5" class="sf-nf-poster-img"></div>
             <div class="sf-nf-info"><div class="sf-nf-title">Stranger Things 5</div><div class="sf-nf-genre">Sci-Fi, Horor</div></div>
           </div>
-          <div class="sf-nf-card">
+          <div class="sf-nf-card" onclick="App.openNetflixModal()" style="cursor: pointer;" title="Klik untuk lihat paket Netflix Premium">
             <div class="sf-nf-badge trending">TRENDING</div>
             <div class="sf-nf-poster"><img src="assets/movies/umbrella_academy.png?v=25.0" alt="Bridgerton: Season 3" class="sf-nf-poster-img"></div>
             <div class="sf-nf-info"><div class="sf-nf-title">Bridgerton: Season 3</div><div class="sf-nf-genre">Romantis, Drama</div></div>
           </div>
-          <div class="sf-nf-card">
+          <div class="sf-nf-card" onclick="App.openNetflixModal()" style="cursor: pointer;" title="Klik untuk lihat paket Netflix Premium">
             <div class="sf-nf-badge new">NEW</div>
             <div class="sf-nf-poster"><img src="assets/movies/hit_man.png?v=25.0" alt="The Crown" class="sf-nf-poster-img"></div>
             <div class="sf-nf-info"><div class="sf-nf-title">The Crown</div><div class="sf-nf-genre">Drama, Sejarah</div></div>
           </div>
-          <div class="sf-nf-card">
+          <div class="sf-nf-card" onclick="App.openNetflixModal()" style="cursor: pointer;" title="Klik untuk lihat paket Netflix Premium">
             <div class="sf-nf-badge top10">TOP 10</div>
             <div class="sf-nf-poster"><img src="assets/movies/the_crown.png?v=25.0" alt="Outer Banks" class="sf-nf-poster-img"></div>
             <div class="sf-nf-info"><div class="sf-nf-title">Outer Banks</div><div class="sf-nf-genre">Petualangan, Action</div></div>
@@ -1932,8 +1932,8 @@
   <!-- Application Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/database.js?v=2000.0"></script>
-  <script src="js/app.js?v=2000.0"></script>
+  <script src="js/database.js?v=4000.0"></script>
+  <script src="js/app.js?v=4000.0"></script>
 
   <!-- EMERGENCY INLINE LOGIN FAILSAFE — runs even if app.js has errors -->
   <script>

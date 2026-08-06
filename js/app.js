@@ -375,6 +375,17 @@ const App = {
     container.innerHTML = html;
   },
 
+  openNetflixModal() {
+    const products = typeof db !== 'undefined' && typeof db.getProducts === 'function' ? db.getProducts() : [];
+    const netflix = products.find(p => p.name && p.name.toLowerCase().includes('netflix')) || products.find(p => p.id === 'prod-netflix' || p.id === 'prod-1') || products[0];
+    if (netflix) {
+      this.openCatalogPackagesModal(netflix.id);
+    } else {
+      const section = document.getElementById('storefront-catalog-section');
+      if (section) section.scrollIntoView({ behavior: 'smooth' });
+    }
+  },
+
   openCatalogPackagesModal(productId) {
     const prod = db.getProductById(productId);
     if (!prod) return;
