@@ -97,10 +97,6 @@ const App = {
     if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
     if (mainApp) { mainApp.classList.remove('active'); mainApp.style.display = 'none'; }
     if (loginWrapper) { loginWrapper.classList.add('active'); loginWrapper.style.display = 'flex'; }
-
-    if (location.pathname !== '/login' && location.hash !== '#login') {
-      history.replaceState(null, '', '/login');
-    }
   },
 
   checkAuth() {
@@ -1323,11 +1319,24 @@ const App = {
     const pass = (passInput && passInput.value.trim()) ? passInput.value.trim() : '123';
 
     const res = db.login(user, pass);
-    if (res.success) {
+    if (res && res.success) {
+      const loginWrapper = document.getElementById('login-screen');
+      const storefront = document.getElementById('storefront-screen');
+      const mainApp = document.getElementById('app-main');
+
+      if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
+      if (loginWrapper) { loginWrapper.classList.remove('active'); loginWrapper.style.display = 'none'; }
+      if (mainApp) { mainApp.classList.add('active'); mainApp.style.display = 'flex'; }
+
+      this.updateAdminHeader(res.session);
+      this.updateNotificationBadge();
+
+      const rawHash = (location.hash || '').replace('#', '').trim().toLowerCase();
+      const targetPage = ['dashboard', 'stock', 'products', 'catalog', 'report', 'activity', 'settings'].includes(rawHash) ? rawHash : 'dashboard';
+      this.navigate(targetPage);
       this.showToast('Login Berhasil', `Selamat datang kembali, ${res.session.name || user}!`, 'success');
-      this.checkAuth();
     } else {
-      this.showToast('Login Gagal', res.message, 'error');
+      this.showToast('Login Gagal', (res && res.message) || 'Username atau password salah', 'error');
     }
     return false;
   },
