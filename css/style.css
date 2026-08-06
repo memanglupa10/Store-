@@ -115,23 +115,23 @@ a { text-decoration: none; color: inherit; }
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  height: 96px !important;
-  max-height: 100px !important;
+  height: 48px !important;
+  max-height: 48px !important;
   flex-shrink: 0 !important;
-  overflow: visible !important;
+  overflow: hidden !important;
   position: relative !important;
   z-index: 1000 !important;
 }
 .sf-nav-logo-img {
-  height: 96px !important;
-  max-height: 100px !important;
+  height: 38px !important;
+  max-height: 40px !important;
   width: auto !important;
-  max-width: 360px !important;
+  max-width: 150px !important;
   object-fit: contain !important;
   margin: 0 !important;
   display: block !important;
   mix-blend-mode: multiply !important;
-  filter: contrast(105%) drop-shadow(0 4px 12px rgba(124,92,191,0.12)) !important;
+  filter: contrast(105%) drop-shadow(0 2px 4px rgba(124,92,191,0.1)) !important;
   transition: transform 0.2s ease !important;
 }
 .sf-nav-logo-img:hover { transform: scale(1.02) !important; }
@@ -1900,7 +1900,7 @@ a { text-decoration: none; color: inherit; }
 @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .login-header { text-align: center; margin-bottom: 1.75rem; }
 .login-logo { display: flex; align-items: center; justify-content: center; margin-bottom: 0.85rem; }
-.login-logo-img { height: 96px !important; max-height: 100px !important; width: auto !important; max-width: 360px !important; object-fit: contain !important; mix-blend-mode: multiply !important; }
+.login-logo-img { height: 38px !important; max-height: 40px !important; width: auto !important; max-width: 150px !important; object-fit: contain !important; mix-blend-mode: multiply !important; }
 .login-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; color: #1F1F38; margin-bottom: 0.25rem; }
 .login-subtitle { font-size: 0.85rem; color: #6A6A8C; font-weight: 500; }
 .login-submit-btn { margin-top: 1.25rem; height: 48px !important; border-radius: 12px !important; background: linear-gradient(135deg, #A76CF5, #F97DBB) !important; font-size: 0.95rem !important; font-weight: 700 !important; box-shadow: 0 4px 16px rgba(167,108,245,0.3) !important; transition: all 0.2s ease !important; }
@@ -1957,8 +1957,8 @@ a { text-decoration: none; color: inherit; }
 .sidebar { width: var(--sidebar-width); background: var(--bg-sidebar); border-right: 1.5px solid var(--border-subtle); position: fixed; top: 0; left: 0; height: 100vh; display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s ease; box-shadow: 4px 0 24px rgba(167,108,245,0.04); }
 .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); z-index: 99; }
 .sidebar-overlay.active { display: block; }
-.sidebar-brand { height: var(--header-height); display: flex; align-items: center; gap: 0.75rem; padding: 0 1.35rem; border-bottom: 1.5px solid var(--border-subtle); background: #FFFFFF; }
-.sidebar-logo-img { height: 48px !important; max-height: 52px !important; width: auto !important; max-width: 180px !important; object-fit: contain !important; mix-blend-mode: multiply !important; }
+.sidebar-brand { height: 76px !important; display: flex; align-items: center; gap: 0.75rem; padding: 0 1.25rem; border-bottom: 1.5px solid var(--border-subtle); background: #FFFFFF; }
+.sidebar-logo-img { height: 38px !important; max-height: 40px !important; width: auto !important; max-width: 140px !important; object-fit: contain !important; mix-blend-mode: multiply !important; }
 .brand-text h2 { font-family: 'Plus Jakarta Sans', 'Nunito', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); line-height: 1.1; }
 .brand-text span { font-size: 0.65rem; color: var(--brand-purple); font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
 .sidebar-menu { padding: 1.1rem 0.85rem; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.25rem; }
