@@ -6,3 +6,8 @@ node_modules/
 
 .vercel
 .env
+scratch/
+assets/*_clean.png
+assets/*_cropped.png
+assets/*_tight.png
+
