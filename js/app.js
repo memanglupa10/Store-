@@ -282,7 +282,7 @@ const App = {
     const container = document.getElementById('storefront-bestsellers-container');
     if (!container) return;
 
-    let products = db.getProducts().filter(p => p.is_active_catalog !== false);
+    let products = db.getProducts().filter(p => p.is_active_catalog !== false && p.is_active_catalog !== 'false' && p.is_active_catalog !== 0 && p.is_active_catalog !== '0');
     // Take top 4 best sellers (Netflix, Canva, ChatGPT, Spotify/Disney)
     const bestsellers = products.slice(0, 4);
 
@@ -347,7 +347,7 @@ const App = {
 
     let products = db.getProducts();
     // Filter active catalog items only
-    products = products.filter(p => p.is_active_catalog !== false);
+    products = products.filter(p => p.is_active_catalog !== false && p.is_active_catalog !== 'false' && p.is_active_catalog !== 0 && p.is_active_catalog !== '0');
 
     // Filter by category pill if not "Semua"
     if (this.currentStorefrontCategory && this.currentStorefrontCategory !== 'Semua') {
@@ -3004,7 +3004,7 @@ const App = {
              <i class="fa-solid ${p.icon}"></i>
            </div>`;
 
-      const isCatalogActive = p.is_active_catalog !== false;
+      const isCatalogActive = p.is_active_catalog !== false && p.is_active_catalog !== 'false' && p.is_active_catalog !== 0 && p.is_active_catalog !== '0';
       const catalogBadgeHtml = isCatalogActive
         ? `<span class="badge badge-success" style="font-size: 0.68rem; padding: 2px 7px;"><i class="fa-solid fa-eye"></i> Tampil di Katalog</span>`
         : `<span class="badge badge-danger" style="font-size: 0.68rem; padding: 2px 7px;"><i class="fa-solid fa-eye-slash"></i> Sembunyi</span>`;
@@ -3122,7 +3122,7 @@ const App = {
              <i class="fa-solid ${p.icon || 'fa-box'}"></i>
            </div>`;
 
-      const isCatalogActive = p.is_active_catalog !== false;
+      const isCatalogActive = p.is_active_catalog !== false && p.is_active_catalog !== 'false' && p.is_active_catalog !== 0 && p.is_active_catalog !== '0';
       const catalogBadgeHtml = isCatalogActive
         ? `<span class="status-badge ready" style="font-size: 0.72rem; padding: 0.25rem 0.65rem;"><i class="fa-solid fa-eye"></i> Tampil</span>`
         : `<span class="status-badge sold" style="font-size: 0.72rem; padding: 0.25rem 0.65rem;"><i class="fa-solid fa-eye-slash"></i> Sembunyi</span>`;
@@ -3194,16 +3194,18 @@ const App = {
     const prod = db.getProductById(productId);
     if (!prod) return;
 
-    const newStatus = prod.is_active_catalog === false ? true : false;
+    const isCurrentlyActive = prod.is_active_catalog !== false && prod.is_active_catalog !== 'false' && prod.is_active_catalog !== 0 && prod.is_active_catalog !== '0';
+    const newStatus = !isCurrentlyActive;
     db.updateProduct(productId, { is_active_catalog: newStatus });
     this.showToast(
       newStatus ? 'Katalog Ditampilkan' : 'Katalog Disembunyikan',
-      `Produk "${prod.name}" sekarang ${newStatus ? 'tampil' : 'disembunyikan dari'} Katalog Publik.`,
+      `Produk "${prod.name}" sekarang ${newStatus ? 'tampil di' : 'disembunyikan dari'} Katalog Publik.`,
       newStatus ? 'success' : 'info'
     );
 
     if (this.currentPage === 'catalog') this.renderCatalogView();
     if (this.currentPage === 'products') this.renderProductsView();
+    this.renderStorefront();
   },
 
   updateProductImagePreview(url) {
