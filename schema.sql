@@ -113,7 +113,21 @@ CREATE TABLE IF NOT EXISTS activity_logs (
 );
 
 -- ---------------------------------------------------------
--- 7. SETTINGS TABLE (Store Metadata & Configuration)
+-- 7. NOTIFICATIONS TABLE (System & Expiration Alerts)
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS notifications (
+  id VARCHAR(50) PRIMARY KEY,
+  username VARCHAR(50) NOT NULL,
+  title VARCHAR(150) NOT NULL,
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_user_read ON notifications (username, is_read);
+
+-- ---------------------------------------------------------
+-- 8. SETTINGS TABLE (Store Metadata & Configuration)
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS settings (
   key VARCHAR(50) PRIMARY KEY,
