@@ -2162,6 +2162,37 @@ const App = {
     this.renderStockTable();
   },
 
+  copyTemplate(stockId) {
+    if (!stockId) return;
+    const stock = (typeof db !== 'undefined' && db.getStockById) ? db.getStockById(stockId) : null;
+    if (!stock) {
+      this.showToast('Gagal Salin', 'Data stok tidak ditemukan!', 'error');
+      return;
+    }
+
+    let formattedText = '';
+    if (typeof db !== 'undefined' && typeof db.generateTemplate === 'function') {
+      formattedText = db.generateTemplate(stockId);
+    } else {
+      formattedText = `✨ ${stock.product_name || 'AKUN DIGITAL'} ✨\n\nNomor: ${stock.nomor || '-'}\nEmail: ${stock.email || '-'}\nLogin By: ${stock.login_by || 'Email & Password'}\nProfil: ${stock.profile || '-'}\nPIN: ${stock.pin || '-'}\nCatatan: ${stock.note || '-'}\n\n© Babyiel Store`;
+    }
+
+    if (!formattedText) {
+      this.showToast('Gagal Salin', 'Teks template stok tidak tersedia.', 'warning');
+      return;
+    }
+
+    this.copyTextToClipboard(formattedText, `Template ${stock.product_name || 'Stok'}`);
+  },
+
+  copyStock(stockId) {
+    this.copyTemplate(stockId);
+  },
+
+  copyStockTemplate(stockId) {
+    this.copyTemplate(stockId);
+  },
+
   // --- NOTIFICATION BADGE & MODAL ---
   updateNotificationBadge() {
     const auth = db.getAuth();
@@ -4155,8 +4186,7 @@ const App = {
   copyText(inputId) {
     const input = document.getElementById(inputId);
     if (input && input.value) {
-      navigator.clipboard.writeText(input.value);
-      this.showToast('Tersalin!', `${input.value} disalin ke clipboard.`, 'success');
+      this.copyTextToClipboard(input.value, 'Info Akun');
     }
   },
 
@@ -4168,8 +4198,7 @@ const App = {
     const prod = document.getElementById('delivery-product-name')?.textContent || 'Digital Product';
     
     const text = `🎉 DETAIL AKUN ${prod}\n======================\nEmail: ${email}\nPassword: ${pass}\nProfil: ${profile}\nPIN: ${pin}\n======================\nTerima kasih telah berbelanja di Babyiel Store!`;
-    navigator.clipboard.writeText(text);
-    this.showToast('Semua Detail Tersalin! 🚀', 'Seluruh info akun berhasil disalin ke clipboard.', 'success');
+    this.copyTextToClipboard(text, 'Semua Detail Akun');
   }
 };
 
