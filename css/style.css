@@ -1427,48 +1427,47 @@ a { text-decoration: none; color: inherit; }
   }
 }
 
-/* ──────── PRODUCT CARD — PASTEL ──────── */
+/* ──────── PRODUCT CARD — REFINED & COMPACT ──────── */
 .storefront-compact-card {
-  background: rgba(255,255,255,0.75);
+  background: #ffffff;
   border: 1.5px solid rgba(209,196,233,0.45);
   border-radius: 18px;
-  padding: 1.25rem;
+  padding: 0.85rem 1rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.5rem;
   position: relative;
   overflow: hidden;
   transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: 0 4px 18px rgba(156,111,224,0.1);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(139,92,246,0.08);
 }
 .storefront-compact-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 14px 36px rgba(156,111,224,0.2);
-  border-color: rgba(156,111,224,0.4);
-  background: rgba(255,255,255,0.92);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(139,92,246,0.14);
+  border-color: #c4b5fd;
 }
 
 .catalog-card-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
 }
 
 .catalog-app-icon-wrap {
-  width: 54px;
-  height: 54px;
-  border-radius: 14px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5px;
-  box-shadow: 0 4px 12px rgba(156,111,224,0.15);
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(156,111,224,0.12);
   flex-shrink: 0;
-  border: 1.5px solid rgba(209,196,233,0.5);
+  border: 1.5px solid rgba(209,196,233,0.4);
 }
 .catalog-app-icon-wrap img {
   width: 100%;
@@ -1478,49 +1477,53 @@ a { text-decoration: none; color: inherit; }
 }
 
 .storefront-compact-badge {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-full);
-  background: rgba(156,111,224,0.1);
-  color: var(--p-purple);
-  border: 1px solid rgba(156,111,224,0.22);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #F5F3FF;
+  color: #7C3AED;
+  border: 1px solid #DDD6FE;
   white-space: nowrap;
 }
 
-.catalog-card-info { margin-top: 0.25rem; }
+.catalog-card-info {
+  margin-top: 0.1rem;
+  margin-bottom: 0.35rem;
+}
 
 .catalog-card-title {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: var(--p-text);
   line-height: 1.3;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .catalog-card-garansi {
-  font-size: 0.75rem;
+  font-size: 0.73rem;
   color: var(--p-muted);
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
 }
 
 .catalog-price-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, rgba(237,231,246,0.6), rgba(232,240,254,0.6));
-  padding: 0.65rem 0.85rem;
+  background: #F8F5FF;
+  padding: 0.45rem 0.75rem;
   border-radius: 10px;
-  border: 1.5px solid rgba(209,196,233,0.4);
+  border: 1.5px solid #E9D5FF;
+  margin-bottom: 0.35rem;
 }
 
 .catalog-price-label {
-  font-size: 0.68rem;
-  color: var(--p-muted);
+  font-size: 0.65rem;
+  color: #64748b;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -1528,18 +1531,22 @@ a { text-decoration: none; color: inherit; }
 
 .storefront-compact-price {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   font-weight: 800;
-  color: var(--p-purple);
+  color: #7C3AED;
 }
 
 .catalog-stock-status {
-  color: var(--p-green);
-  font-weight: 700;
+  color: #64748B;
+  font-weight: 600;
   font-size: 0.73rem;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+}
+
+.catalog-stock-status i {
+  color: #22C55E;
 }
 
 .storefront-view-pkg-btn {
@@ -1548,20 +1555,22 @@ a { text-decoration: none; color: inherit; }
   justify-content: center;
   gap: 0.45rem;
   width: 100%;
-  padding: 0.72rem;
+  height: 44px;
+  padding: 0 1rem;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--p-purple), var(--p-pink));
+  background: #8B5CF6;
   color: #ffffff;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   border: none;
-  transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: 0 4px 14px rgba(156,111,224,0.25);
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(139,92,246,0.2);
 }
 .storefront-view-pkg-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(156,111,224,0.42);
+  background: #7C3AED;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(124,58,237,0.35);
 }
 
 /* ──────── WHY BABYIEL STORE SECTION ──────── */

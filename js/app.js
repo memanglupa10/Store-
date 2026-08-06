@@ -261,7 +261,7 @@ const App = {
         </div>
 
         <div>
-          <div class="catalog-price-row" style="margin-bottom: 0.85rem;">
+          <div class="catalog-price-row">
             <div>
               <div class="catalog-price-label">Harga Paket</div>
               <div class="storefront-compact-price">${priceText}</div>
