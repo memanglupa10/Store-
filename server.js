@@ -48,16 +48,16 @@ app.use(applySecurityHeaders);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// 6. Static File Serving with Cache-Control Headers
+// 6. Static File Serving with Strict No-Cache Headers for Instant Updates
 const PUBLIC_DIR = __dirname;
 app.use(express.static(PUBLIC_DIR, {
-  maxAge: config.isProduction ? '1d' : '0',
+  maxAge: 0,
+  etag: false,
+  lastModified: false,
   setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache');
-    } else {
-      res.setHeader('Cache-Control', 'public, max-age=86400');
-    }
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
   }
 }));
 

@@ -23,8 +23,11 @@
   RewriteRule ^ index.html [L]
 </IfModule>
 
-# Security Headers
+# Security & Cache Control Headers
 <IfModule mod_headers.c>
+  Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+  Header set Pragma "no-cache"
+  Header set Expires "0"
   Header set X-Content-Type-Options "nosniff"
   Header set X-Frame-Options "SAMEORIGIN"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
