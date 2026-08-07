@@ -389,15 +389,12 @@ const DEFAULT_SETTINGS = {
 class StoreDB {
   constructor() {
     this.initDatabase();
-    setTimeout(() => {
-      this.initSupabaseSync();
-      this.syncFromBackend();
-    }, 100);
+    this.syncFromBackend();
   }
 
   async syncFromBackend() {
     try {
-      const res = await fetch('/api/products');
+      const res = await fetch('/api/products?t=' + Date.now());
       if (res.ok) {
         const data = await res.json();
         if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
@@ -408,7 +405,7 @@ class StoreDB {
         }
       }
     } catch (e) {
-      // Ignore if offline
+      console.warn('[syncFromBackend] Error:', e);
     }
   }
 

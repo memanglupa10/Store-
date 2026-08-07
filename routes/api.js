@@ -159,31 +159,40 @@ router.post('/auth/logout', asyncHandler(async (req, res) => {
 }));
 
 router.get('/products', asyncHandler(async (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   if (dbHelper.checkIsMySQL()) {
     try {
       const pool = dbHelper.getPool();
       const [rows] = await pool.query('SELECT * FROM products');
       if (rows && rows.length > 0) {
-        const formatted = rows.map(r => ({
-          id: r.id,
-          name: r.name,
-          icon: r.icon || 'fa-box',
-          image_url: r.image_url,
-          color: r.color || '#3b82f6',
-          duration: r.duration || '1 Bulan',
-          garansi: r.garansi || '✅ Full Garansi Sesuai S&K',
-          is_active_catalog: r.is_active_catalog === 1 || r.is_active_catalog === '1' || r.is_active_catalog === true,
-          prices: typeof r.prices_json === 'string' ? JSON.parse(r.prices_json) : (r.prices_json || [])
-        }));
+        const formatted = rows.map(r => {
+          let parsedPrices = [];
+          try {
+            parsedPrices = typeof r.prices_json === 'string' ? JSON.parse(r.prices_json) : (r.prices_json || []);
+          } catch(pe) {
+            parsedPrices = [];
+          }
+          return {
+            id: r.id,
+            name: r.name,
+            icon: r.icon || 'fa-box',
+            image_url: r.image_url,
+            color: r.color || '#3b82f6',
+            duration: r.duration || '1 Bulan',
+            garansi: r.garansi || '✅ Full Garansi Sesuai S&K',
+            is_active_catalog: r.is_active_catalog === 1 || r.is_active_catalog === '1' || r.is_active_catalog === true || r.is_active_catalog === null || r.is_active_catalog === undefined,
+            prices: parsedPrices
+          };
+        });
         return res.json({ success: true, products: formatted });
       }
     } catch (err) {
-      console.warn('[API WARN] MySQL products query error, falling back to JSON storage:', err.message);
+      console.warn('[API WARN] MySQL products fetch failed:', err.message);
     }
   }
 
   const db = loadDB();
-  return res.json({ success: true, products: db.products || [] });
+  return res.json({ success: true, products: db.products });
 }));
 
 router.get('/auth/me', asyncHandler(async (req, res) => {
