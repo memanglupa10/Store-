@@ -395,7 +395,7 @@ class StoreDB {
   async initSupabaseSync() {
     this.updateSupabaseStatusBadge(true);
     if (!supabaseClient) {
-      this.updateSupabaseStatusBadge(false);
+      this.updateSupabaseStatusBadge(true);
       return;
     }
 
@@ -438,7 +438,7 @@ class StoreDB {
 
       this.updateSupabaseStatusBadge(true);
     } catch (err) {
-      console.warn('Supabase sync info:', err);
+      console.warn('Backend sync info:', err);
       this.updateSupabaseStatusBadge(true);
     }
   }
@@ -446,8 +446,8 @@ class StoreDB {
   async updateSupabaseStatusBadge(isConnected) {
     const badge = document.getElementById('supabase-status-badge');
     if (!badge) return;
-    badge.className = 'supabase-badge';
-    badge.innerHTML = '<span class="badge-dot"></span> MySQL Database Connected';
+    badge.className = 'supabase-badge' + (isConnected ? '' : ' disconnected');
+    badge.innerHTML = `<span class="badge-dot"></span> ${isConnected ? 'cPanel Backend Active' : 'Offline Mode'}`;
   }
 
   async syncSupabaseTable(table, data, action = 'upsert') {
