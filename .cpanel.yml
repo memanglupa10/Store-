@@ -1,6 +1,6 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/babyiels/store
+    - export DEPLOYPATH=/home/babyiels/public_html
     - /bin/cp -R * $DEPLOYPATH
-    - /bin/touch $DEPLOYPATH/tmp/restart.txt
+
