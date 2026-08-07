@@ -27,6 +27,11 @@ const apiRouter = require('./routes/api');
 try {
   const { execSync } = require('child_process');
   execSync('git reset --hard HEAD && git pull origin main', { cwd: __dirname, stdio: 'ignore' });
+  console.log('[cPanel Auto-Sync] Pulled latest commits from GitHub on startup.');
+} catch (gitErr) {
+  console.warn('[cPanel Auto-Sync Notice]:', gitErr.message);
+}
+
 // Auto Copy-Sync /home/babyiels/store/* to /home/babyiels/public_html/* for Instant Live Website Updates
 try {
   const fs = require('fs');
