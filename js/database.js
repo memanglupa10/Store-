@@ -516,13 +516,13 @@ class StoreDB {
       }
     }
 
-    const SEED_VERSION = 'v6_0_clean_architecture_120_stocks';
+    const SEED_VERSION = 'v8_10_ready_per_app_fresh';
     if (localStorage.getItem('babyiel_seed_version') !== SEED_VERSION) {
       this.seedInitialStocks();
       localStorage.setItem('babyiel_seed_version', SEED_VERSION);
     } else {
       const currentStocks = JSON.parse(localStorage.getItem(DB_KEYS.STOCKS)) || [];
-      if (currentStocks.length < 50) {
+      if (currentStocks.length < 10) {
         this.seedInitialStocks();
       }
     }
@@ -534,120 +534,51 @@ class StoreDB {
 
   seedInitialStocks() {
     const products = [
-      { id: 'prod-netflix', name: 'Netflix Premium' },
-      { id: 'prod-canva', name: 'Canva Pro' },
-      { id: 'prod-chatgpt', name: 'ChatGPT Plus' },
-      { id: 'prod-getcontact', name: 'Getcontact Premium' },
-      { id: 'prod-disney', name: 'Disney+ Hotstar' },
-      { id: 'prod-youtube', name: 'YouTube Premium' },
-      { id: 'prod-alightmotion', name: 'Alight Motion Premium' },
-      { id: 'prod-vidio', name: 'Vidio Platinum' },
-      { id: 'prod-wetv', name: 'WeTV Premium' }
+      { id: 'prod-netflix', name: 'Netflix Premium', prefix: 'netflix' },
+      { id: 'prod-canva', name: 'Canva Pro', prefix: 'canva' },
+      { id: 'prod-chatgpt', name: 'ChatGPT Plus', prefix: 'chatgpt' },
+      { id: 'prod-getcontact', name: 'Getcontact Premium', prefix: 'getcontact' },
+      { id: 'prod-disney', name: 'Disney+ Hotstar', prefix: 'disney' },
+      { id: 'prod-youtube', name: 'YouTube Premium', prefix: 'youtube' },
+      { id: 'prod-alightmotion', name: 'Alight Motion Premium', prefix: 'alight' },
+      { id: 'prod-vidio', name: 'Vidio Platinum', prefix: 'vidio' },
+      { id: 'prod-wetv', name: 'WeTV Premium', prefix: 'wetv' },
+      { id: 'prod-spotify', name: 'Spotify Premium', prefix: 'spotify' },
+      { id: 'prod-amazon', name: 'Amazon Prime Video', prefix: 'prime' }
     ];
 
-    const mockStocks = [];
+    const freshStocks = [];
     const now = new Date();
+    let counter = 1001;
 
-    // 1. 100 STOCKS READY (STK-1001 to STK-1100)
-    for (let i = 1; i <= 100; i++) {
-      const id = `STK-${1000 + i}`;
-      const p = products[(i - 1) % products.length];
-      const numPadded = String(i).padStart(3, '0');
-      mockStocks.push({
-        id: id,
-        product_id: p.id,
-        product_name: p.name,
-        nomor: `0857753${numPadded}53`,
-        email: `${p.id.replace('prod-', '')}.ready${numPadded}@babyiel.com`,
-        password: `pass${100000 + i}`,
-        login_by: i % 2 === 0 ? 'Email & Password' : 'OTP WhatsApp',
-        profile: `Profil ${(i % 4) + 1}`,
-        pin: `${1000 + (i % 9000)}`,
-        note: 'Garansi Resmi Full 100%',
-        assigned_to: 'admin',
-        status: 'READY',
-        created_at: new Date(now - 86400000 * (i % 10)).toISOString(),
-        updated_at: new Date(now - 86400000 * (i % 10)).toISOString()
-      });
-    }
+    products.forEach(p => {
+      for (let i = 1; i <= 10; i++) {
+        const id = `STK-${counter++}`;
+        const numPadded = String(i).padStart(2, '0');
+        freshStocks.push({
+          id: id,
+          product_id: p.id,
+          product_name: p.name,
+          nomor: `085775335${numPadded}`,
+          email: `${p.prefix}.ready${numPadded}@babyiel.com`,
+          password: `pass${p.prefix}${numPadded}`,
+          login_by: i % 2 === 0 ? 'Email & Password' : 'OTP WhatsApp',
+          profile: `Profil ${(i % 5) + 1}`,
+          pin: `${1000 + i}`,
+          note: 'Ready Garansi Full 100%',
+          assigned_to: 'admin',
+          status: 'READY',
+          created_at: new Date(now - 3600000 * i).toISOString(),
+          updated_at: new Date(now - 3600000 * i).toISOString()
+        });
+      }
+    });
 
-    // 2. 10 STOCKS ASSIGNED (STK-1101 to STK-1110)
-    const members = ['member1', 'member2', 'member3', 'member4'];
-    for (let i = 1; i <= 10; i++) {
-      const id = `STK-${1100 + i}`;
-      const p = products[(i - 1) % products.length];
-      const numPadded = String(i).padStart(2, '0');
-      const member = members[(i - 1) % members.length];
-      mockStocks.push({
-        id: id,
-        product_id: p.id,
-        product_name: p.name,
-        nomor: `081234567${numPadded}`,
-        email: `${p.id.replace('prod-', '')}.assign${numPadded}@babyiel.com`,
-        password: `passassign${numPadded}`,
-        login_by: 'Email & Password',
-        profile: `Profil ${(i % 4) + 1}`,
-        pin: `${2000 + i}`,
-        note: `Assigned to ${member}`,
-        assigned_to: member,
-        assigned_at: new Date(now - 86400000 * 2).toISOString(),
-        assigned_by: 'admin',
-        status: 'ASSIGNED',
-        created_at: new Date(now - 86400000 * 3).toISOString(),
-        updated_at: new Date(now - 86400000 * 2).toISOString()
-      });
-    }
-
-    // 3. 10 STOCKS SEDANG BERLANGGANAN (STK-1111 to STK-1120)
-    const buyers = [
-      { name: 'Budi Santoso', wa: '081299887766' },
-      { name: 'Siti Aminah', wa: '085711223344' },
-      { name: 'Dewi Lestari', wa: '081277889900' },
-      { name: 'Ahmad Fauzi', wa: '085799001122' },
-      { name: 'Eko Prasetyo', wa: '081311223344' },
-      { name: 'Maya Putri', wa: '085600112233' },
-      { name: 'Rizky Pratama', wa: '087799887766' },
-      { name: 'Hendra Wijaya', wa: '081298765432' },
-      { name: 'Dian Sastro', wa: '089911223344' },
-      { name: 'Fajar Ramadhan', wa: '081299881122' }
-    ];
-
-    for (let i = 1; i <= 10; i++) {
-      const id = `STK-${1110 + i}`;
-      const p = products[(i - 1) % products.length];
-      const buyer = buyers[i - 1];
-      const member = members[(i - 1) % members.length];
-      const numPadded = String(i).padStart(2, '0');
-      mockStocks.push({
-        id: id,
-        product_id: p.id,
-        product_name: p.name,
-        nomor: buyer.wa,
-        email: `${p.id.replace('prod-', '')}.sub${numPadded}@babyiel.com`,
-        password: `passsub${numPadded}`,
-        login_by: 'Email & Password',
-        profile: `Profil ${(i % 4) + 1}`,
-        pin: `${3000 + i}`,
-        note: 'Garansi Reseller 30 Hari',
-        assigned_to: member,
-        sold_by: member,
-        status: 'SEDANG BERLANGGANAN',
-        buyer_name: buyer.name,
-        buyer_wa: buyer.wa,
-        customer_name: buyer.name,
-        customer_wa: buyer.wa,
-        start_date: new Date(now - 86400000 * 5).toISOString(),
-        purchased_at: new Date(now - 86400000 * 5).toISOString(),
-        activated_at: new Date(now - 86400000 * 5).toISOString(),
-        expired_date: new Date(now.getTime() + 86400000 * 25).toISOString(),
-        expires_at: new Date(now.getTime() + 86400000 * 25).toISOString(),
-        created_at: new Date(now - 86400000 * 10).toISOString(),
-        updated_at: new Date(now - 86400000 * 5).toISOString(),
-        sold_at: new Date(now - 86400000 * 5).toISOString()
-      });
-    }
-
-    localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify(mockStocks));
+    localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify(freshStocks));
+    localStorage.setItem(DB_KEYS.ORDERS, JSON.stringify([]));
+    localStorage.setItem(DB_KEYS.NOTIFICATIONS, JSON.stringify([]));
+    localStorage.setItem(DB_KEYS.LOGS, JSON.stringify([]));
+  }
   }
 
   seedInitialLogs() {

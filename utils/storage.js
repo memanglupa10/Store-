@@ -80,18 +80,44 @@ const DEFAULT_PRODUCTS = [
 ];
 
 const nowSeed = new Date();
-const DEFAULT_STOCKS = [
-  { id: 'STK-1001', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', email: 'disney.vip01@babyiel.com', password: 'passdisney01', login_by: 'OTP WhatsApp', profile: 'Profil 1 (Rian)', pin: '1234', note: 'Akun batch utama', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 3).toISOString() },
-  { id: 'STK-1005', product_id: 'prod-canva', product_name: 'Canva Pro', email: 'canva.designer@yahoo.com', password: 'passcanva05', login_by: 'Magic Link', profile: 'Admin Team', pin: '-', note: 'Akses 1 Tahun', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
-  { id: 'STK-1006', product_id: 'prod-chatgpt', product_name: 'ChatGPT Plus', email: 'gpt4o.master@openai.com', password: 'passgpt06', login_by: 'Email & Password', profile: 'Personal', pin: '5544', note: 'Ready GPT-4o', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 5).toISOString() },
-  { id: 'STK-1009', product_id: 'prod-vidio', product_name: 'Vidio Platinum', email: 'vidio.plat01@gmail.com', password: 'passvidio09', login_by: 'OTP Phone', profile: 'Profil 1', pin: '1234', note: 'Premier Platinum 1 Bulan', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
-  { id: 'STK-1010', product_id: 'prod-iqiyi', product_name: 'iQIYI Premium', email: 'iqiyi.vip01@outlook.com', password: 'passiqiyi10', login_by: 'Email & Password', profile: 'VIP Profile', pin: '8899', note: 'Standard VIP', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 8).toISOString() },
-  { id: 'STK-1011', product_id: 'prod-spotify', product_name: 'Spotify Premium', email: 'spot.fam02@gmail.com', password: 'passspot11', login_by: 'Invite Link', profile: 'Profil Member 11', pin: '-', note: 'Full Garansi 1 Bulan', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 2).toISOString() },
-  { id: 'STK-1012', product_id: 'prod-youtube', product_name: 'YouTube Premium', email: 'yt.fam02@gmail.com', password: 'passyt12', login_by: 'Google Account', profile: 'User 2', pin: '-', note: 'Individu Plan', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 1).toISOString() },
-  { id: 'STK-1013', product_id: 'prod-getcontact', product_name: 'Getcontact Premium', email: 'getcontact.prem02@gmail.com', password: 'passgc13', login_by: 'OTP SMS', profile: 'Profil 2', pin: '-', note: 'Aktif 1 Bulan', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 12).toISOString() },
-  { id: 'STK-1014', product_id: 'prod-disney', product_name: 'Disney+ Hotstar', email: 'disney.prem03@babyiel.com', password: 'passdisney14', login_by: 'OTP WhatsApp', profile: 'Profil 3', pin: '5678', note: 'Private Profile', status: 'AVAILABLE', created_at: new Date(nowSeed - 86400000 * 4).toISOString() },
-  { id: 'STK-1015', product_id: 'prod-netflix', product_name: 'Netflix Premium', email: 'net.prem4k_02@gmail.com', password: 'passnet15', login_by: 'Email & Password', profile: 'Profil B', pin: '1122', note: 'Private User Screen', status: 'AVAILABLE', created_at: new Date(nowSeed - 3600000 * 3).toISOString() }
+const SEED_APP_LIST = [
+  { id: 'prod-netflix', name: 'Netflix Premium', prefix: 'netflix' },
+  { id: 'prod-canva', name: 'Canva Pro', prefix: 'canva' },
+  { id: 'prod-chatgpt', name: 'ChatGPT Plus', prefix: 'chatgpt' },
+  { id: 'prod-getcontact', name: 'Getcontact Premium', prefix: 'getcontact' },
+  { id: 'prod-disney', name: 'Disney+ Hotstar', prefix: 'disney' },
+  { id: 'prod-youtube', name: 'YouTube Premium', prefix: 'youtube' },
+  { id: 'prod-alightmotion', name: 'Alight Motion Premium', prefix: 'alight' },
+  { id: 'prod-vidio', name: 'Vidio Platinum', prefix: 'vidio' },
+  { id: 'prod-wetv', name: 'WeTV Premium', prefix: 'wetv' },
+  { id: 'prod-spotify', name: 'Spotify Premium', prefix: 'spotify' },
+  { id: 'prod-amazon', name: 'Amazon Prime Video', prefix: 'prime' }
 ];
+
+const DEFAULT_STOCKS = [];
+let defaultStockCounter = 1001;
+SEED_APP_LIST.forEach(p => {
+  for (let i = 1; i <= 10; i++) {
+    const id = `STK-${defaultStockCounter++}`;
+    const numPadded = String(i).padStart(2, '0');
+    DEFAULT_STOCKS.push({
+      id: id,
+      product_id: p.id,
+      product_name: p.name,
+      nomor: `085775335${numPadded}`,
+      email: `${p.prefix}.ready${numPadded}@babyiel.com`,
+      password: `pass${p.prefix}${numPadded}`,
+      login_by: i % 2 === 0 ? 'Email & Password' : 'OTP WhatsApp',
+      profile: `Profil ${(i % 5) + 1}`,
+      pin: `${1000 + i}`,
+      note: 'Ready Garansi Full 100%',
+      assigned_to: 'admin',
+      status: 'READY',
+      created_at: new Date(nowSeed - 3600000 * i).toISOString(),
+      updated_at: new Date(nowSeed - 3600000 * i).toISOString()
+    });
+  }
+});
 
 function loadDB() {
   if (!fs.existsSync(DB_FILE)) {
