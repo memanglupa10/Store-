@@ -44,9 +44,9 @@ const config = {
   db: {
     host: process.env.DB_HOST || process.env.MYSQL_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || process.env.MYSQL_PORT || '3306', 10),
-    user: process.env.DB_USER || process.env.MYSQL_USER || 'root',
-    password: process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || '',
-    database: process.env.DB_NAME || process.env.MYSQL_DATABASE || 'babyiel_store',
+    user: process.env.DB_USER || process.env.MYSQL_USER || 'babyiels_root',
+    password: process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || 'babyiels_root',
+    database: process.env.DB_NAME || process.env.MYSQL_DATABASE || 'babyiels_db',
     ssl: process.env.DB_SSL === 'true' || (process.env.NODE_ENV === 'production' && process.env.DB_HOST && process.env.DB_HOST !== 'localhost' && process.env.DB_HOST !== '127.0.0.1'),
     connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT || '10', 10),
     connectTimeout: parseInt(process.env.DB_TIMEOUT || '10000', 10),
