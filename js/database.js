@@ -464,10 +464,8 @@ class StoreDB {
   }
 
   async updateSupabaseStatusBadge(isConnected) {
-    const badge = document.getElementById('supabase-status-badge');
-    if (!badge) return;
-    badge.className = 'supabase-badge' + (isConnected ? '' : ' disconnected');
-    badge.innerHTML = `<span class="badge-dot"></span> ${isConnected ? 'cPanel Backend Active' : 'Offline Mode'}`;
+    // Badge element removed from UI per user request
+    return;
   }
 
   async syncSupabaseTable(table, data, action = 'upsert') {
