@@ -394,18 +394,20 @@ class StoreDB {
 
   async syncFromBackend() {
     try {
-      const res = await fetch('/api/products?t=' + Date.now());
+      const res = await fetch('/api/products?t=' + Date.now(), { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
           localStorage.setItem(DB_KEYS.PRODUCTS, JSON.stringify(data.products));
-          if (typeof App !== 'undefined' && typeof App.renderStorefront === 'function') {
-            App.renderStorefront();
+          console.log('[cPanel MySQL Sync] Loaded', data.products.length, 'products from phpMyAdmin MySQL');
+          if (typeof App !== 'undefined') {
+            if (typeof App.renderStorefront === 'function') App.renderStorefront();
+            if (typeof App.renderCatalogTable === 'function') App.renderCatalogTable();
           }
         }
       }
     } catch (e) {
-      console.warn('[syncFromBackend] Error:', e);
+      console.warn('[cPanel MySQL Sync Error]:', e);
     }
   }
 
