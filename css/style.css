@@ -114,8 +114,10 @@ a { text-decoration: none; color: inherit; }
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  height: 84px !important;
-  max-height: 84px !important;
+  height: 80px !important;
+  min-height: 80px !important;
+  width: 220px !important;
+  min-width: 220px !important;
   flex-shrink: 0 !important;
   position: relative !important;
   z-index: 1000 !important;
@@ -123,20 +125,23 @@ a { text-decoration: none; color: inherit; }
   padding: 0 !important;
 }
 .sf-nav-logo-img {
-  height: 84px !important;
-  max-height: 84px !important;
+  height: 75px !important;
+  min-height: 75px !important;
+  max-height: 85px !important;
   width: auto !important;
-  max-width: 380px !important;
+  min-width: 190px !important;
+  max-width: 350px !important;
   object-fit: contain !important;
+  flex-shrink: 0 !important;
   margin: 0 !important;
   display: block !important;
   mix-blend-mode: multiply !important;
-  transform: scale(1.45) !important;
+  transform: scale(1.55) !important;
   transform-origin: left center !important;
-  filter: contrast(110%) drop-shadow(0 2px 8px rgba(124,58,237,0.15)) !important;
+  filter: contrast(110%) drop-shadow(0 2px 8px rgba(124,58,237,0.18)) !important;
   transition: transform 0.2s ease !important;
 }
-.sf-nav-logo-img:hover { transform: scale(1.5) !important; }
+.sf-nav-logo-img:hover { transform: scale(1.6) !important; }
 .sf-nav-menu { display: flex; align-items: center; gap: 1.35rem; flex: 1; justify-content: center; }
 .sf-nav-link { font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 600; color: #5a4a72; text-decoration: none; padding: 0.35rem 0.75rem; border-radius: 99px; transition: all 0.2s; white-space: nowrap; border: 1px solid transparent; }
 .sf-nav-link:hover { background: #f3e8ff; color: #7c5cbf; }
