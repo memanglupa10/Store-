@@ -47,11 +47,28 @@ try {
         fs.copyFileSync(src, dest);
       }
     });
+    function copyFolderRecursive(src, dest) {
+      if (!fs.existsSync(src)) return;
+      if (!fs.existsSync(dest)) {
+        try { fs.mkdirSync(dest, { recursive: true }); } catch (e) {}
+      }
+      const items = fs.readdirSync(src);
+      items.forEach(item => {
+        const srcItem = path.join(src, item);
+        const destItem = path.join(dest, item);
+        try {
+          if (fs.statSync(srcItem).isDirectory()) {
+            copyFolderRecursive(srcItem, destItem);
+          } else {
+            fs.copyFileSync(srcItem, destItem);
+          }
+        } catch (e) {}
+      });
+    }
+
     const srcAssets = path.join(storeDir, 'assets');
     const destAssets = path.join(publicDir, 'assets');
-    if (fs.existsSync(srcAssets)) {
-      fs.cpSync(srcAssets, destAssets, { recursive: true, force: true });
-    }
+    copyFolderRecursive(srcAssets, destAssets);
     console.log('[cPanel Public-Sync] Synced latest frontend & assets to public_html.');
   }
 } catch (syncErr) {
