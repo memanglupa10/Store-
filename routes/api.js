@@ -159,11 +159,12 @@ router.post('/auth/logout', asyncHandler(async (req, res) => {
 }));
 
 router.get('/products', asyncHandler(async (req, res) => {
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   if (dbHelper.checkIsMySQL()) {
     try {
       const pool = dbHelper.getPool();
-      const [rows] = await pool.query('SELECT * FROM products');
+      const qPromise = pool.query('SELECT * FROM products');
+      const tPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Query timeout (2s)')), 2000));
+      const [rows] = await Promise.race([qPromise, tPromise]);
       if (rows && rows.length > 0) {
         const formatted = rows.map(r => {
           let parsedPrices = [];

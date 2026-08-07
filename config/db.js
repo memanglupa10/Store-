@@ -30,17 +30,22 @@ async function initDB() {
   }
 
   try {
-    pool = mysql.createPool(DB_CONFIG);
+    pool = mysql.createPool({
+      ...DB_CONFIG,
+      connectTimeout: 2500
+    });
     
-    // Test connection pool ping
-    const connection = await pool.getConnection();
-    console.log(`[DB] Connected successfully to MySQL at ${DB_CONFIG.host}:${DB_CONFIG.port}/${DB_CONFIG.database} (SSL: ${config.db.ssl ? 'ENABLED' : 'DISABLED'})`);
+    // Test connection with 2-second timeout safeguard
+    const connPromise = pool.getConnection();
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('MySQL connection timeout (2.5s)')), 2500));
+    const connection = await Promise.race([connPromise, timeoutPromise]);
+    console.log(`[DB] Connected successfully to MySQL at ${DB_CONFIG.host}:${DB_CONFIG.port}/${DB_CONFIG.database}`);
     connection.release();
     
     isMySQLEnabled = true;
     return true;
   } catch (err) {
-    console.warn(`[DB WARN] MySQL connection failed (${err.message}). Falling back to local JSON database mode.`);
+    console.warn(`[DB WARN] MySQL connection failed (${err.message}). Operating in JSON Database Fallback mode.`);
     isMySQLEnabled = false;
     pool = null;
     return false;
