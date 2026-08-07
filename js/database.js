@@ -516,11 +516,12 @@ class StoreDB {
       }
     }
 
-    const SEED_VERSION = 'v10_force_purge_assigned_and_subscriptions';
+    const SEED_VERSION = 'v12_exact_10_stocks_all_13_products';
     const currentStocks = JSON.parse(localStorage.getItem(DB_KEYS.STOCKS)) || [];
     const hasOldStatus = currentStocks.some(s => s.status === 'ASSIGNED' || s.status === 'SEDANG BERLANGGANAN' || s.status === 'BERLANGGANAN' || (s.assigned_to && s.assigned_to !== 'admin'));
+    const isMismatchedCount = currentStocks.length !== 130;
 
-    if (localStorage.getItem('babyiel_seed_version') !== SEED_VERSION || hasOldStatus) {
+    if (localStorage.getItem('babyiel_seed_version') !== SEED_VERSION || hasOldStatus || isMismatchedCount) {
       this.seedInitialStocks();
       localStorage.setItem('babyiel_seed_version', SEED_VERSION);
     }
@@ -539,25 +540,26 @@ class StoreDB {
       { id: 'prod-disney', name: 'Disney+ Hotstar', prefix: 'disney' },
       { id: 'prod-youtube', name: 'YouTube Premium', prefix: 'youtube' },
       { id: 'prod-alightmotion', name: 'Alight Motion Premium', prefix: 'alight' },
-      { id: 'prod-vidio', name: 'Vidio Platinum', prefix: 'vidio' },
       { id: 'prod-wetv', name: 'WeTV Premium', prefix: 'wetv' },
       { id: 'prod-spotify', name: 'Spotify Premium', prefix: 'spotify' },
+      { id: 'prod-vidio', name: 'Vidio Platinum', prefix: 'vidio' },
+      { id: 'prod-iqiyi', name: 'iQIYI Premium', prefix: 'iqiyi' },
+      { id: 'prod-viu', name: 'VIU Premium', prefix: 'viu' },
       { id: 'prod-amazon', name: 'Amazon Prime Video', prefix: 'prime' }
     ];
 
     const freshStocks = [];
     const now = new Date();
-    let counter = 1001;
 
     products.forEach(p => {
       for (let i = 1; i <= 10; i++) {
-        const id = `STK-${counter++}`;
         const numPadded = String(i).padStart(2, '0');
+        const id = `STK-${p.prefix.toUpperCase()}-${numPadded}`;
         freshStocks.push({
           id: id,
           product_id: p.id,
           product_name: p.name,
-          nomor: `085775335${numPadded}`,
+          nomor: `0857753350${numPadded}`,
           email: `${p.prefix}.ready${numPadded}@babyiel.com`,
           password: `pass${p.prefix}${numPadded}`,
           login_by: i % 2 === 0 ? 'Email & Password' : 'OTP WhatsApp',

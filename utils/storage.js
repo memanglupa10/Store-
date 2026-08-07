@@ -88,23 +88,24 @@ const SEED_APP_LIST = [
   { id: 'prod-disney', name: 'Disney+ Hotstar', prefix: 'disney' },
   { id: 'prod-youtube', name: 'YouTube Premium', prefix: 'youtube' },
   { id: 'prod-alightmotion', name: 'Alight Motion Premium', prefix: 'alight' },
-  { id: 'prod-vidio', name: 'Vidio Platinum', prefix: 'vidio' },
   { id: 'prod-wetv', name: 'WeTV Premium', prefix: 'wetv' },
   { id: 'prod-spotify', name: 'Spotify Premium', prefix: 'spotify' },
+  { id: 'prod-vidio', name: 'Vidio Platinum', prefix: 'vidio' },
+  { id: 'prod-iqiyi', name: 'iQIYI Premium', prefix: 'iqiyi' },
+  { id: 'prod-viu', name: 'VIU Premium', prefix: 'viu' },
   { id: 'prod-amazon', name: 'Amazon Prime Video', prefix: 'prime' }
 ];
 
 const DEFAULT_STOCKS = [];
-let defaultStockCounter = 1001;
 SEED_APP_LIST.forEach(p => {
   for (let i = 1; i <= 10; i++) {
-    const id = `STK-${defaultStockCounter++}`;
     const numPadded = String(i).padStart(2, '0');
+    const id = `STK-${p.prefix.toUpperCase()}-${numPadded}`;
     DEFAULT_STOCKS.push({
       id: id,
       product_id: p.id,
       product_name: p.name,
-      nomor: `085775335${numPadded}`,
+      nomor: `0857753350${numPadded}`,
       email: `${p.prefix}.ready${numPadded}@babyiel.com`,
       password: `pass${p.prefix}${numPadded}`,
       login_by: i % 2 === 0 ? 'Email & Password' : 'OTP WhatsApp',
