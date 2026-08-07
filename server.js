@@ -27,9 +27,25 @@ const apiRouter = require('./routes/api');
 try {
   const { execSync } = require('child_process');
   execSync('git reset --hard HEAD && git pull origin main', { cwd: __dirname, stdio: 'ignore' });
-  console.log('[cPanel Auto-Sync] Pulled latest commits from GitHub on startup.');
-} catch (gitErr) {
-  console.warn('[cPanel Auto-Sync Notice]:', gitErr.message);
+// Auto Copy-Sync /home/babyiels/store/* to /home/babyiels/public_html/* for Instant Live Website Updates
+try {
+  const fs = require('fs');
+  const path = require('path');
+  const storeDir = '/home/babyiels/store';
+  const publicDir = '/home/babyiels/public_html';
+  if (fs.existsSync(storeDir) && fs.existsSync(publicDir) && storeDir !== publicDir) {
+    const filesToSync = ['index.html', 'js/app.js', 'js/database.js', 'css/style.css', 'deploy.php', '.htaccess'];
+    filesToSync.forEach(f => {
+      const src = path.join(storeDir, f);
+      const dest = path.join(publicDir, f);
+      if (fs.existsSync(src)) {
+        fs.copyFileSync(src, dest);
+      }
+    });
+    console.log('[cPanel Public-Sync] Synced latest frontend files to public_html.');
+  }
+} catch (syncErr) {
+  console.warn('[cPanel Public-Sync Notice]:', syncErr.message);
 }
 
 // Initialize Database Connection Pool
