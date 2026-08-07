@@ -1,18 +1,25 @@
 # =========================================================
 # Babyiel Store - LiteSpeed / Apache cPanel .htaccess
-# SPA Routing & Security Header Rules
+# SPA & API Routing Configuration
 # =========================================================
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
-  # Serve existing physical files and directories directly
+  # 1. Serve existing physical files and directories directly
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Route all SPA paths (e.g. /login, /admin, /dashboard, /stock) to index.html
+  # 2. DO NOT rewrite /api/ requests to index.html (Let Express Node.js handle /api)
+  RewriteRule ^api/ - [L]
+
+  # 3. Rewrite SPA page paths to index.html
+  RewriteRule ^(login|admin|dashboard|stock|products|settings|katalog) index.html [L,QSA]
+
+  # 4. Fallback for non-API frontend routes to index.html
+  RewriteCond %{REQUEST_URI} !^/api/
   RewriteRule ^ index.html [L]
 </IfModule>
 
