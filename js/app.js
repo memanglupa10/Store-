@@ -54,42 +54,30 @@ const App = {
   handleRoute() {
     const rawHash = (location.hash || '').replace('#', '').trim().toLowerCase();
     const pathname = (location.pathname || '').trim().toLowerCase();
+    const auth = db.getAuth();
 
     const isLoginRoute = pathname === '/login' || pathname === '/admin' || rawHash === 'login' || rawHash === 'admin';
-    const isCatalogRoute = rawHash === 'katalog' || rawHash === 'storefront' || rawHash === 'publik' || rawHash === 'store' || pathname === '/katalog';
+    const isDashboardRoute = ['dashboard', 'stock', 'products', 'catalog', 'report', 'activity', 'settings'].includes(rawHash) || pathname === '/dashboard' || pathname === '/stock' || pathname === '/products' || pathname === '/settings';
 
     if (isLoginRoute) {
-      const auth = db.getAuth();
       if (!auth) {
         this.showLoginScreen();
       } else {
-        this.navigate('dashboard');
+        this.showAdminApp(auth, 'dashboard');
       }
-    } else if (isCatalogRoute) {
-      this.goToStorefront();
-    } else if (['dashboard', 'stock', 'products', 'catalog', 'report', 'activity', 'settings'].includes(rawHash)) {
-      const auth = db.getAuth();
+    } else if (isDashboardRoute) {
       if (!auth) {
         this.showLoginScreen();
       } else {
-        this.navigate(rawHash);
+        this.showAdminApp(auth, rawHash || 'dashboard');
       }
     } else {
-      const auth = db.getAuth();
-      if (rawHash) {
-        if (!auth) {
-          this.showLoginScreen();
-        } else {
-          this.navigate(rawHash);
-        }
-      } else {
-        this.goToStorefront();
-      }
+      // Default for root domain (babyielstore.my.id) is Storefront Home Page
+      this.goToStorefront();
     }
   },
 
   showLoginScreen() {
-    db.logout();
     this.closeMobileSidebar();
     const storefront = document.getElementById('storefront-screen');
     const loginWrapper = document.getElementById('login-screen');
@@ -100,17 +88,7 @@ const App = {
     if (loginWrapper) { loginWrapper.classList.add('active'); loginWrapper.style.display = 'flex'; }
   },
 
-  checkAuth() {
-    const auth = db.getAuth();
-    const rawHash = (location.hash || '').replace('#', '').trim().toLowerCase();
-    const pathname = (location.pathname || '').trim().toLowerCase();
-    const isLoginRoute = pathname === '/login' || pathname === '/admin' || rawHash === 'login' || rawHash === 'admin';
-
-    if (!auth) {
-      this.showLoginScreen();
-      return;
-    }
-
+  showAdminApp(auth, page = 'dashboard') {
     const loginWrapper = document.getElementById('login-screen');
     const storefront = document.getElementById('storefront-screen');
     const mainApp = document.getElementById('app-main');
@@ -119,14 +97,15 @@ const App = {
     if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
     if (mainApp) { mainApp.classList.add('active'); mainApp.style.display = 'flex'; }
 
-    this.updateAdminHeader(auth);
-    this.updateNotificationBadge();
-
-    if (isLoginRoute && (!rawHash || rawHash === 'login' || rawHash === 'admin')) {
-      this.navigate('dashboard');
-    } else {
-      this.handleRoute();
+    if (auth) {
+      this.updateAdminHeader(auth);
+      this.updateNotificationBadge();
     }
+    this.navigate(page);
+  },
+
+  checkAuth() {
+    this.handleRoute();
   },
 
   toggleMobileSidebar(e) {
@@ -182,8 +161,8 @@ const App = {
     if (waHero) waHero.href = waLink;
     if (waFloat) waFloat.href = waLink;
 
-    if (location.pathname !== '/' && location.pathname !== '') {
-      history.replaceState(null, '', '/');
+    if (location.hash) {
+      history.replaceState(null, '', location.pathname + location.search);
     }
   },
 
