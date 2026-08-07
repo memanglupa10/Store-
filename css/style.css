@@ -101,47 +101,36 @@ a { text-decoration: none; color: inherit; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.6rem 2rem;
+  padding: 0.5rem 2rem;
   position: sticky;
   top: 0;
   z-index: 900;
   gap: 1.5rem;
-  min-height: 84px;
+  min-height: 64px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
+.header-logo,
 .sf-nav-logo {
+  width: 220px !important;
+  height: auto !important;
+  max-width: none !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  height: 80px !important;
-  min-height: 80px !important;
-  width: 220px !important;
-  min-width: 220px !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-  z-index: 1000 !important;
-  margin: 0 !important;
-  padding: 0 !important;
 }
+.header-logo img,
 .sf-nav-logo-img {
-  height: 75px !important;
-  min-height: 75px !important;
-  max-height: 85px !important;
-  width: auto !important;
-  min-width: 190px !important;
-  max-width: 350px !important;
+  width: 100% !important;
+  height: auto !important;
   object-fit: contain !important;
-  flex-shrink: 0 !important;
-  margin: 0 !important;
+  max-width: none !important;
   display: block !important;
   mix-blend-mode: multiply !important;
-  transform: scale(1.55) !important;
-  transform-origin: left center !important;
   filter: contrast(110%) drop-shadow(0 2px 8px rgba(124,58,237,0.18)) !important;
-  transition: transform 0.2s ease !important;
 }
-.sf-nav-logo-img:hover { transform: scale(1.6) !important; }
 .sf-nav-menu { display: flex; align-items: center; gap: 1.35rem; flex: 1; justify-content: center; }
 .sf-nav-link { font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 600; color: #5a4a72; text-decoration: none; padding: 0.35rem 0.75rem; border-radius: 99px; transition: all 0.2s; white-space: nowrap; border: 1px solid transparent; }
 .sf-nav-link:hover { background: #f3e8ff; color: #7c5cbf; }
@@ -306,18 +295,7 @@ a { text-decoration: none; color: inherit; }
     box-shadow: 0 4px 16px rgba(124, 92, 191, 0.05) !important;
   }
   .sf-navbar {
-    min-height: 68px !important;
     padding: 0.5rem 1.25rem !important;
-  }
-  .sf-nav-logo {
-    height: 52px !important;
-    max-height: 52px !important;
-  }
-  .sf-nav-logo-img {
-    height: 52px !important;
-    max-height: 52px !important;
-    width: auto !important;
-    transform: none !important;
   }
   .sf-nav-right {
     gap: 6px !important;
@@ -688,18 +666,7 @@ a { text-decoration: none; color: inherit; }
 
 @media (max-width: 480px) {
   .sf-navbar {
-    min-height: 56px !important;
     padding: 6px 12px !important;
-  }
-  .sf-nav-logo {
-    height: 44px !important;
-    max-height: 44px !important;
-  }
-  .sf-nav-logo-img {
-    height: 44px !important;
-    max-height: 44px !important;
-    width: auto !important;
-    transform: none !important;
   }
   .sf-hero-title {
     font-size: 1.6rem !important;
