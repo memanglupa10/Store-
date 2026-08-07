@@ -2700,81 +2700,15 @@ html, body {
   width: 100% !important;
   max-width: 100vw !important;
   overflow-x: hidden !important;
-}
-
-@media (max-width: 1200px) {
-  /* Sidebar Drawer on Mobile & Tablet */
-  .sidebar {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    bottom: 0 !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    width: 290px !important;
-    max-width: 82vw !important;
-    z-index: 999999 !important;
-    transform: translateX(-100%) !important;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.25) !important;
-    background: #ffffff !important;
-  }
-  .sidebar.open {
-    transform: translateX(0) !important;
-  }
-  
-  .sidebar-overlay {
-    display: none;
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: rgba(15, 23, 42, 0.7) !important;
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
-    z-index: 999998 !important;
-  }
-  .sidebar-overlay.active {
-    display: block !important;
-  }
-
-  .main-wrapper {
-    margin-left: 0 !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-  }
-
-  .mobile-toggle {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 44px !important;
-    height: 44px !important;
-    background: #ffffff !important;
-    border: 1.5px solid #cbd5e1 !important;
-    border-radius: var(--radius-md) !important;
-    color: #1e1b4b !important;
-    font-size: 1.35rem !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    flex-shrink: 0 !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-  }
-  .mobile-toggle:active {
-    transform: scale(0.92) !important;
-    background: rgba(124, 58, 237, 0.1) !important;
-  }
-
-  .top-header {
-/* ====== ULTIMATE MOBILE & TABLET RESPONSIVE DESIGN ====== */
-html, body {
-  max-width: 100vw;
-  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
 
-/* 1. Global Responsive Table Scrolling */
+/* 1. Global Responsive Table Scrolling (NO OVERFLOW TRAP ON CARD-BODY) */
+.card, .card-body {
+  overflow: visible !important;
+  max-width: 100% !important;
+}
+
 .table-responsive, 
 .table-container, 
 .top-products-table-wrapper {
@@ -2787,6 +2721,7 @@ html, body {
   display: block !important;
   position: relative !important;
   margin-bottom: 1rem !important;
+  border-radius: var(--radius-md);
 }
 
 .table-responsive::-webkit-scrollbar,
@@ -2795,16 +2730,27 @@ html, body {
 }
 .table-responsive::-webkit-scrollbar-thumb,
 .table-container::-webkit-scrollbar-thumb {
-  background: #c4b5fd !important;
+  background: #a76cf5 !important;
   border-radius: 99px !important;
 }
 
 .custom-table, 
 .stock-simple-table, 
 .table-responsive table {
-  min-width: 680px !important;
+  min-width: 720px !important;
   width: 100% !important;
   border-collapse: collapse !important;
+}
+
+/* Mobile Touch Action Button Group */
+.action-btn-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+}
+.act-btn {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 @media (max-width: 1024px) {
@@ -2885,15 +2831,60 @@ html, body {
     font-size: 0.72rem !important;
   }
 
-  /* Responsive Tables & Cards */
-  .table-container, .card-body, .card {
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+  .content-container {
+    padding: 0.75rem 0.65rem !important;
+    width: 100% !important;
+    max-width: 100vw !important;
   }
 
-  table {
-    min-width: 600px !important;
+  /* Stock Tab Horizontal Touch Scroll */
+  .stock-tab-wrapper {
+    display: flex !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
+    white-space: nowrap !important;
+    gap: 0.5rem !important;
+    padding: 0.25rem 0.25rem 0.6rem !important;
+    margin-bottom: 1rem !important;
+  }
+  .stock-tab-btn {
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.82rem !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Table Toolbar Responsive Layout */
+  .table-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+  .table-toolbar .search-box {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  .table-toolbar .filter-group {
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  .table-toolbar select, .table-toolbar button {
+    width: 100% !important;
+    font-size: 16px !important; /* Prevents auto-zoom on mobile */
+  }
+
+  /* Grid Layouts for Mobile */
+  .grid-3, .sales-counter-grid, .grid-2, .settings-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  #products-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
   }
 
   .clock-widget, .supabase-badge {
@@ -2905,45 +2896,53 @@ html, body {
     height: 36px !important;
   }
 
-  /* Public Storefront Mobile Adjustments */
-  .storefront-products-section {
-    padding: 0 0.85rem 3rem !important;
+  /* Mobile Modals (Edit Stock, Add Product, etc.) */
+  .modal-backdrop {
+    padding: 0.35rem !important;
+    align-items: flex-end !important;
   }
-  .storefront-grid {
-    grid-template-columns: 1fr !important;
-    gap: 1rem !important;
-  }
-  .storefront-title {
-    font-size: 1.75rem !important;
-  }
-  .reseller-hero-card {
-    flex-direction: column !important;
-    text-align: center !important;
-  }
-  .reseller-hero-btn {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-
-  /* Modals on Mobile */
   .modal-container {
-    width: 92vw !important;
-    max-width: 480px !important;
-    border-radius: 20px !important;
-    margin: 1rem auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 90vh !important;
+    max-height: 90dvh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: 20px 20px 0 0 !important;
+    margin: 0 !important;
+  }
+  .modal-body {
+    max-height: calc(90vh - 120px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 1rem !important;
+  }
+  .form-input, .form-select, .form-textarea {
+    font-size: 16px !important; /* Prevents unwanted auto-zoom on iOS & Android */
+  }
+  .modal-footer {
+    flex-direction: column-reverse !important;
+    gap: 0.5rem !important;
+    padding: 0.85rem 1rem !important;
+  }
+  .modal-footer button {
+    width: 100% !important;
+    height: 46px !important;
+    font-size: 0.95rem !important;
+    justify-content: center !important;
   }
 }
 
 @media (max-width: 480px) {
-  .storefront-nav-bar {
-    padding: 0.65rem 0.85rem !important;
-  }
-  .storefront-brand-name {
-    font-size: 1rem !important;
-  }
-  .storefront-login-btn {
+  .sf-announce-bar {
     padding: 0.35rem 0.85rem !important;
-    font-size: 0.78rem !important;
+    font-size: 0.72rem !important;
+  }
+  .sf-ann-btn {
+    display: none !important;
+  }
+  .sf-hero-title {
+    font-size: 1.85rem !important;
   }
 }
 
