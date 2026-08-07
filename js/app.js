@@ -33,9 +33,9 @@ const App = {
     this.startClock();
     window.addEventListener('hashchange', () => this.handleRoute());
     try {
-      this.checkAuth();
+      this.handleRoute();
     } catch (e) {
-      console.error('[App.init] checkAuth error:', e);
+      console.error('[App.init] handleRoute error:', e);
     }
     // Expiration & Notification auto-checker interval
     setInterval(() => {
@@ -56,23 +56,24 @@ const App = {
     const pathname = (location.pathname || '').trim().toLowerCase();
     const auth = db.getAuth();
 
-    const isLoginRoute = pathname === '/login' || pathname === '/admin' || rawHash === 'login' || rawHash === 'admin';
-    const isDashboardRoute = ['dashboard', 'stock', 'products', 'catalog', 'report', 'activity', 'settings'].includes(rawHash) || pathname === '/dashboard' || pathname === '/stock' || pathname === '/products' || pathname === '/settings';
+    // STRICT ROUTING: ONLY show login if hash is explicitly #login or #admin or pathname is /login
+    const isExplicitLogin = rawHash === 'login' || rawHash === 'admin' || pathname === '/login' || pathname === '/admin';
+    const isDashboard = ['dashboard', 'stock', 'products', 'catalog', 'report', 'activity', 'settings'].includes(rawHash);
 
-    if (isLoginRoute) {
+    if (isExplicitLogin) {
       if (!auth) {
         this.showLoginScreen();
       } else {
         this.showAdminApp(auth, 'dashboard');
       }
-    } else if (isDashboardRoute) {
+    } else if (isDashboard) {
       if (!auth) {
         this.showLoginScreen();
       } else {
         this.showAdminApp(auth, rawHash || 'dashboard');
       }
     } else {
-      // Default for root domain (babyielstore.my.id) is Storefront Home Page
+      // 100% ALWAYS DEFAULT TO STOREFRONT KATALOG HOME PAGE FOR ROOT DOMAIN
       this.goToStorefront();
     }
   },
