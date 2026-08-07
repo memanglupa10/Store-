@@ -389,7 +389,27 @@ const DEFAULT_SETTINGS = {
 class StoreDB {
   constructor() {
     this.initDatabase();
-    setTimeout(() => this.initSupabaseSync(), 100);
+    setTimeout(() => {
+      this.initSupabaseSync();
+      this.syncFromBackend();
+    }, 100);
+  }
+
+  async syncFromBackend() {
+    try {
+      const res = await fetch('/api/products');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
+          localStorage.setItem(DB_KEYS.PRODUCTS, JSON.stringify(data.products));
+          if (typeof App !== 'undefined' && typeof App.renderStorefront === 'function') {
+            App.renderStorefront();
+          }
+        }
+      }
+    } catch (e) {
+      // Ignore if offline
+    }
   }
 
   async initSupabaseSync() {

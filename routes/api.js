@@ -157,6 +157,11 @@ router.post('/auth/logout', asyncHandler(async (req, res) => {
   return res.json({ success: true, message: 'Berhasil logout dari sistem.' });
 }));
 
+router.get('/products', asyncHandler(async (req, res) => {
+  const db = loadDB();
+  return res.json({ success: true, products: db.products || [] });
+}));
+
 router.get('/auth/me', asyncHandler(async (req, res) => {
   const session = authenticateSession(req);
   if (!session) {
