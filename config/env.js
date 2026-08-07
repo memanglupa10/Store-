@@ -38,7 +38,7 @@ const config = {
   isProduction: process.env.NODE_ENV === 'production',
   isVercel: !!process.env.VERCEL,
   server: {
-    port: parseInt(process.env.PORT || '3000', 10),
+    port: process.env.PORT || 3000,
     trustProxy: process.env.TRUST_PROXY || '1',
   },
   db: {
@@ -47,7 +47,7 @@ const config = {
     user: process.env.DB_USER || process.env.MYSQL_USER || 'root',
     password: process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || '',
     database: process.env.DB_NAME || process.env.MYSQL_DATABASE || 'babyiel_store',
-    ssl: process.env.NODE_ENV === 'production' || process.env.DB_SSL === 'true',
+    ssl: process.env.DB_SSL === 'true' || (process.env.NODE_ENV === 'production' && process.env.DB_HOST && process.env.DB_HOST !== 'localhost' && process.env.DB_HOST !== '127.0.0.1'),
     connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT || '10', 10),
     connectTimeout: parseInt(process.env.DB_TIMEOUT || '10000', 10),
     disableMySQL: process.env.DISABLE_MYSQL === 'true',

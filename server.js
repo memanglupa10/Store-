@@ -101,14 +101,13 @@ async function gracefulShutdown(signal) {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-// Start Server when run directly (Not in Serverless Vercel context)
-if (!config.isVercel && require.main === module) {
+// Start Server when not in Serverless Vercel context
+if (!config.isVercel && !server.listening) {
   server.listen(PORT, () => {
     console.log(`===================================================`);
-    console.log(`🚀 Babyiel Store Express Server running on port ${PORT}`);
+    console.log(`🚀 Babyiel Store Express Server running on port/socket ${PORT}`);
     console.log(`🔒 Security Hardening: Helmet, CORS, Rate-Limit & Compression Active`);
     console.log(`🗄️ Database Mode: ${dbHelper.checkIsMySQL() ? 'MySQL Connection Pool' : 'JSON Storage Fallback'}`);
-    console.log(`👉 Access URL: http://localhost:${PORT}`);
     console.log(`===================================================`);
   });
 }
