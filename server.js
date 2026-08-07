@@ -42,7 +42,12 @@ try {
         fs.copyFileSync(src, dest);
       }
     });
-    console.log('[cPanel Public-Sync] Synced latest frontend files to public_html.');
+    const srcAssets = path.join(storeDir, 'assets');
+    const destAssets = path.join(publicDir, 'assets');
+    if (fs.existsSync(srcAssets)) {
+      fs.cpSync(srcAssets, destAssets, { recursive: true, force: true });
+    }
+    console.log('[cPanel Public-Sync] Synced latest frontend & assets to public_html.');
   }
 } catch (syncErr) {
   console.warn('[cPanel Public-Sync Notice]:', syncErr.message);
