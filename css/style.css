@@ -115,21 +115,24 @@ a { text-decoration: none; color: inherit; }
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  height: 92px !important;
-  max-height: 92px !important;
+  height: 120px !important;
+  max-height: 130px !important;
   flex-shrink: 0 !important;
   position: relative !important;
   z-index: 1000 !important;
+  padding-right: 1.5rem !important;
 }
 .sf-nav-logo-img {
-  height: 92px !important;
-  max-height: 92px !important;
+  height: 110px !important;
+  max-height: 120px !important;
   width: auto !important;
-  max-width: 420px !important;
+  max-width: 480px !important;
   object-fit: contain !important;
   margin: 0 !important;
   display: block !important;
   mix-blend-mode: multiply !important;
+  transform: scale(1.65) !important;
+  transform-origin: left center !important;
   filter: contrast(108%) drop-shadow(0 2px 6px rgba(124,58,237,0.12)) !important;
   transition: transform 0.2s ease !important;
 }
