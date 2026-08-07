@@ -15,6 +15,7 @@ function generateQRISData(orderId, amount) {
   return {
     qr_string: qrString,
     qris_url: qrDataUrl,
+    qris_image_url: qrDataUrl,
     merchant_name: 'BABYIEL STORE OFFICIAL',
     merchant_id: 'ID1029384756'
   };
