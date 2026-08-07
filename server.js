@@ -23,6 +23,15 @@ const { notFoundHandler, errorHandler } = require('./middleware/error');
 const healthRouter = require('./routes/health');
 const apiRouter = require('./routes/api');
 
+// Auto Git Sync on cPanel Server Startup
+try {
+  const { execSync } = require('child_process');
+  execSync('git reset --hard HEAD && git pull origin main', { cwd: __dirname, stdio: 'ignore' });
+  console.log('[cPanel Auto-Sync] Pulled latest commits from GitHub on startup.');
+} catch (gitErr) {
+  console.warn('[cPanel Auto-Sync Notice]:', gitErr.message);
+}
+
 // Initialize Database Connection Pool
 dbHelper.initDB();
 
