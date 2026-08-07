@@ -228,29 +228,10 @@ router.post('/checkout', asyncHandler(async (req, res) => {
   let availableStock = (db.stocks || []).find(s => (s.product_id === product_id || s.product_name === prod.name || (s.product_id && s.product_id.includes(product_id.replace('prod-', '')))) && (s.status === 'READY' || s.status === 'AVAILABLE'));
 
   if (!availableStock) {
-    if (!db.stocks) db.stocks = [];
-    const prefix = (prod.name || 'app').split(' ')[0].toLowerCase();
-    for (let i = 1; i <= 10; i++) {
-      const numPadded = String(i).padStart(2, '0');
-      db.stocks.unshift({
-        id: `STK-${prefix.toUpperCase()}-AUTO-${numPadded}-${Date.now().toString().slice(-4)}`,
-        product_id: prod.id,
-        product_name: prod.name,
-        nomor: `085775335${numPadded}`,
-        email: `${prefix}.vip${numPadded}@babyielstore.my.id`,
-        password: `Babyiel${numPadded}!`,
-        login_by: 'Email & Password / OTP WA',
-        profile: `Profil ${(i % 5) + 1}`,
-        pin: `${1000 + i}`,
-        note: 'Garansi Full Resmi 100% Babyiel Store',
-        assigned_to: 'admin',
-        status: 'READY',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
-    }
-    saveDB(db);
-    availableStock = db.stocks.find(s => (s.product_id === product_id || s.product_name === prod.name) && s.status === 'READY');
+    return res.status(400).json({
+      success: false,
+      message: `Maaf, stok untuk produk "${prod.name}" sedang habis! Transaksi tidak dapat dilanjutkan. Silakan hubungi admin atau pilih produk lain yang ready.`
+    });
   }
 
   const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;

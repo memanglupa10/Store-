@@ -611,25 +611,29 @@ const App = {
         submitBtn.innerHTML = origBtnText;
       }
 
-      if (response.ok) {
-        const res = await response.json().catch(() => null);
-        if (res && res.success && res.order) {
-          this.currentActiveOrder = res.order;
-          this.closeCheckoutModal();
-          this.openQRISModal(res.order);
-          return;
-        }
+      const resData = await response.json().catch(() => null);
+
+      if (response.ok && resData && resData.success && resData.order) {
+        this.currentActiveOrder = resData.order;
+        this.closeCheckoutModal();
+        this.openQRISModal(resData.order);
+        return;
       }
 
-      // Seamless Client-Side QRIS Fallback if backend API is offline or 503
+      if (resData && resData.message && resData.message.includes('stok')) {
+        this.showToast('Stok Habis ⚠️', resData.message, 'warning');
+        return;
+      }
+
+      // If backend fails due to network/503 fallback
       this.createFallbackQRISOrder(prod, label, name, wa, email);
     } catch (err) {
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = origBtnText;
       }
-      console.warn('[CHECKOUT] Falling back to client-side QRIS generator:', err.message);
-      this.createFallbackQRISOrder(prod, label, name, wa, email);
+      console.warn('[CHECKOUT Error]:', err.message);
+      this.showToast('Gagal Checkout', 'Gagal memproses pesanan. Silakan coba lagi atau hubungi admin.', 'error');
     }
   },
 
