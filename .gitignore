@@ -11,3 +11,6 @@ assets/*_clean.png
 assets/*_cropped.png
 assets/*_tight.png
 
+data/
+data/*.json
+
