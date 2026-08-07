@@ -70,14 +70,10 @@ if errorlevel 1 (
     git push -u origin master
 )
 
-REM Deploy to Vercel Production
-echo.
-echo [6/6] Melakukan deployment langsung ke Vercel Production...
-cmd.exe /c "npx -y vercel --prod --yes"
-
 echo.
 echo ========================================================
-echo   Proses Selesai!
+echo   Proses Selesai! Kode berhasil ter-push ke GitHub & cPanel!
+echo ========================================================
 echo   Situs Live: https://babyielstore.my.id
 echo   Repository: https://github.com/memanglupa10/Store-
 echo ========================================================
