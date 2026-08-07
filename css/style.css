@@ -2703,15 +2703,13 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* 1. Global Responsive Table Scrolling (NO OVERFLOW TRAP ON CARD-BODY) */
+/* 1. Global Responsive Table Scrolling */
 .card, .card-body {
   overflow: visible !important;
   max-width: 100% !important;
 }
 
-.table-responsive, 
-.table-container, 
-.top-products-table-wrapper {
+.table-responsive {
   width: 100% !important;
   max-width: 100% !important;
   overflow-x: auto !important;
@@ -2724,33 +2722,80 @@ html, body {
   border-radius: var(--radius-md);
 }
 
-.table-responsive::-webkit-scrollbar,
-.table-container::-webkit-scrollbar {
+.table-responsive::-webkit-scrollbar {
   height: 6px !important;
 }
-.table-responsive::-webkit-scrollbar-thumb,
-.table-container::-webkit-scrollbar-thumb {
+.table-responsive::-webkit-scrollbar-thumb {
   background: #a76cf5 !important;
   border-radius: 99px !important;
 }
 
-.custom-table, 
-.stock-simple-table, 
-.table-responsive table {
+.custom-table {
   min-width: 720px !important;
   width: 100% !important;
   border-collapse: collapse !important;
 }
 
-/* Mobile Touch Action Button Group */
-.action-btn-group {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.35rem !important;
-}
-.act-btn {
-  white-space: nowrap !important;
-  flex-shrink: 0 !important;
+/* 2. Mobile Stock Card Layout (<= 768px) */
+@media (max-width: 768px) {
+  .stock-simple-table {
+    display: block !important;
+    min-width: 100% !important;
+    width: 100% !important;
+  }
+  .stock-simple-table thead {
+    display: none !important;
+  }
+  .stock-simple-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.85rem !important;
+    width: 100% !important;
+  }
+  .stock-simple-table tr {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #ffffff !important;
+    border: 1.5px solid #e9e7f3 !important;
+    border-radius: 16px !important;
+    padding: 1rem !important;
+    box-shadow: 0 4px 16px rgba(167, 108, 245, 0.07) !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+  }
+  .stock-simple-table td {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+    text-align: left !important;
+  }
+  .stock-simple-table td:nth-child(1) {
+    border-bottom: 1px dashed #e2e8f0 !important;
+    padding-bottom: 0.65rem !important;
+  }
+  .stock-simple-table td:nth-child(2) {
+    padding-bottom: 0.35rem !important;
+  }
+  .stock-simple-table td:nth-child(3) {
+    border-top: 1px solid #f1f5f9 !important;
+    padding-top: 0.75rem !important;
+  }
+  .stock-simple-table .action-btn-group {
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    gap: 0.45rem !important;
+    width: 100% !important;
+  }
+  .stock-simple-table .act-btn {
+    flex: 1 !important;
+    min-width: 68px !important;
+    justify-content: center !important;
+    padding: 0.6rem 0.65rem !important;
+    font-size: 0.82rem !important;
+    font-weight: 800 !important;
+    border-radius: 10px !important;
+  }
 }
 
 @media (max-width: 1024px) {
