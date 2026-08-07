@@ -85,7 +85,7 @@ const App = {
 
     if (storefront) { storefront.classList.remove('active'); storefront.style.display = 'none'; }
     if (mainApp) { mainApp.classList.remove('active'); mainApp.style.display = 'none'; }
-    if (loginWrapper) { loginWrapper.classList.add('active'); loginWrapper.style.display = 'flex'; }
+    if (loginWrapper) { loginWrapper.classList.add('active'); loginWrapper.style.setProperty('display', 'flex', 'important'); }
   },
 
   showAdminApp(auth, page = 'dashboard') {
