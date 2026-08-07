@@ -104,6 +104,26 @@ const App = {
     this.navigate(page);
   },
 
+  async forceSyncDatabase() {
+    this.showToast('Syncing...', 'Mengambil data terbaru dari MySQL cPanel...', 'info');
+    try {
+      const res = await fetch('/api/products?t=' + Date.now());
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
+          localStorage.setItem('babyiel_store_products', JSON.stringify(data.products));
+          this.renderStorefront();
+          if (typeof this.renderProductsList === 'function') this.renderProductsList();
+          this.showToast('Sukses!', 'Data berhasil diperbarui dari MySQL cPanel!', 'success');
+          return;
+        }
+      }
+      this.showToast('Info', 'Database cPanel dalam mode sync lokal.', 'info');
+    } catch (e) {
+      this.showToast('Error', 'Gagal terhubung ke backend cPanel.', 'error');
+    }
+  },
+
   checkAuth() {
     this.handleRoute();
   },
