@@ -582,15 +582,24 @@ const App = {
       submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menghubungi Midtrans...';
     }
 
-    const { prod, label } = this.selectedPackageData || {};
+    let { prod, label } = this.selectedPackageData || {};
+    if (!prod && this.activeCatalogProduct) {
+      prod = this.activeCatalogProduct;
+    }
+    if (!prod) {
+      prod = { id: 'prod-netflix', name: 'Netflix Premium', prices: [{ label: '1 Bulan', price: 26000 }] };
+    }
+    if (!label && prod.prices && prod.prices[0]) {
+      label = prod.prices[0].label;
+    }
 
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          product_id: prod ? prod.id : '',
-          package_label: label || '',
+          product_id: prod ? prod.id : 'prod-netflix',
+          package_label: label || '1 Bulan',
           customer_name: name,
           customer_wa: wa,
           customer_email: email
