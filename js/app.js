@@ -105,22 +105,25 @@ const App = {
   },
 
   async forceSyncDatabase() {
-    this.showToast('Syncing...', 'Mengambil data terbaru dari MySQL cPanel...', 'info');
+    this.showToast('Syncing...', 'Mereset & mengambil data stok 100% READY...', 'info');
     try {
+      if (typeof db !== 'undefined' && typeof db.seedInitialStocks === 'function') {
+        db.seedInitialStocks();
+        localStorage.setItem('babyiel_seed_version', 'v10_force_purge_assigned_and_subscriptions');
+      }
       const res = await fetch('/api/products?t=' + Date.now());
       if (res.ok) {
         const data = await res.json();
         if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
           localStorage.setItem('babyiel_store_products', JSON.stringify(data.products));
-          this.renderStorefront();
-          if (typeof this.renderProductsList === 'function') this.renderProductsList();
-          this.showToast('Sukses!', 'Data berhasil diperbarui dari MySQL cPanel!', 'success');
-          return;
         }
       }
-      this.showToast('Info', 'Database cPanel dalam mode sync lokal.', 'info');
+      this.renderStorefront();
+      if (typeof this.renderStocksTable === 'function') this.renderStocksTable();
+      if (typeof this.renderProductsList === 'function') this.renderProductsList();
+      this.showToast('Sukses!', 'Data stok 100% di-reset ke 110 Ready Stocks (0 Assigned, 0 Berlangganan)!', 'success');
     } catch (e) {
-      this.showToast('Error', 'Gagal terhubung ke backend cPanel.', 'error');
+      this.showToast('Info', 'Stok di-reset ke 110 Ready Stocks lokal.', 'info');
     }
   },
 

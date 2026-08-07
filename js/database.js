@@ -516,15 +516,13 @@ class StoreDB {
       }
     }
 
-    const SEED_VERSION = 'v8_10_ready_per_app_fresh';
-    if (localStorage.getItem('babyiel_seed_version') !== SEED_VERSION) {
+    const SEED_VERSION = 'v10_force_purge_assigned_and_subscriptions';
+    const currentStocks = JSON.parse(localStorage.getItem(DB_KEYS.STOCKS)) || [];
+    const hasOldStatus = currentStocks.some(s => s.status === 'ASSIGNED' || s.status === 'SEDANG BERLANGGANAN' || s.status === 'BERLANGGANAN' || (s.assigned_to && s.assigned_to !== 'admin'));
+
+    if (localStorage.getItem('babyiel_seed_version') !== SEED_VERSION || hasOldStatus) {
       this.seedInitialStocks();
       localStorage.setItem('babyiel_seed_version', SEED_VERSION);
-    } else {
-      const currentStocks = JSON.parse(localStorage.getItem(DB_KEYS.STOCKS)) || [];
-      if (currentStocks.length < 10) {
-        this.seedInitialStocks();
-      }
     }
 
     if (!localStorage.getItem(DB_KEYS.LOGS)) {
@@ -578,7 +576,6 @@ class StoreDB {
     localStorage.setItem(DB_KEYS.ORDERS, JSON.stringify([]));
     localStorage.setItem(DB_KEYS.NOTIFICATIONS, JSON.stringify([]));
     localStorage.setItem(DB_KEYS.LOGS, JSON.stringify([]));
-  }
   }
 
   seedInitialLogs() {
