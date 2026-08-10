@@ -582,6 +582,14 @@ router.get('/admin/stocks', requireAuth(), asyncHandler(async (req, res) => {
   return res.json({ success: true, stocks: sanitizedStocks });
 }));
 
+router.post('/admin/stocks/wipe-all', requireAuth(), asyncHandler(async (req, res) => {
+  const db = loadDB();
+  db.stocks = [];
+  db.orders = [];
+  saveDB(db);
+  return res.json({ success: true, message: 'Seluruh data stok berhasil dikosongkan (0 stok).' });
+}));
+
 router.post('/admin/stocks/update-status', requireAuth(), asyncHandler(async (req, res) => {
   const session = req.user;
   const body = req.body;

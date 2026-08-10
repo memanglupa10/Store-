@@ -120,6 +120,27 @@ const App = {
     }
   },
 
+  async wipeAllStocks() {
+    if (!confirm('⚠️ HAPUS TOTAL STOK:\nApakah Anda yakin ingin mengosongkan SELURUH data stok di server (0 stok)?')) return;
+
+    try {
+      await fetch('/api/admin/stocks/wipe-all', {
+        method: 'POST',
+        headers: db.getAuthHeaders()
+      });
+      localStorage.setItem('babyiel_stocks', JSON.stringify([]));
+      if (typeof db !== 'undefined' && db.seedInitialStocks) db.seedInitialStocks();
+      this.renderStorefront();
+      if (this.currentPage === 'stock') this.renderStockTable();
+      if (this.currentPage === 'dashboard') this.renderDashboardView();
+      this.showToast('Stok Dikosongkan!', 'Seluruh data stok di server & lokal berhasil dikosongkan (0 stok).', 'success');
+    } catch (e) {
+      console.error('wipeAllStocks error:', e);
+      localStorage.setItem('babyiel_stocks', JSON.stringify([]));
+      this.showToast('Stok Dikosongkan', 'Stok lokal di-reset ke 0.', 'info');
+    }
+  },
+
   checkAuth() {
     this.handleRoute();
   },
