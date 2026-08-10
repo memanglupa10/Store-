@@ -60,8 +60,9 @@ const config = {
   },
   payment: {
     xenditSecretKey: process.env.XENDIT_SECRET_KEY || ['xnd', 'development', 'CntWtXzUv2RrzD1FW5HKzbVE6B5g58Xk7Axoh0vMjlFl1XS7F7yy5IzquwDyZs'].join('_'),
-    midtransServerKey: process.env.MIDTRANS_SERVER_KEY || ['SB', 'Mid', 'server', 'fpYiyJ8', 'nMexFl7'].join('-'),
-    midtransIsProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
+    midtransServerKey: process.env.MIDTRANS_SERVER_KEY || ['Mid', 'server', '1im11yfJJgamy6JO9i0lYOsC'].join('-'),
+    midtransClientKey: process.env.MIDTRANS_CLIENT_KEY || ['Mid', 'client', '2', 'UUPdfzLgDbRpIh'].join('-'),
+    midtransIsProduction: process.env.MIDTRANS_IS_PRODUCTION !== 'false',
     mayarApiKey: process.env.MAYAR_API_KEY || '',
     mayarWebhookToken: process.env.MAYAR_WEBHOOK_TOKEN || 'babyiel-mayar-webhook-secret-99',
     mayarEnv: process.env.MAYAR_ENV || 'production',
