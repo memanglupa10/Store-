@@ -97,28 +97,6 @@ const SEED_APP_LIST = [
 ];
 
 const DEFAULT_STOCKS = [];
-SEED_APP_LIST.forEach(p => {
-  for (let i = 1; i <= 10; i++) {
-    const numPadded = String(i).padStart(2, '0');
-    const id = `STK-${p.prefix.toUpperCase()}-${numPadded}`;
-    DEFAULT_STOCKS.push({
-      id: id,
-      product_id: p.id,
-      product_name: p.name,
-      nomor: `0857753350${numPadded}`,
-      email: `${p.prefix}.ready${numPadded}@babyiel.com`,
-      password: `pass${p.prefix}${numPadded}`,
-      login_by: i % 2 === 0 ? 'Email & Password' : 'OTP WhatsApp',
-      profile: `Profil ${(i % 5) + 1}`,
-      pin: `${1000 + i}`,
-      note: 'Ready Garansi Full 100%',
-      assigned_to: 'admin',
-      status: 'READY',
-      created_at: new Date(nowSeed - 3600000 * i).toISOString(),
-      updated_at: new Date(nowSeed - 3600000 * i).toISOString()
-    });
-  }
-});
 
 function loadDB() {
   if (!fs.existsSync(DB_FILE)) {

@@ -515,12 +515,9 @@ class StoreDB {
       }
     }
 
-    const SEED_VERSION = 'v12_exact_10_stocks_all_13_products';
-    const currentStocks = JSON.parse(localStorage.getItem(DB_KEYS.STOCKS)) || [];
-    const hasOldStatus = currentStocks.some(s => s.status === 'ASSIGNED' || s.status === 'SEDANG BERLANGGANAN' || s.status === 'BERLANGGANAN' || (s.assigned_to && s.assigned_to !== 'admin'));
-    const isMismatchedCount = currentStocks.length !== 130;
+    const SEED_VERSION = 'v99_empty_stocks_clean';
 
-    if (localStorage.getItem('babyiel_seed_version') !== SEED_VERSION || hasOldStatus || isMismatchedCount) {
+    if (localStorage.getItem('babyiel_seed_version') !== SEED_VERSION) {
       this.seedInitialStocks();
       localStorage.setItem('babyiel_seed_version', SEED_VERSION);
     }
@@ -531,49 +528,7 @@ class StoreDB {
   }
 
   seedInitialStocks() {
-    const products = [
-      { id: 'prod-netflix', name: 'Netflix Premium', prefix: 'netflix' },
-      { id: 'prod-canva', name: 'Canva Pro', prefix: 'canva' },
-      { id: 'prod-chatgpt', name: 'ChatGPT Plus', prefix: 'chatgpt' },
-      { id: 'prod-getcontact', name: 'Getcontact Premium', prefix: 'getcontact' },
-      { id: 'prod-disney', name: 'Disney+ Hotstar', prefix: 'disney' },
-      { id: 'prod-youtube', name: 'YouTube Premium', prefix: 'youtube' },
-      { id: 'prod-alightmotion', name: 'Alight Motion Premium', prefix: 'alight' },
-      { id: 'prod-wetv', name: 'WeTV Premium', prefix: 'wetv' },
-      { id: 'prod-spotify', name: 'Spotify Premium', prefix: 'spotify' },
-      { id: 'prod-vidio', name: 'Vidio Platinum', prefix: 'vidio' },
-      { id: 'prod-iqiyi', name: 'iQIYI Premium', prefix: 'iqiyi' },
-      { id: 'prod-viu', name: 'VIU Premium', prefix: 'viu' },
-      { id: 'prod-amazon', name: 'Amazon Prime Video', prefix: 'prime' }
-    ];
-
-    const freshStocks = [];
-    const now = new Date();
-
-    products.forEach(p => {
-      for (let i = 1; i <= 10; i++) {
-        const numPadded = String(i).padStart(2, '0');
-        const id = `STK-${p.prefix.toUpperCase()}-${numPadded}`;
-        freshStocks.push({
-          id: id,
-          product_id: p.id,
-          product_name: p.name,
-          nomor: `0857753350${numPadded}`,
-          email: `${p.prefix}.ready${numPadded}@babyiel.com`,
-          password: `pass${p.prefix}${numPadded}`,
-          login_by: i % 2 === 0 ? 'Email & Password' : 'OTP WhatsApp',
-          profile: `Profil ${(i % 5) + 1}`,
-          pin: `${1000 + i}`,
-          note: 'Ready Garansi Full 100%',
-          assigned_to: 'admin',
-          status: 'READY',
-          created_at: new Date(now - 3600000 * i).toISOString(),
-          updated_at: new Date(now - 3600000 * i).toISOString()
-        });
-      }
-    });
-
-    localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify(freshStocks));
+    localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify([]));
     localStorage.setItem(DB_KEYS.ORDERS, JSON.stringify([]));
     localStorage.setItem(DB_KEYS.NOTIFICATIONS, JSON.stringify([]));
     localStorage.setItem(DB_KEYS.LOGS, JSON.stringify([]));
