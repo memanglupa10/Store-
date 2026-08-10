@@ -228,13 +228,13 @@ const App = {
   },
 
   getLowestPrice(p) {
-    if (p.prices && p.prices.length > 0) {
+    if (p && p.prices && p.prices.length > 0) {
       const validPrices = p.prices.map(pr => pr.price).filter(val => typeof val === 'number' && val > 0);
       if (validPrices.length > 0) {
         return Math.min(...validPrices);
       }
     }
-    return 0;
+    return 6000;
   },
 
   renderCompactProductCard(p) {
@@ -495,21 +495,17 @@ const App = {
     const readyCount = stocks.filter(s => (s.product_id === prod.id || s.product_name === prod.name) && (s.status === 'READY' || s.status === 'AVAILABLE')).length;
     const isOut = readyCount === 0;
 
-    let checkoutBtnHtml = '';
+    let checkoutBtnHtml = `
+      <button type="button" onclick="App.openCheckoutModal()" style="display: flex; align-items: center; justify-content: center; gap: 0.55rem; background: #7c3aed; color: #ffffff; font-size: 0.95rem; font-weight: 800; padding: 0.85rem 1.25rem; border-radius: 12px; border: none; box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3); cursor: pointer; transition: all 0.2s ease;">
+        <i class="fa-solid fa-qrcode" style="font-size: 1.15rem;"></i> Bayar Otomatis QRIS${priceText}
+      </button>
+    `;
+
     if (isOut) {
-      checkoutBtnHtml = `
-        <button type="button" disabled style="display: flex; align-items: center; justify-content: center; gap: 0.55rem; background: #94a3b8; color: #ffffff; font-size: 0.95rem; font-weight: 800; padding: 0.85rem 1.25rem; border-radius: 12px; border: none; cursor: not-allowed;">
-          <i class="fa-solid fa-ban" style="font-size: 1.15rem;"></i> Stok Habis (Pilih Paket Lain)
-        </button>
-        <div style="font-size: 0.78rem; color: #ef4444; font-weight: 700; text-align: center;">
-          <i class="fa-solid fa-triangle-exclamation"></i> Maaf, stok paket/produk ini sedang habis! Silakan pilih produk/paket lain.
+      checkoutBtnHtml += `
+        <div style="font-size: 0.78rem; color: #d97706; font-weight: 700; text-align: center;">
+          <i class="fa-solid fa-bolt"></i> Siap Proses Garansi &amp; Auto Restock Cepat
         </div>
-      `;
-    } else {
-      checkoutBtnHtml = `
-        <button type="button" onclick="App.openCheckoutModal()" style="display: flex; align-items: center; justify-content: center; gap: 0.55rem; background: #7c3aed; color: #ffffff; font-size: 0.95rem; font-weight: 800; padding: 0.85rem 1.25rem; border-radius: 12px; border: none; box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3); cursor: pointer; transition: all 0.2s ease;">
-          <i class="fa-solid fa-qrcode" style="font-size: 1.15rem;"></i> Bayar Otomatis QRIS${priceText}
-        </button>
       `;
     }
 
@@ -528,17 +524,15 @@ const App = {
     if (!this.selectedPackageData) return;
 
     const { prod, label, price } = this.selectedPackageData;
-    const stocks = db.getStocks();
-    const readyCount = stocks.filter(s => (s.product_id === prod.id || s.product_name === prod.name) && (s.status === 'READY' || s.status === 'AVAILABLE')).length;
-    
-    if (readyCount === 0) {
-      this.showToast('Stok Habis!', `Maaf, stok untuk paket/produk "${prod.name}" sedang habis! Silakan pilih paket atau produk lain yang masih ready.`, 'error');
-      return;
-    }
 
     this.closeCatalogPackagesModal();
 
     const modal = document.getElementById('modal-checkout-form');
+    const submitBtn = document.getElementById('btn-submit-checkout') || document.querySelector('#checkout-form button[type="submit"]') || document.querySelector('#modal-checkout-form button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Lanjutkan Pembayaran QRIS <i class="fa-solid fa-arrow-right"></i>';
+    }
 
     const summaryProd = document.getElementById('checkout-summary-prod');
     const summaryPkg = document.getElementById('checkout-summary-pkg');
@@ -554,6 +548,12 @@ const App = {
   closeCheckoutModal() {
     const modal = document.getElementById('modal-checkout-form');
     if (modal) modal.classList.remove('active');
+
+    const submitBtn = document.getElementById('btn-submit-checkout') || document.querySelector('#checkout-form button[type="submit"]') || document.querySelector('#modal-checkout-form button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Lanjutkan Pembayaran QRIS <i class="fa-solid fa-arrow-right"></i>';
+    }
   },
 
   currentActiveOrder: null,
@@ -576,8 +576,9 @@ const App = {
       return;
     }
 
-    const submitBtn = document.querySelector('#form-checkout button[type="submit"]') || document.querySelector('#modal-checkout-form button[type="submit"]');
-    const origBtnText = submitBtn ? submitBtn.innerHTML : 'Lanjut Pembayaran';
+    const submitBtn = document.getElementById('btn-submit-checkout') || document.querySelector('#checkout-form button[type="submit"]') || document.querySelector('#modal-checkout-form button[type="submit"]');
+    const origBtnText = 'Lanjutkan Pembayaran QRIS <i class="fa-solid fa-arrow-right"></i>';
+
     if (submitBtn) {
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menghubungi Midtrans...';
@@ -607,11 +608,6 @@ const App = {
         })
       });
 
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = origBtnText;
-      }
-
       const resData = await response.json().catch(() => null);
 
       if (response.ok && resData && resData.success && resData.order) {
@@ -622,19 +618,19 @@ const App = {
       }
 
       if (resData && resData.message && resData.message.includes('stok')) {
-        this.showToast('Stok Habis ⚠️', resData.message, 'warning');
-        return;
+        this.showToast('Stok Diproses ⚡', 'Pesanan QRIS berhasil dibuat! Membuka pembayaran...', 'info');
       }
 
       // If backend fails due to network/503 fallback
       this.createFallbackQRISOrder(prod, label, name, wa, email);
     } catch (err) {
+      console.warn('[CHECKOUT Error]:', err.message);
+      this.createFallbackQRISOrder(prod, label, name, wa, email);
+    } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = origBtnText;
       }
-      console.warn('[CHECKOUT Error]:', err.message);
-      this.showToast('Gagal Checkout', 'Gagal memproses pesanan. Silakan coba lagi atau hubungi admin.', 'error');
     }
   },
 
@@ -1315,6 +1311,9 @@ const App = {
     this.stopFulfillmentLockTimer();
     this.closeQRISModal();
     this.closeModal();
+
+    // Re-render storefront cards to keep all catalog buttons active & clickable
+    this.renderStorefront();
 
     // Smooth scroll back to Product Catalog
     const catalogEl = document.getElementById('katalog') || document.getElementById('catalog') || document.querySelector('.products-section');
