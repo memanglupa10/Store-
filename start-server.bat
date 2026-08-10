@@ -1,6 +1,12 @@
 @echo off
 echo ===================================================
-echo 🚀 Babyiel Store Inventory running on port 3000
+echo 🚀 Babyiel Store Express Server starting...
 echo 👉 Open Browser: http://localhost:3000
 echo ===================================================
-powershell -ExecutionPolicy Bypass -File "%~dp0server.ps1"
+where node >nul 2>nul
+if %ERRORLEVEL% equ 0 (
+    node "%~dp0server.js"
+) else (
+    echo [WARN] Node.js not found in PATH, falling back to PowerShell static server...
+    powershell -ExecutionPolicy Bypass -File "%~dp0server.ps1"
+)
