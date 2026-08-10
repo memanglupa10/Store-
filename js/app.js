@@ -106,25 +106,17 @@ const App = {
   },
 
   async forceSyncDatabase() {
-    this.showToast('Syncing...', 'Mereset & mengambil data stok 100% READY...', 'info');
+    this.showToast('Syncing...', 'Mengambil data stok terbaru dari server...', 'info');
     try {
-      if (typeof db !== 'undefined' && typeof db.seedInitialStocks === 'function') {
-        db.seedInitialStocks();
-        localStorage.setItem('babyiel_seed_version', 'v10_force_purge_assigned_and_subscriptions');
-      }
-      const res = await fetch('/api/products?t=' + Date.now());
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
-          localStorage.setItem('babyiel_store_products', JSON.stringify(data.products));
-        }
-      }
+      await this.syncServerStocksToLocal();
       this.renderStorefront();
-      if (typeof this.renderStocksTable === 'function') this.renderStocksTable();
-      if (typeof this.renderProductsList === 'function') this.renderProductsList();
-      this.showToast('Sukses!', 'Data stok 100% di-reset ke 110 Ready Stocks (0 Assigned, 0 Berlangganan)!', 'success');
+      if (this.currentPage === 'stock') this.renderStockTable();
+      if (this.currentPage === 'dashboard') this.renderDashboardView();
+      const currentStocks = db.getStocks();
+      this.showToast('Sync Berhasil!', `Data stok berhasil disinkronisasi dengan server (${currentStocks.length} stok).`, 'success');
     } catch (e) {
-      this.showToast('Info', 'Stok di-reset ke 110 Ready Stocks lokal.', 'info');
+      console.warn('forceSyncDatabase error:', e);
+      this.showToast('Error Sync', 'Gagal memuat data dari server.', 'error');
     }
   },
 
@@ -996,7 +988,16 @@ const App = {
       const data = await res.json();
 
       if (data.success && Array.isArray(data.stocks)) {
+        if (data.stocks.length === 0) {
+          localStorage.setItem('babyiel_stocks', JSON.stringify([]));
+          if (this.currentPage === 'stock') this.renderStockTable();
+          if (this.currentPage === 'dashboard') this.renderDashboardView();
+          return;
+        }
+
+        const serverStockIds = new Set(data.stocks.map(s => s.id));
         let localStocks = JSON.parse(localStorage.getItem('babyiel_stocks') || '[]');
+        localStocks = localStocks.filter(s => serverStockIds.has(s.id));
 
         // Sort data.stocks so BERLANGGANAN / SOLD items are processed FIRST before READY items!
         const sortedServerStocks = [...data.stocks].sort((a, b) => {
