@@ -38,11 +38,12 @@ if (process.env.AUTO_GIT_SYNC === 'true') {
 try {
   const fs = require('fs');
   const path = require('path');
+  const repoDir = '/home/babyiels/repositories/Store-';
   const storeDir = '/home/babyiels/store';
   const publicDir = '/home/babyiels/public_html';
 
   // Auto Purge Dummy Stocks in database.json across cPanel paths
-  [storeDir, publicDir, path.join(__dirname, 'public'), __dirname].forEach(dir => {
+  [repoDir, storeDir, publicDir, path.join(__dirname, 'public'), __dirname].forEach(dir => {
     const dbPath = path.join(dir, 'data', 'database.json');
     if (fs.existsSync(dbPath)) {
       try {
@@ -57,10 +58,11 @@ try {
     }
   });
 
-  if (fs.existsSync(storeDir) && fs.existsSync(publicDir) && storeDir !== publicDir) {
+  const actualStoreDir = fs.existsSync(repoDir) ? repoDir : (fs.existsSync(storeDir) ? storeDir : null);
+  if (actualStoreDir && fs.existsSync(publicDir) && actualStoreDir !== publicDir) {
     const filesToSync = ['index.html', 'js/app.js', 'js/database.js', 'css/style.css', 'deploy.php', '.htaccess'];
     filesToSync.forEach(f => {
-      const src = path.join(storeDir, f);
+      const src = path.join(actualStoreDir, f);
       const dest = path.join(publicDir, f);
       if (fs.existsSync(src)) {
         fs.copyFileSync(src, dest);

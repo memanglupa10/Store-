@@ -9,10 +9,28 @@ echo "===============================================\n";
 echo "   Babyiel Store - cPanel Deploy Engine        \n";
 echo "===============================================\n\n";
 
-$repoPath = '/home/babyiels/store';
+$possibleRepoPaths = [
+    '/home/babyiels/repositories/Store-',
+    '/home/babyiels/store',
+    dirname(__DIR__),
+    __DIR__
+];
+
+$repoPath = null;
+foreach ($possibleRepoPaths as $p) {
+    if (file_exists($p . '/.git') || file_exists($p . '/package.json')) {
+        $repoPath = $p;
+        break;
+    }
+}
+if (!$repoPath) {
+    $repoPath = '/home/babyiels/repositories/Store-';
+}
+
 $publicPath = '/home/babyiels/public_html';
 
 if (file_exists($repoPath)) {
+    echo "Detected Repository Path: $repoPath\n\n";
     echo "[1/4] Discarding local changes & pulling from GitHub...\n";
     $gitCmd = "cd " . escapeshellarg($repoPath) . " && git reset --hard HEAD && git pull origin main 2>&1";
     $gitOutput = shell_exec($gitCmd);
