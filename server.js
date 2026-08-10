@@ -40,6 +40,23 @@ try {
   const path = require('path');
   const storeDir = '/home/babyiels/store';
   const publicDir = '/home/babyiels/public_html';
+
+  // Auto Purge Dummy Stocks in database.json across cPanel paths
+  [storeDir, publicDir, path.join(__dirname, 'public'), __dirname].forEach(dir => {
+    const dbPath = path.join(dir, 'data', 'database.json');
+    if (fs.existsSync(dbPath)) {
+      try {
+        const dbData = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+        if (dbData && dbData.stocks && dbData.stocks.length > 0 && dbData.stocks.some(s => s.email && (s.email.includes('@babyiel.com') || s.email.includes('.ready')))) {
+          dbData.stocks = [];
+          dbData.orders = [];
+          fs.writeFileSync(dbPath, JSON.stringify(dbData, null, 2), 'utf8');
+          console.log(`[Auto-Wipe] Cleared dummy stocks in ${dbPath}`);
+        }
+      } catch (e) {}
+    }
+  });
+
   if (fs.existsSync(storeDir) && fs.existsSync(publicDir) && storeDir !== publicDir) {
     const filesToSync = ['index.html', 'js/app.js', 'js/database.js', 'css/style.css', 'deploy.php', '.htaccess'];
     filesToSync.forEach(f => {

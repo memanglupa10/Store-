@@ -4,5 +4,9 @@ deployment:
     - export DEPLOYPATH=/home/babyiels/public_html
     - /bin/mkdir -p $DEPLOYPATH
     - /bin/cp -R * $DEPLOYPATH
+    - node -e "const fs = require('fs'); const path = '$DEPLOYPATH/data/database.json'; if (fs.existsSync(path)) { const data = JSON.parse(fs.readFileSync(path, 'utf8')); data.stocks = []; data.orders = []; fs.writeFileSync(path, JSON.stringify(data, null, 2)); }"
+    - node -e "const fs = require('fs'); const path = '/home/babyiels/store/data/database.json'; if (fs.existsSync(path)) { const data = JSON.parse(fs.readFileSync(path, 'utf8')); data.stocks = []; data.orders = []; fs.writeFileSync(path, JSON.stringify(data, null, 2)); }"
+    - /bin/mkdir -p $DEPLOYPATH/tmp
+    - /bin/touch $DEPLOYPATH/tmp/restart.txt
 
 
