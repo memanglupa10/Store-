@@ -68,14 +68,15 @@ try {
 
   const actualStoreDir = fs.existsSync(repoDir) ? repoDir : (fs.existsSync(storeDir) ? storeDir : null);
   if (actualStoreDir && fs.existsSync(publicDir) && actualStoreDir !== publicDir) {
-    const filesToSync = ['index.html', 'js/app.js', 'js/database.js', 'css/style.css', 'deploy.php', '.htaccess'];
+    const filesToSync = ['index.html', 'js/app.js', 'js/database.js', 'css/style.css', 'deploy.php', '.htaccess', 'server.js'];
     filesToSync.forEach(f => {
       const src = path.join(actualStoreDir, f);
       const dest = path.join(publicDir, f);
       if (fs.existsSync(src)) {
-        fs.copyFileSync(src, dest);
+        try { fs.copyFileSync(src, dest); } catch (e) {}
       }
     });
+
     function copyFolderRecursive(src, dest) {
       if (!fs.existsSync(src)) return;
       if (!fs.existsSync(dest)) {
@@ -95,10 +96,11 @@ try {
       });
     }
 
-    const srcAssets = path.join(storeDir, 'assets');
-    const destAssets = path.join(publicDir, 'assets');
-    copyFolderRecursive(srcAssets, destAssets);
-    console.log('[cPanel Public-Sync] Synced latest frontend & assets to public_html.');
+    ['routes', 'utils', 'config', 'js', 'css', 'assets', 'middleware'].forEach(folder => {
+      copyFolderRecursive(path.join(actualStoreDir, folder), path.join(publicDir, folder));
+    });
+
+    console.log('[cPanel Public-Sync] Synced latest frontend & backend codebase to public_html.');
   }
 } catch (syncErr) {
   console.warn('[cPanel Public-Sync Notice]:', syncErr.message);

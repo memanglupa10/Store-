@@ -431,7 +431,9 @@ const App = {
       garansiEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${prod.garansi || 'Full Garansi Sesuai S&K'}`;
     }
 
-    const prices = prod.prices || [];
+    const rawPrices = prod.prices || [];
+    const prices = [...rawPrices].sort((a, b) => (a.price || 0) - (b.price || 0));
+
     if (prices.length === 0) {
       listEl.innerHTML = `
         <div style="text-align: center; color: #64748b; padding: 1.5rem 0; font-size: 0.88rem;">
