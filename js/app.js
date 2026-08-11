@@ -462,7 +462,10 @@ const App = {
     }
 
     this.renderCatalogOrderFooter();
-    if (modal) modal.classList.add('active');
+    if (modal) {
+      modal.style.display = 'flex';
+      modal.classList.add('active');
+    }
   },
 
   selectCatalogPackage(productId, idx, el) {
@@ -555,7 +558,10 @@ const App = {
     if (summaryPkg) summaryPkg.textContent = `Paket ${label}`;
     if (summaryPrice) summaryPrice.textContent = `Rp ${price.toLocaleString('id-ID')}`;
 
-    if (modal) modal.classList.add('active');
+    if (modal) {
+      modal.style.display = 'flex';
+      modal.classList.add('active');
+    }
   },
 
   closeCheckoutModal() {
@@ -710,7 +716,10 @@ const App = {
     // Start Auto Polling every 3 seconds
     this.startQRISPolling(order.id);
 
-    modal.classList.add('active');
+    if (modal) {
+      modal.style.display = 'flex';
+      modal.classList.add('active');
+    }
   },
 
   copyTextToClipboard(text, successMsg) {
@@ -1332,7 +1341,6 @@ const App = {
     this.stopQRISCountdown();
     this.stopFulfillmentLockTimer();
     this.closeQRISModal();
-    this.closeModal();
 
     // Re-render storefront cards to keep all catalog buttons active & clickable
     this.renderStorefront();
