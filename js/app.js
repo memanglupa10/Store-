@@ -442,15 +442,20 @@ const App = {
       `;
       this.selectedPackageData = { prod, label: 'Standard', price: 0 };
     } else {
-      this.selectedPackageData = { prod, label: prices[0].label, price: prices[0].price };
+      this.selectedPackageData = { prod, label: prices[0].label, price: prices[0].price, category: prices[0].category };
 
       let html = '';
       prices.forEach((pr, idx) => {
         const isSelected = idx === 0 ? 'selected' : '';
+        const catClean = pr.category ? pr.category.replace(/^[💎👑🚀🛡️👤✨]+\s*/, '').trim() : '';
+        const displayLabel = catClean && !pr.label.toLowerCase().includes(catClean.toLowerCase())
+          ? `${pr.label} (${catClean})`
+          : pr.label;
+
         html += `
           <div class="package-item-option ${isSelected}" data-idx="${idx}" onclick="App.selectCatalogPackage('${prod.id}', ${idx}, this)">
             <div>
-              <div class="pkg-title">${pr.label}</div>
+              <div class="pkg-title">${displayLabel}</div>
               <div class="pkg-category">Kategori: ${pr.category || 'Member'}</div>
             </div>
             <div class="pkg-price">
@@ -472,7 +477,11 @@ const App = {
 
   selectCatalogPackage(productId, idx, el) {
     const prod = db.getProductById(productId);
-    if (!prod || !prod.prices || !prod.prices[idx]) return;
+    if (!prod || !prod.prices) return;
+
+    const rawPrices = prod.prices || [];
+    const prices = [...rawPrices].sort((a, b) => (a.price || 0) - (b.price || 0));
+    if (!prices[idx]) return;
 
     document.querySelectorAll('.package-item-option').forEach(item => {
       item.classList.remove('selected');
@@ -491,8 +500,8 @@ const App = {
       }
     }
 
-    const pr = prod.prices[idx];
-    this.selectedPackageData = { prod, label: pr.label, price: pr.price };
+    const pr = prices[idx];
+    this.selectedPackageData = { prod, label: pr.label, price: pr.price, category: pr.category };
     this.renderCatalogOrderFooter();
   },
 
@@ -505,7 +514,9 @@ const App = {
     const waNum = settings.support_phone ? settings.support_phone.replace(/\D/g, '') : '085775335453';
     const waBase = waNum.startsWith('0') ? '62' + waNum.slice(1) : (waNum.startsWith('62') ? waNum : '62' + waNum);
 
-    const priceText = price > 0 ? ` — Rp ${price.toLocaleString('id-ID')}` : '';
+    const qrisFeeRate = 0.007; // 0.7% QRIS Fee
+    const finalQrisPrice = price > 0 ? Math.ceil((price * (1 + qrisFeeRate)) / 100) * 100 : 0;
+    const priceText = finalQrisPrice > 0 ? ` — Rp ${finalQrisPrice.toLocaleString('id-ID')}` : '';
     const msg = encodeURIComponent(`Halo Babyiel Store, saya mau pesan ${prod.name} paket ${label}${priceText}. Apakah ready stok? 🙏`);
     const waUrl = `https://wa.me/${waBase}?text=${msg}`;
 
@@ -556,9 +567,12 @@ const App = {
     const summaryPkg = document.getElementById('checkout-summary-pkg');
     const summaryPrice = document.getElementById('checkout-summary-price');
 
+    const qrisFeeRate = 0.007; // 0.7% QRIS Fee
+    const finalQrisPrice = price > 0 ? Math.ceil((price * (1 + qrisFeeRate)) / 100) * 100 : 0;
+
     if (summaryProd) summaryProd.textContent = prod.name;
     if (summaryPkg) summaryPkg.textContent = `Paket ${label}`;
-    if (summaryPrice) summaryPrice.textContent = `Rp ${price.toLocaleString('id-ID')}`;
+    if (summaryPrice) summaryPrice.textContent = `Rp ${finalQrisPrice.toLocaleString('id-ID')}`;
 
     if (modal) {
       modal.style.display = 'flex';
