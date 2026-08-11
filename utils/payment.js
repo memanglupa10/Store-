@@ -204,7 +204,7 @@ async function createMidtransQRISCode(orderId, amount, customerInfo = {}) {
     }
   } catch (err) {
     clearTimeout(timeout);
-    console.warn('[MIDTRANS SANDBOX NOTICE] Returning Sandbox QRIS Generator for Testing:', err.message);
+    console.warn('[MIDTRANS NOTICE] Returning Static QRIS Generator Fallback:', err.message);
   }
   return generateQRISData(orderId, amount);
 }
