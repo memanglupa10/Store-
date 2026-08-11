@@ -15,18 +15,40 @@ if (!file_exists($repoPath)) {
 }
 $publicPath = '/home/babyiels/public_html';
 
+function runCmd($cmd) {
+    $fullCmd = "export PATH=\$PATH:/usr/bin:/usr/local/bin:/bin; " . $cmd . " 2>&1";
+    if (function_exists('shell_exec')) {
+        $out = shell_exec($fullCmd);
+        if ($out !== null && trim($out) !== '') return trim($out);
+    }
+    if (function_exists('exec')) {
+        $output = [];
+        $returnVar = 0;
+        @exec($fullCmd, $output, $returnVar);
+        if (!empty($output)) return implode("\n", $output);
+    }
+    if (function_exists('system')) {
+        ob_start();
+        @system($fullCmd);
+        $out = ob_get_clean();
+        if (trim($out) !== '') return trim($out);
+    }
+    return "[ERROR] System execution functions (shell_exec/exec/system) disabled or returned empty output.";
+}
+
 if (file_exists($repoPath)) {
     echo "Using Repository Path: $repoPath\n\n";
+    
     echo "[1/4] Discarding local changes & pulling from GitHub...\n";
-    $gitCmd = "cd " . escapeshellarg($repoPath) . " && git reset --hard HEAD && git pull origin main 2>&1";
-    $gitOutput = shell_exec($gitCmd);
-    echo $gitOutput . "\n";
+    $gitCmd = "cd " . escapeshellarg($repoPath) . " && git reset --hard HEAD && git pull origin main";
+    $gitOutput = runCmd($gitCmd);
+    echo $gitOutput . "\n\n";
 
     if (file_exists($publicPath) && $publicPath !== $repoPath) {
         echo "[2/4] Copying updated files to public_html...\n";
-        $cpCmd = "cp -rf " . escapeshellarg($repoPath) . "/* " . escapeshellarg($publicPath) . "/ 2>&1";
-        $cpOutput = shell_exec($cpCmd);
-        echo ($cpOutput ? $cpOutput : "Files copied successfully.") . "\n";
+        $cpCmd = "cp -rf " . escapeshellarg($repoPath) . "/* " . escapeshellarg($publicPath) . "/";
+        $cpOutput = runCmd($cpCmd);
+        echo ($cpOutput ? $cpOutput : "Files copied successfully.") . "\n\n";
     }
 
     echo "[3/4] Purging dummy stock data from database.json...\n";
@@ -43,6 +65,7 @@ if (file_exists($repoPath)) {
             }
         }
     }
+    echo "\n";
 
     echo "[4/4] Restarting Node.js App Server (Passenger)...\n";
     @mkdir($publicPath . '/tmp', 0755, true);
