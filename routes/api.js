@@ -222,9 +222,8 @@ router.post('/checkout', asyncHandler(async (req, res) => {
 
   const pkg = (prod.prices || []).find(pr => pr.label === package_label) || { label: package_label, price: 15000, category: 'Standard' };
   const catalogPrice = pkg.price || 0;
-  
-  const rawPriceWithFee = catalogPrice * 1.05;
-  const price = catalogPrice > 0 ? Math.ceil(rawPriceWithFee / 500) * 500 : 0;
+  const qrisFeeRate = 0.007; // 0.7% QRIS MDR Fee
+  const price = catalogPrice > 0 ? Math.ceil(catalogPrice * (1 + qrisFeeRate)) : 0;
 
   let availableStock = (db.stocks || []).find(s => (s.product_id === product_id || s.product_name === prod.name || (s.product_id && s.product_id.includes(product_id.replace('prod-', '')))) && (s.status === 'READY' || s.status === 'AVAILABLE'));
 

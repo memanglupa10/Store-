@@ -656,7 +656,8 @@ const App = {
   createFallbackQRISOrder(prod, label, name, wa, email) {
     const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     const basePrice = (prod && prod.prices && prod.prices[0]) ? (prod.prices[0].price || 15000) : 15000;
-    const price = Math.ceil((basePrice * 1.05) / 500) * 500;
+    const qrisFeeRate = 0.007; // 0.7% QRIS MDR Fee
+    const price = basePrice > 0 ? Math.ceil(basePrice * (1 + qrisFeeRate)) : 0;
     const qrString = `00020101021226670016COM.BABYIEL.WWW01189360091430000000000215ID10293847560303UMI5204581253033605802ID5920BABYIEL STORE OFFICIAL6013JAKARTA SELATAN61051211062070703A016304`;
     const qrisImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
 
