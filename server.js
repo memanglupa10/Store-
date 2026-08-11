@@ -29,6 +29,13 @@ try {
   const fs = require('fs');
   const repoDir = '/home/babyiels/repositories/Store-';
   const targetDir = fs.existsSync(repoDir) ? repoDir : __dirname;
+
+  // Unlink blocking database.json in repo directory
+  const repoDbFile = path.join(repoDir, 'data', 'database.json');
+  if (fs.existsSync(repoDbFile)) {
+    try { fs.unlinkSync(repoDbFile); } catch (e) {}
+  }
+
   execSync('git reset --hard HEAD && git clean -fd', { cwd: targetDir, stdio: 'ignore', timeout: 5000 });
   console.log('[cPanel Auto-Clean] Discarded local uncommitted server changes.');
 } catch (gitErr) {

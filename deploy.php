@@ -38,7 +38,14 @@ function runCmd($cmd) {
 
 if (file_exists($repoPath)) {
     echo "Using Repository Path: $repoPath\n\n";
-    
+
+    // Unlink blocking database.json in repo directory to unblock Git pull
+    $repoDbFile = $repoPath . '/data/database.json';
+    if (file_exists($repoDbFile)) {
+        @unlink($repoDbFile);
+        echo "[Fix] Unlinked blocking data/database.json from repository folder.\n";
+    }
+
     echo "[1/4] Discarding local changes & pulling from GitHub...\n";
     $gitCmd = "cd " . escapeshellarg($repoPath) . " && git reset --hard HEAD && git pull origin main";
     $gitOutput = runCmd($gitCmd);
