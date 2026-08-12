@@ -111,7 +111,9 @@ const App = {
   async forceSyncDatabase() {
     this.showToast('Syncing...', 'Mengambil data stok terbaru dari server...', 'info');
     try {
-      await this.syncServerStocksToLocal();
+      if (typeof db !== 'undefined' && typeof db.syncFromBackend === 'function') {
+        await db.syncFromBackend();
+      }
       this.renderStorefront();
       if (this.currentPage === 'stock') this.renderStockTable();
       if (this.currentPage === 'dashboard') this.renderDashboardView();
