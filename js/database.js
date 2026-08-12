@@ -394,17 +394,67 @@ class StoreDB {
 
   async syncFromBackend() {
     try {
-      const res = await fetch('/api/products?t=' + Date.now(), { cache: 'no-store' });
-      if (res.ok) {
-        const data = await res.json();
+      const auth = this.getAuth();
+      const headers = auth && auth.token ? { 'Authorization': `Bearer ${auth.token}` } : {};
+
+      // 1. Sync Products from phpMyAdmin MySQL
+      const resProds = await fetch('/api/products?t=' + Date.now(), { cache: 'no-store' });
+      if (resProds.ok) {
+        const data = await resProds.json();
         if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
           localStorage.setItem(DB_KEYS.PRODUCTS, JSON.stringify(data.products));
           console.log('[cPanel MySQL Sync] Loaded', data.products.length, 'products from phpMyAdmin MySQL');
-          if (typeof App !== 'undefined') {
-            if (typeof App.renderStorefront === 'function') App.renderStorefront();
-            if (typeof App.renderCatalogTable === 'function') App.renderCatalogTable();
+        }
+      }
+
+      // 2. Sync Stocks directly from phpMyAdmin MySQL
+      const resStocks = await fetch('/api/stocks?t=' + Date.now(), { cache: 'no-store', headers });
+      if (resStocks.ok) {
+        const data = await resStocks.json();
+        if (data && data.success && Array.isArray(data.stocks)) {
+          localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify(data.stocks));
+          console.log('[cPanel MySQL Sync] Loaded', data.stocks.length, 'stocks live from phpMyAdmin MySQL');
+        }
+      }
+
+      // 3. Sync Users directly from phpMyAdmin MySQL
+      if (auth) {
+        const resUsers = await fetch('/api/admin/users?t=' + Date.now(), { cache: 'no-store', headers });
+        if (resUsers.ok) {
+          const data = await resUsers.json();
+          if (data && data.success && Array.isArray(data.users) && data.users.length > 0) {
+            localStorage.setItem(DB_KEYS.USERS, JSON.stringify(data.users));
+            console.log('[cPanel MySQL Sync] Loaded', data.users.length, 'users live from phpMyAdmin MySQL');
           }
         }
+      }
+
+      // 4. Sync Settings directly from phpMyAdmin MySQL
+      const resSettings = await fetch('/api/admin/settings?t=' + Date.now(), { cache: 'no-store' });
+      if (resSettings.ok) {
+        const data = await resSettings.json();
+        if (data && data.success && data.settings && Object.keys(data.settings).length > 0) {
+          localStorage.setItem(DB_KEYS.SETTINGS, JSON.stringify(data.settings));
+        }
+      }
+
+      // 5. Sync Activity Logs directly from phpMyAdmin MySQL
+      if (auth) {
+        const resLogs = await fetch('/api/admin/logs?t=' + Date.now(), { cache: 'no-store', headers });
+        if (resLogs.ok) {
+          const data = await resLogs.json();
+          if (data && data.success && Array.isArray(data.logs)) {
+            localStorage.setItem(DB_KEYS.LOGS, JSON.stringify(data.logs));
+          }
+        }
+      }
+
+      if (typeof App !== 'undefined') {
+        if (typeof App.renderStorefront === 'function') App.renderStorefront();
+        if (typeof App.renderCatalogTable === 'function') App.renderCatalogTable();
+        if (typeof App.renderStockTable === 'function' && App.currentPage === 'stock') App.renderStockTable();
+        if (typeof App.renderDashboardView === 'function' && App.currentPage === 'dashboard') App.renderDashboardView();
+        if (typeof App.renderUsersTable === 'function' && App.currentPage === 'users') App.renderUsersTable();
       }
     } catch (e) {
       console.warn('[cPanel MySQL Sync Error]:', e);

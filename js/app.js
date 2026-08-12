@@ -52,6 +52,9 @@ const App = {
   },
 
   handleRoute() {
+    if (typeof db !== 'undefined' && typeof db.syncFromBackend === 'function') {
+      db.syncFromBackend();
+    }
     const rawHash = (location.hash || '').replace('#', '').trim().toLowerCase();
     const pathname = (location.pathname || '').trim().toLowerCase();
     const auth = db.getAuth();

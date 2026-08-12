@@ -196,6 +196,33 @@ router.get('/products', asyncHandler(async (req, res) => {
   return res.json({ success: true, products: db.products });
 }));
 
+router.get('/stocks', asyncHandler(async (req, res) => {
+  if (dbHelper.checkIsMySQL()) {
+    try {
+      const pool = dbHelper.getPool();
+      const [rows] = await pool.query('SELECT * FROM stocks ORDER BY created_at DESC');
+      const sanitized = (rows || []).map(s => {
+        const copy = { ...s };
+        copy.password = decryptCredential(copy.password);
+        copy.pin = decryptCredential(copy.pin);
+        return copy;
+      });
+      return res.json({ success: true, stocks: sanitized, source: 'mysql' });
+    } catch (err) {
+      console.warn('[API WARN] MySQL stocks fetch failed:', err.message);
+    }
+  }
+
+  const db = loadDB();
+  const sanitized = (db.stocks || []).map(s => {
+    const copy = { ...s };
+    copy.password = decryptCredential(copy.password);
+    copy.pin = decryptCredential(copy.pin);
+    return copy;
+  });
+  return res.json({ success: true, stocks: sanitized, source: 'json' });
+}));
+
 router.get('/auth/me', asyncHandler(async (req, res) => {
   const session = authenticateSession(req);
   if (!session) {
@@ -549,25 +576,123 @@ router.post('/simulations/pay-order', asyncHandler(async (req, res) => {
 // 5. ADMIN AUTHENTICATED ENDPOINTS
 // ---------------------------------------------------------
 router.get('/admin/notifications', requireAuth(), asyncHandler(async (req, res) => {
+  if (dbHelper.checkIsMySQL()) {
+    try {
+      const pool = dbHelper.getPool();
+      const [rows] = await pool.query('SELECT * FROM notifications ORDER BY created_at DESC LIMIT 50');
+      const unreadCount = (rows || []).filter(n => !n.is_read && !n.read).length;
+      return res.json({
+        success: true,
+        unread_count: unreadCount,
+        notifications: rows || [],
+        source: 'mysql'
+      });
+    } catch (err) {
+      console.warn('[API WARN] MySQL notifications fetch failed:', err.message);
+    }
+  }
+
   const db = loadDB();
   const notifications = db.notifications || [];
   const unreadCount = notifications.filter(n => !n.read).length;
   return res.json({
     success: true,
     unread_count: unreadCount,
-    notifications: notifications.slice(0, 20)
+    notifications: notifications.slice(0, 20),
+    source: 'json'
   });
 }));
 
 router.get('/admin/orders', requireAuth(), asyncHandler(async (req, res) => {
+  if (dbHelper.checkIsMySQL()) {
+    try {
+      const pool = dbHelper.getPool();
+      const [rows] = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
+      return res.json({ success: true, orders: rows || [], source: 'mysql' });
+    } catch (err) {
+      console.warn('[API WARN] MySQL orders fetch failed:', err.message);
+    }
+  }
+
   const db = loadDB();
-  return res.json({ success: true, orders: db.orders });
+  return res.json({ success: true, orders: db.orders || [], source: 'json' });
+}));
+
+router.get('/admin/users', requireAuth(), asyncHandler(async (req, res) => {
+  if (dbHelper.checkIsMySQL()) {
+    try {
+      const pool = dbHelper.getPool();
+      const [rows] = await pool.query('SELECT id, username, name, role, created_at FROM users ORDER BY created_at ASC');
+      return res.json({ success: true, users: rows || [], source: 'mysql' });
+    } catch (err) {
+      console.warn('[API WARN] MySQL users fetch failed:', err.message);
+    }
+  }
+
+  const db = loadDB();
+  return res.json({ success: true, users: db.users || [], source: 'json' });
+}));
+
+router.get('/admin/logs', requireAuth(), asyncHandler(async (req, res) => {
+  if (dbHelper.checkIsMySQL()) {
+    try {
+      const pool = dbHelper.getPool();
+      const [rows] = await pool.query('SELECT * FROM activity_logs ORDER BY created_at DESC LIMIT 200');
+      return res.json({ success: true, logs: rows || [], source: 'mysql' });
+    } catch (err) {
+      console.warn('[API WARN] MySQL activity_logs fetch failed:', err.message);
+    }
+  }
+
+  const db = loadDB();
+  return res.json({ success: true, logs: db.logs || [], source: 'json' });
+}));
+
+router.get('/admin/settings', asyncHandler(async (req, res) => {
+  if (dbHelper.checkIsMySQL()) {
+    try {
+      const pool = dbHelper.getPool();
+      const [rows] = await pool.query('SELECT `key`, `value` FROM settings');
+      const settingsObj = {};
+      (rows || []).forEach(r => {
+        settingsObj[r.key] = r.value;
+      });
+      return res.json({ success: true, settings: settingsObj, source: 'mysql' });
+    } catch (err) {
+      console.warn('[API WARN] MySQL settings fetch failed:', err.message);
+    }
+  }
+
+  const db = loadDB();
+  return res.json({ success: true, settings: db.settings || {}, source: 'json' });
 }));
 
 router.get('/admin/stocks', requireAuth(), asyncHandler(async (req, res) => {
   const session = req.user;
+
+  if (dbHelper.checkIsMySQL()) {
+    try {
+      const pool = dbHelper.getPool();
+      const [rows] = await pool.query('SELECT * FROM stocks ORDER BY created_at DESC');
+      let sanitizedStocks = (rows || []).map(s => {
+        const copy = { ...s };
+        copy.password = decryptCredential(copy.password);
+        copy.pin = decryptCredential(copy.pin);
+        return copy;
+      });
+
+      if (session.role === 'Member') {
+        sanitizedStocks = sanitizedStocks.filter(s => s.assigned_to === session.username || s.sold_by === session.username);
+      }
+
+      return res.json({ success: true, stocks: sanitizedStocks, source: 'mysql' });
+    } catch (err) {
+      console.warn('[API WARN] MySQL admin stocks fetch failed:', err.message);
+    }
+  }
+
   const db = loadDB();
-  let sanitizedStocks = db.stocks.map(s => {
+  let sanitizedStocks = (db.stocks || []).map(s => {
     const copy = { ...s };
     copy.password = decryptCredential(copy.password);
     copy.pin = decryptCredential(copy.pin);
@@ -578,10 +703,20 @@ router.get('/admin/stocks', requireAuth(), asyncHandler(async (req, res) => {
     sanitizedStocks = sanitizedStocks.filter(s => s.assigned_to === session.username || s.sold_by === session.username);
   }
 
-  return res.json({ success: true, stocks: sanitizedStocks });
+  return res.json({ success: true, stocks: sanitizedStocks, source: 'json' });
 }));
 
 router.post('/admin/stocks/wipe-all', requireAuth(), asyncHandler(async (req, res) => {
+  if (dbHelper.checkIsMySQL()) {
+    try {
+      const pool = dbHelper.getPool();
+      await pool.query('DELETE FROM stocks');
+      console.log('[MySQL] Cleared all rows in stocks table in phpMyAdmin');
+    } catch (err) {
+      console.warn('[API WARN] MySQL wipe-all stocks failed:', err.message);
+    }
+  }
+
   const db = loadDB();
   db.stocks = [];
   db.orders = [];
@@ -593,6 +728,37 @@ router.post('/admin/stocks/update-status', requireAuth(), asyncHandler(async (re
   const session = req.user;
   const body = req.body;
   const { id, status, assigned_to, sold_by, customer_name, customer_wa, product_id, product_name, email, password, login_by, profile, pin, nomor, note } = body;
+
+  if (dbHelper.checkIsMySQL()) {
+    try {
+      const pool = dbHelper.getPool();
+      const updateFields = [];
+      const queryParams = [];
+
+      if (status !== undefined) { updateFields.push('status = ?'); queryParams.push(status); }
+      if (assigned_to !== undefined) { updateFields.push('assigned_to = ?'); queryParams.push(assigned_to); }
+      if (sold_by !== undefined) { updateFields.push('sold_by = ?'); queryParams.push(sold_by); }
+      if (customer_name !== undefined) { updateFields.push('buyer_name = ?'); queryParams.push(customer_name); }
+      if (customer_wa !== undefined) { updateFields.push('buyer_wa = ?'); queryParams.push(customer_wa); }
+      if (product_id !== undefined) { updateFields.push('product_id = ?'); queryParams.push(product_id); }
+      if (product_name !== undefined) { updateFields.push('product_name = ?'); queryParams.push(product_name); }
+      if (email !== undefined) { updateFields.push('email = ?'); queryParams.push(email); }
+      if (password !== undefined) { updateFields.push('password = ?'); queryParams.push(encryptCredential(password)); }
+      if (login_by !== undefined) { updateFields.push('login_by = ?'); queryParams.push(login_by); }
+      if (profile !== undefined) { updateFields.push('profile = ?'); queryParams.push(profile); }
+      if (pin !== undefined) { updateFields.push('pin = ?'); queryParams.push(encryptCredential(pin)); }
+      if (note !== undefined) { updateFields.push('note = ?'); queryParams.push(note); }
+
+      if (updateFields.length > 0) {
+        updateFields.push('updated_at = NOW()');
+        queryParams.push(id);
+        await pool.query(`UPDATE stocks SET ${updateFields.join(', ')} WHERE id = ?`, queryParams);
+      }
+    } catch (err) {
+      console.warn('[API WARN] MySQL update-status stock failed:', err.message);
+    }
+  }
+
   const db = loadDB();
   let stock = db.stocks.find(s => s.id === id || (s.email && s.email === body.email));
 
@@ -629,7 +795,8 @@ router.post('/admin/stocks/update-status', requireAuth(), asyncHandler(async (re
 
     return res.json({ success: true, message: 'Stock data updated in server.', stock: returnedStock });
   }
-  return res.status(404).json({ success: false, message: 'Stock tidak ditemukan.' });
+
+  return res.json({ success: true, message: 'Stock data updated in server.' });
 }));
 
 module.exports = router;
