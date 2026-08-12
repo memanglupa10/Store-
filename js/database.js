@@ -403,18 +403,22 @@ class StoreDB {
         const data = await resProds.json();
         if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
           localStorage.setItem(DB_KEYS.PRODUCTS, JSON.stringify(data.products));
-          console.log('[cPanel MySQL Sync] Loaded', data.products.length, 'products from phpMyAdmin MySQL');
         }
       }
 
       // 2. Sync Stocks directly from phpMyAdmin MySQL
-      const resStocks = await fetch('/api/stocks?t=' + Date.now(), { cache: 'no-store', headers });
+      const stockEndpoint = auth && auth.token ? '/api/admin/stocks' : '/api/stocks';
+      const resStocks = await fetch(stockEndpoint + '?t=' + Date.now(), { cache: 'no-store', headers });
       if (resStocks.ok) {
         const data = await resStocks.json();
         if (data && data.success && Array.isArray(data.stocks)) {
           localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify(data.stocks));
           console.log('[cPanel MySQL Sync] Loaded', data.stocks.length, 'stocks live from phpMyAdmin MySQL');
+        } else {
+          localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify([]));
         }
+      } else {
+        localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify([]));
       }
 
       // 3. Sync Users directly from phpMyAdmin MySQL
@@ -424,7 +428,6 @@ class StoreDB {
           const data = await resUsers.json();
           if (data && data.success && Array.isArray(data.users) && data.users.length > 0) {
             localStorage.setItem(DB_KEYS.USERS, JSON.stringify(data.users));
-            console.log('[cPanel MySQL Sync] Loaded', data.users.length, 'users live from phpMyAdmin MySQL');
           }
         }
       }
@@ -458,6 +461,7 @@ class StoreDB {
       }
     } catch (e) {
       console.warn('[cPanel MySQL Sync Error]:', e);
+      localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify([]));
     }
   }
 
@@ -565,8 +569,10 @@ class StoreDB {
       }
     }
 
-    const SEED_VERSION = 'v99_empty_stocks_clean';
+    const SEED_VERSION = 'v100_always_live_mysql_clean';
 
+    // Always reset local stocks cache to [] so browser relies 100% on live phpMyAdmin MySQL response
+    localStorage.setItem(DB_KEYS.STOCKS, JSON.stringify([]));
     if (localStorage.getItem('babyiel_seed_version') !== SEED_VERSION) {
       this.seedInitialStocks();
       localStorage.setItem('babyiel_seed_version', SEED_VERSION);
