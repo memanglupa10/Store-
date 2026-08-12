@@ -148,15 +148,8 @@ function loadDB() {
     if (!parsed.users) parsed.users = [];
     if (!parsed.webhook_logs) parsed.webhook_logs = [];
 
-    // Auto purge old dummy seed stocks if present
-    if (parsed.stocks && Array.isArray(parsed.stocks) && parsed.stocks.length > 0) {
-      const filtered = parsed.stocks.filter(s => s.email && !s.email.includes('@babyiel.com') && !s.email.includes('.ready') && !s.email.includes('ready0'));
-      if (filtered.length !== parsed.stocks.length) {
-        parsed.stocks = filtered;
-        saveDB(parsed);
-      }
-    }
-
+    // Always force parsed.stocks to empty [] so dummy stocks are never served from JSON fallback
+    parsed.stocks = [];
     return parsed;
   } catch (err) {
     console.error('[STORAGE ERROR] Error reading database file:', err.message);
