@@ -25,30 +25,53 @@ let isMySQLEnabled = false;
 
 async function initDB() {
   if (config.db.disableMySQL) {
-    console.log('[DB] MySQL disabled via DISABLE_MYSQL flag. Operating in JSON Database Fallback mode.');
+    console.log('[DB] MySQL disabled via DISABLE_MYSQL flag.');
     return false;
   }
 
   try {
     pool = mysql.createPool({
-      ...DB_CONFIG,
-      connectTimeout: 2500
+      host: DB_CONFIG.host || '127.0.0.1',
+      user: DB_CONFIG.user,
+      password: DB_CONFIG.password,
+      database: DB_CONFIG.database,
+      port: DB_CONFIG.port || 3306,
+      waitForConnections: true,
+      connectionLimit: 10,
+      connectTimeout: 10000,
+      queueLimit: 0,
+      ssl: DB_CONFIG.ssl
     });
     
-    // Test connection with 2-second timeout safeguard
-    const connPromise = pool.getConnection();
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('MySQL connection timeout (2.5s)')), 2500));
-    const connection = await Promise.race([connPromise, timeoutPromise]);
-    console.log(`[DB] Connected successfully to MySQL at ${DB_CONFIG.host}:${DB_CONFIG.port}/${DB_CONFIG.database}`);
+    const connection = await pool.getConnection();
+    console.log(`[DB] Connected successfully to cPanel MySQL at ${DB_CONFIG.host}:${DB_CONFIG.port}/${DB_CONFIG.database}`);
     connection.release();
     
     isMySQLEnabled = true;
     return true;
   } catch (err) {
-    console.warn(`[DB WARN] MySQL connection failed (${err.message}). Operating in JSON Database Fallback mode.`);
-    isMySQLEnabled = false;
-    pool = null;
-    return false;
+    console.warn(`[DB WARN] MySQL connection initial attempt failed (${err.message}). Retrying pool...`);
+    try {
+      pool = mysql.createPool({
+        host: '127.0.0.1',
+        user: DB_CONFIG.user,
+        password: DB_CONFIG.password,
+        database: DB_CONFIG.database,
+        port: DB_CONFIG.port || 3306,
+        waitForConnections: true,
+        connectionLimit: 10,
+        connectTimeout: 10000
+      });
+      const connection = await pool.getConnection();
+      console.log(`[DB] Connected successfully to cPanel MySQL via 127.0.0.1/${DB_CONFIG.database}`);
+      connection.release();
+      isMySQLEnabled = true;
+      return true;
+    } catch (err2) {
+      console.error(`[DB ERROR] Cannot connect to cPanel MySQL database (${err2.message}). Please verify MySQL credentials in .env!`);
+      isMySQLEnabled = false;
+      return false;
+    }
   }
 }
 
