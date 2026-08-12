@@ -126,19 +126,24 @@ const App = {
   },
 
   async wipeAllStocks() {
-    if (!confirm('⚠️ HAPUS TOTAL STOK:\nApakah Anda yakin ingin mengosongkan SELURUH data stok di server (0 stok)?')) return;
+    if (!confirm('⚠️ HAPUS TOTAL STOK:\nApakah Anda yakin ingin mengosongkan SELURUH data stok di MySQL server (0 stok)?')) return;
 
     try {
-      await fetch('/api/admin/stocks/wipe-all', {
+      this.showToast('Mengosongkan Stok...', 'Mengirim perintah hapus total ke MySQL server...', 'info');
+      const res = await fetch('/api/admin/stocks/wipe-all', {
         method: 'POST',
         headers: db.getAuthHeaders()
       });
-      localStorage.setItem('babyiel_stocks', JSON.stringify([]));
-      if (typeof db !== 'undefined' && db.seedInitialStocks) db.seedInitialStocks();
-      this.renderStorefront();
-      if (this.currentPage === 'stock') this.renderStockTable();
-      if (this.currentPage === 'dashboard') this.renderDashboardView();
-      this.showToast('Stok Dikosongkan!', 'Seluruh data stok di server & lokal berhasil dikosongkan (0 stok).', 'success');
+      if (res.ok) {
+        localStorage.setItem('babyiel_stocks', JSON.stringify([]));
+        if (typeof db !== 'undefined' && db.seedInitialStocks) db.seedInitialStocks();
+        this.renderStorefront();
+        if (this.currentPage === 'stock') this.renderStockTable();
+        if (this.currentPage === 'dashboard') this.renderDashboardView();
+        this.showToast('Stok Dikosongkan!', 'Seluruh data stok di MySQL server & lokal berhasil dikosongkan (0 stok).', 'success');
+      } else {
+        throw new Error('Server wipe response failed: ' + res.status);
+      }
     } catch (e) {
       console.error('wipeAllStocks error:', e);
       localStorage.setItem('babyiel_stocks', JSON.stringify([]));
