@@ -1005,6 +1005,9 @@ class StoreDB {
     this.checkSubscriptionExpirations();
     let stocks = JSON.parse(localStorage.getItem(DB_KEYS.STOCKS)) || [];
 
+    // HARD PURGE: Filter out any legacy dummy seed emails (@babyiel.com, ready0, .ready)
+    stocks = stocks.filter(s => s && s.email && !s.email.includes('@babyiel.com') && !s.email.includes('.ready') && !s.email.includes('ready0') && !s.email.includes('babyielstore.my.id'));
+
     const auth = this.getAuth();
     if (auth && auth.role === 'Member') {
       const username = auth.username;
