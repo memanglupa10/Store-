@@ -1,14 +1,8 @@
 {
   "version": 2,
   "functions": {
-    "api/**/*.js": {
-      "includeFiles": [
-        "css/**",
-        "js/**",
-        "assets/**",
-        "index.html",
-        "favicon.ico"
-      ]
+    "api/index.js": {
+      "includeFiles": "css/**,js/**,assets/**,index.html,favicon.ico"
     }
   },
   "rewrites": [
@@ -18,6 +12,7 @@
     }
   ]
 }
+
 
 
 
