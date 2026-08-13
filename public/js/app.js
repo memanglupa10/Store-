@@ -2554,8 +2554,11 @@ const App = {
     if (select) {
       const products = db.getProducts();
       let html = '<option value="">-- Pilih Produk --</option>';
+      const defaultId = (this.stockFilters && this.stockFilters.product_id && this.stockFilters.product_id !== 'ALL') ? this.stockFilters.product_id : (products[0] ? products[0].id : '');
+      
       products.forEach(p => {
-        html += `<option value="${p.id}">${p.name}</option>`;
+        const isSelected = p.id === defaultId ? 'selected' : '';
+        html += `<option value="${p.id}" ${isSelected}>${p.name}</option>`;
       });
       select.innerHTML = html;
 
@@ -2570,7 +2573,7 @@ const App = {
           });
           pkgSelect.innerHTML = phtml;
         } else {
-          pkgSelect.innerHTML = '<option value="Paket Standard">Standard</option>';
+          pkgSelect.innerHTML = '<option value="">-- Pilih Produk Dahulu --</option>';
         }
       };
 
