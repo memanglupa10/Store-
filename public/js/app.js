@@ -458,11 +458,18 @@ const App = {
         categoryMap.get(cat).push(pr);
       });
 
+      // Sort categories so the category with the lowest price option comes FIRST
+      const sortedCategories = Array.from(categoryMap.entries()).sort((a, b) => {
+        const minA = Math.min(...a[1].map(x => x.price || 0));
+        const minB = Math.min(...b[1].map(x => x.price || 0));
+        return minA - minB;
+      });
+
       const flatPricesList = [];
       let html = '';
       let globalIdx = 0;
 
-      categoryMap.forEach((items, cat) => {
+      sortedCategories.forEach(([cat, items]) => {
         // Sort items in category by price
         items.sort((a, b) => (a.price || 0) - (b.price || 0));
 
@@ -710,7 +717,7 @@ const App = {
 
   createFallbackQRISOrder(prod, label, name, wa, email) {
     const orderId = `BYL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    const basePrice = (prod && prod.prices && prod.prices[0]) ? (prod.prices[0].price || 15000) : 15000;
+    const basePrice = (this.selectedPackageData && this.selectedPackageData.price) ? this.selectedPackageData.price : ((prod && prod.prices && prod.prices[0]) ? (prod.prices[0].price || 15000) : 15000);
     const qrisFeeRate = 0.007; // 0.7% QRIS MDR Fee
     const price = basePrice > 0 ? Math.ceil((basePrice * (1 + qrisFeeRate)) / 100) * 100 : 0;
     const qrString = `00020101021226670016COM.BABYIEL.WWW01189360091430000000000215ID10293847560303UMI5204581253033605802ID5920BABYIEL STORE OFFICIAL6013JAKARTA SELATAN61051211062070703A016304`;
