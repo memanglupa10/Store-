@@ -253,7 +253,18 @@ router.post('/checkout', asyncHandler(async (req, res) => {
   const qrisFeeRate = 0.007; // 0.7% QRIS MDR Fee
   const price = catalogPrice > 0 ? Math.ceil((catalogPrice * (1 + qrisFeeRate)) / 100) * 100 : 0;
 
-  let availableStock = (db.stocks || []).find(s => (s.product_id === product_id || s.product_name === prod.name || (s.product_id && s.product_id.includes(product_id.replace('prod-', '')))) && (s.status === 'READY' || s.status === 'AVAILABLE'));
+  let availableStock = (db.stocks || []).find(s =>
+    (s.product_id === product_id || s.product_name === prod.name || (s.product_id && s.product_id.includes(product_id.replace('prod-', '')))) &&
+    (s.package_name ? s.package_name === package_label : true) &&
+    (s.status === 'READY' || s.status === 'AVAILABLE')
+  );
+
+  if (!availableStock) {
+    availableStock = (db.stocks || []).find(s =>
+      (s.product_id === product_id || s.product_name === prod.name || (s.product_id && s.product_id.includes(product_id.replace('prod-', '')))) &&
+      (s.status === 'READY' || s.status === 'AVAILABLE')
+    );
+  }
 
   if (!availableStock) {
     return res.status(400).json({
