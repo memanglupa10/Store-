@@ -1,10 +1,5 @@
 {
   "version": 2,
-  "functions": {
-    "api/**/*.js": {
-      "includeFiles": "css/**,js/**,assets/**,index.html,favicon.ico"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -40,4 +35,5 @@
     }
   ]
 }
+
 
