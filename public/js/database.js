@@ -2831,6 +2831,10 @@ class StoreDB {
       stocks = stocks.filter(s => s.product_id === filters.product_id);
     }
 
+    if (filters.package_name && filters.package_name !== 'ALL') {
+      stocks = stocks.filter(s => (s.package_name && s.package_name === filters.package_name) || (s.notes && s.notes.includes(filters.package_name)));
+    }
+
     if (filters.assignment && filters.assignment !== 'ALL') {
       if (filters.assignment === 'UNASSIGNED') {
         stocks = stocks.filter(s => !s.assigned_to || s.assigned_to === 'admin' || s.assigned_to === '-');

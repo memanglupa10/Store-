@@ -13,6 +13,7 @@ const App = {
   stockFilters: {
     status: 'READY',
     product_id: 'ALL',
+    package_name: 'ALL',
     assignment: 'ALL',
     search: '',
     page: 1,
@@ -1753,6 +1754,18 @@ const App = {
     if (filterProdSelect) {
       filterProdSelect.addEventListener('change', (e) => {
         this.stockFilters.product_id = e.target.value;
+        this.stockFilters.package_name = 'ALL';
+        this.stockFilters.page = 1;
+        this.updatePackageFilterDropdown();
+        this.renderStockTable();
+      });
+    }
+
+    // Stock Filter Package Dropdown
+    const filterPkgSelect = document.getElementById('filter-package-select');
+    if (filterPkgSelect) {
+      filterPkgSelect.addEventListener('change', (e) => {
+        this.stockFilters.package_name = e.target.value;
         this.stockFilters.page = 1;
         this.renderStockTable();
       });
@@ -2102,7 +2115,37 @@ const App = {
       prodSelect.innerHTML = html;
     }
 
+    this.updatePackageFilterDropdown();
     this.renderStockTable();
+  },
+
+  updatePackageFilterDropdown() {
+    const pkgSelect = document.getElementById('filter-package-select');
+    if (!pkgSelect) return;
+
+    const products = db.getProducts();
+    const selectedProdId = this.stockFilters.product_id;
+    let packages = [];
+
+    if (selectedProdId && selectedProdId !== 'ALL') {
+      const prod = products.find(p => p.id === selectedProdId);
+      if (prod && prod.prices) {
+        packages = prod.prices.map(pr => pr.label);
+      }
+    } else {
+      const set = new Set();
+      products.forEach(p => {
+        if (p.prices) p.prices.forEach(pr => set.add(pr.label));
+      });
+      packages = Array.from(set);
+    }
+
+    let html = '<option value="ALL">Semua Paket / Durasi</option>';
+    packages.forEach(pkg => {
+      const selected = this.stockFilters.package_name === pkg ? 'selected' : '';
+      html += `<option value="${pkg}" ${selected}>📦 ${pkg}</option>`;
+    });
+    pkgSelect.innerHTML = html;
   },
 
   switchStockTab(status) {
@@ -2218,13 +2261,24 @@ const App = {
 
       const assignedDateFormatted = item.assigned_at ? new Date(item.assigned_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '';
 
+      const pkgBadgeHtml = `
+        <div style="margin-top: 0.25rem;">
+          <span class="badge" style="background: rgba(124, 58, 237, 0.1); color: #7c3aed; border: 1px solid rgba(124, 58, 237, 0.25); font-size: 0.72rem; font-weight: 800; padding: 0.2rem 0.55rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.3rem;">
+            <i class="fa-solid fa-box-archive" style="font-size: 0.68rem; color: #7c3aed;"></i> ${item.package_name || 'Paket Standard'}
+          </span>
+        </div>
+      `;
+
       html += `
         <tr>
           <td>
-            <div class="product-pill">
-              ${appIconHtml}
-              <span>${item.product_name}</span>
-              ${subStatusBadgeHtml}
+            <div class="product-pill" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                ${appIconHtml}
+                <span style="font-weight: 700; color: #0f172a;">${item.product_name}</span>
+                ${subStatusBadgeHtml}
+              </div>
+              ${pkgBadgeHtml}
             </div>
           </td>
           <td>
@@ -2482,6 +2536,7 @@ const App = {
 
     // Populate product select dropdown
     const select = document.getElementById('stock-product-id');
+    const pkgSelect = document.getElementById('stock-package-name');
     if (select) {
       const products = db.getProducts();
       let html = '<option value="">-- Pilih Produk --</option>';
@@ -2489,6 +2544,24 @@ const App = {
         html += `<option value="${p.id}">${p.name}</option>`;
       });
       select.innerHTML = html;
+
+      const updateAddStockPackages = () => {
+        if (!pkgSelect) return;
+        const prodId = select.value;
+        const prod = products.find(p => p.id === prodId);
+        if (prod && prod.prices && prod.prices.length > 0) {
+          let phtml = '';
+          prod.prices.forEach(pr => {
+            phtml += `<option value="${pr.label}">📦 ${pr.label} (${pr.category || 'Member'})</option>`;
+          });
+          pkgSelect.innerHTML = phtml;
+        } else {
+          pkgSelect.innerHTML = '<option value="Paket Standard">Standard</option>';
+        }
+      };
+
+      select.onchange = updateAddStockPackages;
+      updateAddStockPackages();
     }
 
     // Switch to target tab
@@ -2530,8 +2603,12 @@ const App = {
       return;
     }
 
+    const packageEl = document.getElementById('stock-package-name');
+    const package_name = packageEl ? packageEl.value : '';
+
     const newStock = db.addStock({
       product_id,
+      package_name: package_name || 'Standard',
       email,
       nomor: nomor || '-',
       login_by: login_by || 'OTP WhatsApp',

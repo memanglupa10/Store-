@@ -784,6 +784,11 @@
                   <option value="ALL">Semua Produk</option>
                 </select>
 
+                <!-- Package Dropdown -->
+                <select id="filter-package-select" class="form-select no-icon" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem; border-color: #7c3aed;">
+                  <option value="ALL">Semua Paket / Durasi</option>
+                </select>
+
                 <!-- Assignment Status Dropdown (Admin Only) -->
                 <select id="filter-assignment-select" class="form-select no-icon admin-only-btn" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
                   <option value="ALL">Semua Assignment</option>
@@ -1118,11 +1123,20 @@
           <div class="modal-body">
             <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #A76CF5; letter-spacing: 0.08em; margin-bottom: 0.85rem;">General Information</div>
 
-            <div class="form-group">
-              <label class="form-label" for="stock-product-id">Pilih Produk</label>
-              <select id="stock-product-id" class="form-select no-icon" required>
-                <!-- Dynamic options -->
-              </select>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="stock-product-id">Pilih Produk</label>
+                <select id="stock-product-id" class="form-select no-icon" required>
+                  <!-- Dynamic options -->
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="stock-package-name">Pilih Paket / Varian Durasi</label>
+                <select id="stock-package-name" class="form-select no-icon" required style="border-color: #7c3aed; font-weight: 700;">
+                  <!-- Dynamic options based on product -->
+                </select>
+              </div>
             </div>
 
             <div class="grid-2">
