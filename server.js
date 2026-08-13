@@ -130,7 +130,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // 6. Static File Serving with Strict No-Cache Headers for Instant Updates
-const PUBLIC_DIR = __dirname;
+const PUBLIC_DIR = path.resolve(process.cwd());
 app.use(express.static(PUBLIC_DIR, {
   maxAge: 0,
   etag: false,

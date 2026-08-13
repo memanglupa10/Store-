@@ -23,7 +23,7 @@ function notFoundHandler(req, res, next) {
 
   const reqPath = req.path || '';
   const fs = require('fs');
-  const targetFile = path.join(__dirname, '..', reqPath);
+  const targetFile = path.join(process.cwd(), reqPath);
 
   // Static file fallback check
   if (reqPath !== '/' && fs.existsSync(targetFile) && fs.statSync(targetFile).isFile()) {
@@ -33,7 +33,7 @@ function notFoundHandler(req, res, next) {
   // Single Page Application (SPA) Fallback for storefront routes
   const spaRoutes = ['/login', '/admin', '/katalog', '/dashboard', '/stock', '/products', '/settings'];
   if (spaRoutes.some(route => reqPath.startsWith(route)) || reqPath === '/') {
-    return res.sendFile(path.join(__dirname, '..', 'index.html'));
+    return res.sendFile(path.join(process.cwd(), 'index.html'));
   }
 
   res.status(404).json({
