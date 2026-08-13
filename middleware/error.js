@@ -13,36 +13,47 @@ const asyncHandler = (fn) => (req, res, next) => {
 
 // 404 Not Found Middleware
 function notFoundHandler(req, res, next) {
+  const rawUrl = req.originalUrl || req.url || req.path || '';
+  const cleanPath = rawUrl.split('?')[0];
+
   // If request is for an API route, return JSON 404
-  if (req.originalUrl.startsWith('/api')) {
+  if (cleanPath.startsWith('/api')) {
     return res.status(404).json({
       success: false,
-      message: `Endpoint API '${req.originalUrl}' tidak ditemukan.`
+      message: `Endpoint API '${cleanPath}' tidak ditemukan.`
     });
   }
 
-  const reqPath = req.path || '';
   const fs = require('fs');
-  const targetPublic = path.join(process.cwd(), 'public', reqPath);
-  const targetRoot = path.join(process.cwd(), reqPath);
+  if (cleanPath !== '/') {
+    const candidateFiles = [
+      path.join(process.cwd(), 'public', cleanPath),
+      path.join(process.cwd(), cleanPath),
+      path.join(__dirname, '..', 'public', cleanPath),
+      path.join(__dirname, '..', cleanPath)
+    ];
 
-  // Static file fallback check
-  if (reqPath !== '/') {
-    if (fs.existsSync(targetPublic) && fs.statSync(targetPublic).isFile()) {
-      return res.sendFile(targetPublic);
-    }
-    if (fs.existsSync(targetRoot) && fs.statSync(targetRoot).isFile()) {
-      return res.sendFile(targetRoot);
+    for (const file of candidateFiles) {
+      if (fs.existsSync(file) && fs.statSync(file).isFile()) {
+        return res.sendFile(file);
+      }
     }
   }
 
   // Single Page Application (SPA) Fallback for storefront routes
   const spaRoutes = ['/login', '/admin', '/katalog', '/dashboard', '/stock', '/products', '/settings'];
-  if (spaRoutes.some(route => reqPath.startsWith(route)) || reqPath === '/') {
-    const spaIndex = fs.existsSync(path.join(process.cwd(), 'public', 'index.html'))
-      ? path.join(process.cwd(), 'public', 'index.html')
-      : path.join(process.cwd(), 'index.html');
-    return res.sendFile(spaIndex);
+  if (spaRoutes.some(route => cleanPath.startsWith(route)) || cleanPath === '/') {
+    const spaCandidates = [
+      path.join(process.cwd(), 'public', 'index.html'),
+      path.join(process.cwd(), 'index.html'),
+      path.join(__dirname, '..', 'public', 'index.html'),
+      path.join(__dirname, '..', 'index.html')
+    ];
+    for (const spaFile of spaCandidates) {
+      if (fs.existsSync(spaFile)) {
+        return res.sendFile(spaFile);
+      }
+    }
   }
 
   res.status(404).json({
