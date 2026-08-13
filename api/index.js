@@ -7,9 +7,6 @@
 const app = require('../server');
 
 module.exports = (req, res) => {
-  if (req.headers && req.headers['x-forwarded-url']) {
-    req.url = req.headers['x-forwarded-url'];
-  }
   return app(req, res);
 };
 
