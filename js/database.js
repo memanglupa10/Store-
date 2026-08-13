@@ -590,7 +590,7 @@ class StoreDB {
 
   getProducts() {
     let prods = JSON.parse(localStorage.getItem(DB_KEYS.PRODUCTS));
-    if (!prods || prods.length < 12 || !prods[0].garansi) {
+    if (!prods || !Array.isArray(prods) || prods.length !== DEFAULT_PRODUCTS.length) {
       localStorage.setItem(DB_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
       return DEFAULT_PRODUCTS;
     }
