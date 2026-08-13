@@ -130,8 +130,12 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // 6. Static File Serving with Strict No-Cache Headers for Instant Updates
-const PUBLIC_DIR = path.resolve(process.cwd());
-app.use(express.static(PUBLIC_DIR, {
+const fs = require('fs');
+const PUBLIC_DIR = fs.existsSync(path.join(process.cwd(), 'public'))
+  ? path.join(process.cwd(), 'public')
+  : path.resolve(process.cwd());
+
+const staticOptions = {
   maxAge: 0,
   etag: false,
   lastModified: false,
@@ -140,7 +144,12 @@ app.use(express.static(PUBLIC_DIR, {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
   }
-}));
+};
+
+app.use(express.static(PUBLIC_DIR, staticOptions));
+if (PUBLIC_DIR !== path.resolve(process.cwd())) {
+  app.use(express.static(path.resolve(process.cwd()), staticOptions));
+}
 
 // 7. Rate Limiter on API Endpoints
 app.use('/api', apiLimiter);

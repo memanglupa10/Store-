@@ -23,17 +23,26 @@ function notFoundHandler(req, res, next) {
 
   const reqPath = req.path || '';
   const fs = require('fs');
-  const targetFile = path.join(process.cwd(), reqPath);
+  const targetPublic = path.join(process.cwd(), 'public', reqPath);
+  const targetRoot = path.join(process.cwd(), reqPath);
 
   // Static file fallback check
-  if (reqPath !== '/' && fs.existsSync(targetFile) && fs.statSync(targetFile).isFile()) {
-    return res.sendFile(targetFile);
+  if (reqPath !== '/') {
+    if (fs.existsSync(targetPublic) && fs.statSync(targetPublic).isFile()) {
+      return res.sendFile(targetPublic);
+    }
+    if (fs.existsSync(targetRoot) && fs.statSync(targetRoot).isFile()) {
+      return res.sendFile(targetRoot);
+    }
   }
 
   // Single Page Application (SPA) Fallback for storefront routes
   const spaRoutes = ['/login', '/admin', '/katalog', '/dashboard', '/stock', '/products', '/settings'];
   if (spaRoutes.some(route => reqPath.startsWith(route)) || reqPath === '/') {
-    return res.sendFile(path.join(process.cwd(), 'index.html'));
+    const spaIndex = fs.existsSync(path.join(process.cwd(), 'public', 'index.html'))
+      ? path.join(process.cwd(), 'public', 'index.html')
+      : path.join(process.cwd(), 'index.html');
+    return res.sendFile(spaIndex);
   }
 
   res.status(404).json({
