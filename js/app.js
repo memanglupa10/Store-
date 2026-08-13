@@ -442,9 +442,7 @@ const App = {
     }
 
     const rawPrices = prod.prices || [];
-    const prices = [...rawPrices].sort((a, b) => (a.price || 0) - (b.price || 0));
-
-    if (prices.length === 0) {
+    if (rawPrices.length === 0) {
       listEl.innerHTML = `
         <div style="text-align: center; color: #64748b; padding: 1.5rem 0; font-size: 0.88rem;">
           Hubungi admin via WhatsApp untuk info ketersediaan paket.
@@ -452,29 +450,60 @@ const App = {
       `;
       this.selectedPackageData = { prod, label: 'Standard', price: 0 };
     } else {
-      this.selectedPackageData = { prod, label: prices[0].label, price: prices[0].price, category: prices[0].category };
+      // Group prices by category
+      const categoryMap = new Map();
+      rawPrices.forEach(pr => {
+        const cat = pr.category || 'Pilihan Paket';
+        if (!categoryMap.has(cat)) categoryMap.set(cat, []);
+        categoryMap.get(cat).push(pr);
+      });
 
+      const flatPricesList = [];
       let html = '';
-      prices.forEach((pr, idx) => {
-        const isSelected = idx === 0 ? 'selected' : '';
-        const catClean = pr.category ? pr.category.replace(/^[💎👑🚀🛡️👤✨]+\s*/, '').trim() : '';
-        const displayLabel = catClean && !pr.label.toLowerCase().includes(catClean.toLowerCase())
-          ? `${pr.label} (${catClean})`
-          : pr.label;
+      let globalIdx = 0;
+
+      categoryMap.forEach((items, cat) => {
+        // Sort items in category by price
+        items.sort((a, b) => (a.price || 0) - (b.price || 0));
 
         html += `
-          <div class="package-item-option ${isSelected}" data-idx="${idx}" onclick="App.selectCatalogPackage('${prod.id}', ${idx}, this)">
-            <div>
-              <div class="pkg-title">${displayLabel}</div>
-              <div class="pkg-category">Kategori: ${pr.category || 'Member'}</div>
-            </div>
-            <div class="pkg-price">
-              Rp ${(pr.price || 0).toLocaleString('id-ID')}
-              ${idx === 0 ? '<i class="fa-solid fa-circle-check" style="font-size: 1.05rem; color: #7c3aed; margin-left: 0.35rem;"></i>' : ''}
+          <div class="pkg-category-group" style="margin-top: 0.85rem; margin-bottom: 0.4rem;">
+            <div style="font-size: 0.82rem; font-weight: 800; color: #475569; background: #f8fafc; padding: 0.3rem 0.75rem; border-radius: 8px; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; gap: 0.35rem;">
+              ${cat}
             </div>
           </div>
         `;
+
+        items.forEach(pr => {
+          flatPricesList.push(pr);
+          const currentIdx = globalIdx;
+          const isSelected = currentIdx === 0 ? 'selected' : '';
+
+          // Clean title display (remove category suffix if redundant)
+          const catClean = pr.category ? pr.category.replace(/^[💎👑🚀🛡️👤⚡👥🔥✨]+\s*/, '').trim() : '';
+          let titleText = pr.label;
+          if (catClean && titleText.toLowerCase().includes(`(${catClean.toLowerCase()})`)) {
+            titleText = titleText.replace(new RegExp(`\\s*\\(${catClean}\\)`, 'gi'), '').trim();
+          }
+
+          html += `
+            <div class="package-item-option ${isSelected}" data-idx="${currentIdx}" onclick="App.selectCatalogPackage('${prod.id}', ${currentIdx}, this)">
+              <div>
+                <div class="pkg-title" style="font-weight: 700; color: #0f172a; font-size: 0.95rem;">${titleText}</div>
+                <div class="pkg-category" style="font-size: 0.75rem; color: #64748b; margin-top: 0.1rem;">Kategori: ${cat}</div>
+              </div>
+              <div class="pkg-price" style="font-weight: 800; color: #7c3aed; font-size: 1.05rem;">
+                Rp ${(pr.price || 0).toLocaleString('id-ID')}
+                ${currentIdx === 0 ? '<i class="fa-solid fa-circle-check" style="font-size: 1.05rem; color: #7c3aed; margin-left: 0.35rem;"></i>' : ''}
+              </div>
+            </div>
+          `;
+          globalIdx++;
+        });
       });
+
+      this.activeCatalogPrices = flatPricesList;
+      this.selectedPackageData = { prod, label: flatPricesList[0].label, price: flatPricesList[0].price, category: flatPricesList[0].category };
       listEl.innerHTML = html;
     }
 
@@ -487,11 +516,8 @@ const App = {
 
   selectCatalogPackage(productId, idx, el) {
     const prod = db.getProductById(productId);
-    if (!prod || !prod.prices) return;
-
-    const rawPrices = prod.prices || [];
-    const prices = [...rawPrices].sort((a, b) => (a.price || 0) - (b.price || 0));
-    if (!prices[idx]) return;
+    const prices = this.activeCatalogPrices || (prod ? prod.prices : []);
+    if (!prices || !prices[idx]) return;
 
     document.querySelectorAll('.package-item-option').forEach(item => {
       item.classList.remove('selected');
