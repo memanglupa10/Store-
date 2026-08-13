@@ -28,6 +28,27 @@ const { asyncHandler } = require('../middleware/error');
 // Atomic Database Lock Mutex for Concurrent Payment Allocation
 const ATOMIC_LOCKS = new Set();
 
+router.get('/debug-fs', (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+  const cwd = process.cwd();
+  const dirname = __dirname;
+  
+  function listDir(dir) {
+    try { return fs.readdirSync(dir); } catch(e) { return e.message; }
+  }
+
+  res.json({
+    cwd: cwd,
+    dirname: dirname,
+    cwdFiles: listDir(cwd),
+    parentCwdFiles: listDir(path.join(cwd, '..')),
+    cssFiles: listDir(path.join(cwd, 'css')),
+    parentCssFiles: listDir(path.join(cwd, '..', 'css')),
+  });
+});
+
+
 // Atomic Stock Allocation Mutex Lock Helper
 async function lockAndAllocateStock(db, order) {
   if (ATOMIC_LOCKS.has(order.id)) {
