@@ -23,58 +23,164 @@ if (!config.isVercel && !fs.existsSync(path.join(PUBLIC_DIR, 'data'))) {
 
 const DEFAULT_PRODUCTS = [
   {
+    id: 'prod-sharing-premium-ul',
+    name: 'ShariNG Premium UL',
+    icon: 'fa-tv',
+    image_url: 'assets/icons/netflix.svg',
+    color: '#7c3aed',
+    duration: '1 Hari - 7 Hari',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Hari', price: 6000, category: '💎 Sharing' },
+      { label: '3 Hari', price: 12000, category: '💎 Sharing' },
+      { label: '7 Hari', price: 17000, category: '💎 Sharing' }
+    ]
+  },
+  {
     id: 'prod-netflix',
-    name: 'Netflix Premium',
+    name: 'Netflix',
     icon: 'fa-film',
     image_url: 'assets/icons/netflix.svg',
     color: '#ef4444',
+    duration: '1 Hari - 1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Hari', price: 6000, category: '💎 Sharing' },
+      { label: '7 Hari', price: 12000, category: '💎 Sharing' },
+      { label: '14 Hari', price: 18000, category: '💎 Sharing' },
+      { label: '1 Bulan', price: 40000, category: '💎 Sharing' },
+      { label: '1 Bulan PROMO', price: 55000, category: '🔥 Promo' }
+    ]
+  },
+  {
+    id: 'prod-netflix-1p2u',
+    name: 'Netflix 1P2U',
+    icon: 'fa-film',
+    image_url: 'assets/icons/netflix.svg',
+    color: '#dc2626',
+    duration: '1 Hari - 1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Hari', price: 5000, category: '💎 Sharing 1P2U' },
+      { label: '7 Hari', price: 12000, category: '💎 Sharing 1P2U' },
+      { label: '1 Bulan', price: 30000, category: '💎 Sharing 1P2U' }
+    ]
+  },
+  {
+    id: 'prod-netflix-semi-private',
+    name: 'Netflix Semi Private',
+    icon: 'fa-film',
+    image_url: 'assets/icons/netflix.svg',
+    color: '#b91c1c',
     duration: '1 Bulan',
     garansi: '✅ Full Garansi Sesuai S&K',
     prices: [
-      { label: '3 Hari', price: 7000, category: '💎 Sharing 1P1U' },
-      { label: '7 Hari', price: 14000, category: '💎 Sharing 1P1U' },
-      { label: '1 Bulan', price: 35000, category: '💎 Sharing 1P1U' },
-      { label: '1 Bulan', price: 26000, category: '💎 Sharing 1P2U' },
-      { label: '1 Bulan', price: 165000, category: '👑 Private' }
+      { label: '1 Bulan', price: 55000, category: '👑 Semi Private' }
     ]
   },
   {
-    id: 'prod-canva',
-    name: 'Canva Pro',
-    icon: 'fa-palette',
-    image_url: 'assets/icons/canva.svg',
-    color: '#06b6d4',
-    duration: '1 Tahun',
+    id: 'prod-viu-private-basic',
+    name: 'Viu Private Basic',
+    icon: 'fa-play',
+    image_url: 'assets/icons/viu.svg',
+    color: '#f59e0b',
+    duration: '1 Bulan - 2 Bulan',
     garansi: '✅ Full Garansi Sesuai S&K',
     prices: [
-      { label: '1 Bulan', price: 10000, category: '💎 Member' },
-      { label: '1 Tahun', price: 27000, category: '💎 Member' }
+      { label: '1 Bulan', price: 10000, category: '👑 Private Basic' },
+      { label: '2 Bulan', price: 20000, category: '👑 Private Basic' }
     ]
   },
   {
-    id: 'prod-youtube',
-    name: 'YouTube Premium',
-    icon: 'fa-youtube',
+    id: 'prod-viu-private-anti-limit',
+    name: 'Viu Private Anti Limit',
+    icon: 'fa-play',
+    image_url: 'assets/icons/viu.svg',
+    color: '#d97706',
+    duration: '1 Bulan - 1 Tahun',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan', price: 15000, category: '🛡️ Anti Limit' },
+      { label: '2 Bulan', price: 25000, category: '🛡️ Anti Limit' },
+      { label: '6 Bulan', price: 40000, category: '🛡️ Anti Limit' },
+      { label: '1 Tahun', price: 45000, category: '🛡️ Anti Limit' }
+    ]
+  },
+  {
+    id: 'prod-wetv-sharing',
+    name: 'WeTV Sharing',
+    icon: 'fa-circle-play',
+    image_url: 'assets/icons/wetv.svg',
+    color: '#f97316',
+    duration: '1 Bulan - 1 Tahun',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan', price: 15000, category: '💎 Sharing' },
+      { label: '3 Bulan', price: 26000, category: '💎 Sharing' },
+      { label: '1 Tahun', price: 42000, category: '💎 Sharing' }
+    ]
+  },
+  {
+    id: 'prod-wetv-anti-limit',
+    name: 'WeTV Anti Limit',
+    icon: 'fa-circle-play',
+    image_url: 'assets/icons/wetv.svg',
+    color: '#ea580c',
+    duration: '1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan', price: 25000, category: '🛡️ Anti Limit' }
+    ]
+  },
+  {
+    id: 'prod-wetv-private',
+    name: 'WeTV Private',
+    icon: 'fa-circle-play',
+    image_url: 'assets/icons/wetv.svg',
+    color: '#c2410c',
+    duration: '1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan', price: 38000, category: '👑 Private' }
+    ]
+  },
+  {
+    id: 'prod-youtube-sharing',
+    name: 'YouTube Sharing',
+    icon: 'fa-play-circle',
     image_url: 'assets/icons/youtube.svg',
     color: '#ff0000',
-    duration: '1 Bulan',
+    duration: '1 Bulan - 3 Bulan',
     garansi: '✅ Full Garansi Sesuai S&K',
     prices: [
-      { label: '1 Bulan', price: 12000, category: '💎 Invite Family' },
-      { label: '3 Bulan', price: 30000, category: '💎 Invite Family' }
+      { label: '1 Bulan', price: 24000, category: '💎 Sharing' },
+      { label: '3 Bulan Invite', price: 32000, category: '📩 Invite' }
     ]
   },
   {
-    id: 'prod-spotify',
-    name: 'Spotify Premium',
-    icon: 'fa-spotify',
-    image_url: 'assets/icons/spotify.svg',
-    color: '#1db954',
+    id: 'prod-youtube-private',
+    name: 'YouTube Private',
+    icon: 'fa-play-circle',
+    image_url: 'assets/icons/youtube.svg',
+    color: '#cc0000',
     duration: '1 Bulan',
     garansi: '✅ Full Garansi Sesuai S&K',
     prices: [
-      { label: '1 Bulan', price: 15000, category: '💎 Individual' },
-      { label: '3 Bulan', price: 40000, category: '💎 Individual' }
+      { label: '1 Bulan Mobile', price: 27000, category: '📱 Mobile' },
+      { label: '1 Bulan All Device', price: 43000, category: '💻 All Device' }
+    ]
+  },
+  {
+    id: 'prod-iqiyi-sharing-standard',
+    name: 'iQIYI Sharing Standard',
+    icon: 'fa-tv',
+    image_url: 'assets/icons/iqiyi.svg',
+    color: '#10b981',
+    duration: '1 Bulan - 3 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan', price: 15000, category: '💎 Sharing Standard' },
+      { label: '3 Bulan', price: 25000, category: '💎 Sharing Standard' }
     ]
   }
 ];

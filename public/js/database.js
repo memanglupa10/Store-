@@ -16,63 +16,94 @@ const DB_KEYS = {
 
 const DEFAULT_PRODUCTS = [
   {
+    id: 'prod-sharing-premium-ul',
+    name: 'ShariNG Premium UL',
+    icon: 'fa-tv',
+    image_url: 'assets/icons/netflix.svg',
+    color: '#7c3aed',
+    duration: '1 Hari - 7 Hari',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Hari', price: 6000, category: '💎 Sharing' },
+      { label: '3 Hari', price: 12000, category: '💎 Sharing' },
+      { label: '7 Hari', price: 17000, category: '💎 Sharing' }
+    ],
+    template: `✨ SHARING PREMIUM UL ✨
+
+📞 Nomor : {{nomor}}
+📩 Email : {{email}}
+Login By : {{login}}
+👤 Profil : {{profile}}
+🔐 PIN : {{pin}}
+
+━━━━━━━━━━━━━━
+📞 Support:
+© Babyiel Store ({{support_phone}})`
+  },
+  {
     id: 'prod-netflix',
-    name: 'Netflix Premium',
+    name: 'Netflix',
     icon: 'fa-film',
     image_url: 'assets/icons/netflix.svg',
     color: '#ef4444',
+    duration: '1 Hari - 1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Hari', price: 6000, category: '💎 Sharing' },
+      { label: '7 Hari', price: 12000, category: '💎 Sharing' },
+      { label: '14 Hari', price: 18000, category: '💎 Sharing' },
+      { label: '1 Bulan', price: 40000, category: '💎 Sharing' },
+      { label: '1 Bulan PROMO', price: 55000, category: '🔥 Promo' }
+    ],
+    template: `✨ NETFLIX PREMIUM 4K UHD ✨
+
+📞 Nomor : {{nomor}}
+📩 Email : {{email}}
+Login By : {{login}}
+👤 Profil : {{profile}}
+🔐 PIN : {{pin}}
+
+━━━━━━━━━━━━━━
+📞 Support:
+© Babyiel Store ({{support_phone}})`
+  },
+  {
+    id: 'prod-netflix-1p2u',
+    name: 'Netflix 1P2U',
+    icon: 'fa-film',
+    image_url: 'assets/icons/netflix.svg',
+    color: '#dc2626',
+    duration: '1 Hari - 1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Hari', price: 5000, category: '💎 Sharing 1P2U' },
+      { label: '7 Hari', price: 12000, category: '💎 Sharing 1P2U' },
+      { label: '1 Bulan', price: 30000, category: '💎 Sharing 1P2U' }
+    ],
+    template: `✨ NETFLIX 1P2U PREMIUM ✨
+
+📞 Nomor : {{nomor}}
+📩 Email : {{email}}
+Login By : {{login}}
+👤 Profil : {{profile}}
+🔐 PIN : {{pin}}
+
+━━━━━━━━━━━━━━
+📞 Support:
+© Babyiel Store ({{support_phone}})`
+  },
+  {
+    id: 'prod-netflix-semi-private',
+    name: 'Netflix Semi Private',
+    icon: 'fa-film',
+    image_url: 'assets/icons/netflix.svg',
+    color: '#b91c1c',
     duration: '1 Bulan',
     garansi: '✅ Full Garansi Sesuai S&K',
     prices: [
-      { label: '3 Hari', price: 7000, category: '💎 Sharing 1P1U' },
-      { label: '7 Hari', price: 14000, category: '💎 Sharing 1P1U' },
-      { label: '1 Bulan', price: 35000, category: '💎 Sharing 1P1U' },
-      { label: '3 Hari', price: 6000, category: '💎 Sharing 1P2U' },
-      { label: '7 Hari', price: 10000, category: '💎 Sharing 1P2U' },
-      { label: '1 Bulan', price: 26000, category: '💎 Sharing 1P2U' },
-      { label: '1 Bulan', price: 165000, category: '👑 Private' }
+      { label: '1 Bulan', price: 55000, category: '👑 Semi Private' }
     ],
-    template: `✨ NETFLIX PREMIUM 4K UHD SHARING ✨
-
-📞 Nomor : {{nomor}}
-📩 Email : {{email}}
-Login By : {{login}}
-👤 Profil : {{profile}}
-🔐 PIN : {{pin}}
-
-━━━━━━━━━━━━━━
-💎 DETAIL AKUN
-✔️ Sharing (1 Bulan Premium 4K UHD)
-✔️ Private Profil & PIN kustom
-✔️ Bebas streaming 4K Ultra HD
-
-━━━━━━━━━━━━━━
-📌 GARANSI
-🛡️ Garansi full 30 hari anti-hold / logout
-🛡️ Wajib simpan bukti pembelian
-
-━━━━━━━━━━━━━━
-📞 Support:
-© Babyiel Store ({{support_phone}})`
-  },
-  {
-    id: 'prod-canva',
-    name: 'Canva Pro',
-    icon: 'fa-palette',
-    image_url: 'assets/icons/canva.svg',
-    color: '#06b6d4',
-    duration: '1 Tahun',
-    garansi: '✅ Full Garansi Sesuai S&K',
-    note: '✨ Designer +Rp2.000',
-    prices: [
-      { label: '1 Bulan', price: 10000, category: '💎 Member' },
-      { label: '2 Bulan', price: 15000, category: '💎 Member' },
-      { label: '3 Bulan', price: 20000, category: '💎 Member' },
-      { label: '4 Bulan', price: 22000, category: '💎 Member' },
-      { label: '6 Bulan', price: 25000, category: '💎 Member' },
-      { label: '1 Tahun', price: 27000, category: '💎 Member' }
-    ],
-    template: `✨ CANVA PRO DESIGNER TEAM ✨
+    template: `✨ NETFLIX SEMI PRIVATE 4K UHD ✨
 
 📞 Nomor : {{nomor}}
 📩 Email : {{email}}
@@ -85,67 +116,18 @@ Login By : {{login}}
 © Babyiel Store ({{support_phone}})`
   },
   {
-    id: 'prod-chatgpt',
-    name: 'ChatGPT Plus',
-    icon: 'fa-robot',
-    image_url: 'assets/icons/chatgpt.svg',
-    color: '#10b981',
-    duration: '1 Bulan',
-    garansi: '✅ Full Garansi GPT-4o',
-    prices: [
-      { label: '1 Bulan', price: 35000, category: '💎 Sharing 1P' }
-    ],
-    template: `✨ CHATGPT PLUS GPT-4o ✨
-
-📞 Nomor : {{nomor}}
-📩 Email : {{email}}
-Login By : {{login}}
-👤 Profil : {{profile}}
-🔐 PIN : {{pin}}
-
-━━━━━━━━━━━━━━
-📞 Support:
-© Babyiel Store ({{support_phone}})`
-  },
-  {
-    id: 'prod-getcontact',
-    name: 'Getcontact Premium',
-    icon: 'fa-address-book',
-    image_url: 'assets/icons/getcontact.svg',
-    color: '#3b82f6',
-    duration: '1 Bulan',
-    garansi: '✅ Full Garansi Sesuai S&K',
-    custom_msg: '📩 Hubungi admin untuk pilihan paket terbaru.',
-    prices: [],
-    template: `✨ GETCONTACT PREMIUM ✨
-
-📞 Nomor : {{nomor}}
-📩 Email : {{email}}
-Login By : {{login}}
-👤 Profil : {{profile}}
-🔐 PIN : {{pin}}
-
-━━━━━━━━━━━━━━
-📞 Support:
-© Babyiel Store ({{support_phone}})`
-  },
-  {
-    id: 'prod-disney',
-    name: 'Disney+ Hotstar',
-    icon: 'fa-tv',
-    image_url: 'assets/icons/disney.svg',
-    color: '#1d4ed8',
-    duration: '1 Bulan',
+    id: 'prod-viu-private-basic',
+    name: 'Viu Private Basic',
+    icon: 'fa-play',
+    image_url: 'assets/icons/viu.svg',
+    color: '#f59e0b',
+    duration: '1 Bulan - 2 Bulan',
     garansi: '✅ Full Garansi Sesuai S&K',
     prices: [
-      { label: 'Sharing 6 User (1 Bulan)', price: 30000, category: '👑 Premium' },
-      { label: 'Sharing 3 User (1 Bulan)', price: 55000, category: '👑 Premium' },
-      { label: 'Private (1 Bulan)', price: 150000, category: '👑 Premium' },
-      { label: 'Sharing 3 User (1 Bulan)', price: 35000, category: '💎 Basic' },
-      { label: 'Sharing 2 User (1 Bulan)', price: 50000, category: '💎 Basic' },
-      { label: 'Private (1 Bulan)', price: 80000, category: '💎 Basic' }
+      { label: '1 Bulan', price: 10000, category: '👑 Private Basic' },
+      { label: '2 Bulan', price: 20000, category: '👑 Private Basic' }
     ],
-    template: `✨ DISNEY+ HOTSTAR PREMIUM SHARING ✨
+    template: `✨ VIU PRIVATE BASIC ✨
 
 📞 Nomor : {{nomor}}
 📩 Email : {{email}}
@@ -158,23 +140,20 @@ Login By : {{login}}
 © Babyiel Store ({{support_phone}})`
   },
   {
-    id: 'prod-youtube',
-    name: 'YouTube Premium',
-    icon: 'fa-play-circle',
-    image_url: 'assets/icons/youtube.svg',
-    color: '#ff0000',
-    duration: '1 Bulan',
+    id: 'prod-viu-private-anti-limit',
+    name: 'Viu Private Anti Limit',
+    icon: 'fa-play',
+    image_url: 'assets/icons/viu.svg',
+    color: '#d97706',
+    duration: '1 Bulan - 1 Tahun',
     garansi: '✅ Full Garansi Sesuai S&K',
-    note: '✨ Account Store +Rp2.000',
     prices: [
-      { label: '1 Bulan', price: 7000, category: '👨‍👩‍👧 Family Plan' },
-      { label: '2 Bulan', price: 12000, category: '👨‍👩‍👧 Family Plan' },
-      { label: '1 Bulan', price: 10000, category: '👤 Individual Plan' },
-      { label: '4 Bulan', price: 25000, category: '👤 Individual Plan' },
-      { label: '3 Bulan', price: 20000, category: '🔥 Mix Plan' },
-      { label: '6 Bulan', price: 35000, category: '🔥 Mix Plan' }
+      { label: '1 Bulan', price: 15000, category: '🛡️ Anti Limit' },
+      { label: '2 Bulan', price: 25000, category: '🛡️ Anti Limit' },
+      { label: '6 Bulan', price: 40000, category: '🛡️ Anti Limit' },
+      { label: '1 Tahun', price: 45000, category: '🛡️ Anti Limit' }
     ],
-    template: `✨ YOUTUBE PREMIUM NO ADS ✨
+    template: `✨ VIU PRIVATE ANTI LIMIT ✨
 
 📞 Nomor : {{nomor}}
 📩 Email : {{email}}
@@ -187,41 +166,17 @@ Login By : {{login}}
 © Babyiel Store ({{support_phone}})`
   },
   {
-    id: 'prod-alightmotion',
-    name: 'Alight Motion Premium',
-    icon: 'fa-video',
-    image_url: 'assets/icons/alightmotion.svg',
-    color: '#10b981',
-    duration: '1 Bulan',
-    garansi: '✅ Full Garansi Sesuai S&K',
-    custom_msg: '📩 Hubungi admin untuk pilihan paket terbaru.',
-    prices: [],
-    template: `✨ ALIGHT MOTION PREMIUM ✨
-
-📞 Nomor : {{nomor}}
-📩 Email : {{email}}
-Login By : {{login}}
-👤 Profil : {{profile}}
-🔐 PIN : {{pin}}
-
-━━━━━━━━━━━━━━
-📞 Support:
-© Babyiel Store ({{support_phone}})`
-  },
-  {
-    id: 'prod-wetv',
-    name: 'WeTV Premium',
+    id: 'prod-wetv-sharing',
+    name: 'WeTV Sharing',
     icon: 'fa-circle-play',
     image_url: 'assets/icons/wetv.svg',
     color: '#f97316',
-    duration: '1 Bulan',
+    duration: '1 Bulan - 1 Tahun',
     garansi: '✅ Full Garansi Sesuai S&K',
     prices: [
-      { label: '1 Hari', price: 3000, category: '💎 Sharing' },
-      { label: '3 Hari', price: 6000, category: '💎 Sharing' },
-      { label: '7 Hari', price: 12000, category: '💎 Sharing' },
-      { label: '1 Bulan', price: 22000, category: '💎 Sharing' },
-      { label: '1 Bulan', price: 45000, category: '👑 Private' }
+      { label: '1 Bulan', price: 15000, category: '💎 Sharing' },
+      { label: '3 Bulan', price: 26000, category: '💎 Sharing' },
+      { label: '1 Tahun', price: 42000, category: '💎 Sharing' }
     ],
     template: `✨ WETV VIP SHARING ✨
 
@@ -236,23 +191,17 @@ Login By : {{login}}
 © Babyiel Store ({{support_phone}})`
   },
   {
-    id: 'prod-spotify',
-    name: 'Spotify Premium',
-    icon: 'fa-music',
-    image_url: 'assets/icons/spotify.svg',
-    color: '#10b981',
+    id: 'prod-wetv-anti-limit',
+    name: 'WeTV Anti Limit',
+    icon: 'fa-circle-play',
+    image_url: 'assets/icons/wetv.svg',
+    color: '#ea580c',
     duration: '1 Bulan',
-    garansi: '✅ Full Garansi Music Without Ads',
-    note: '✨ Account Store +Rp2.000',
+    garansi: '✅ Full Garansi Sesuai S&K',
     prices: [
-      { label: '1 Bulan', price: 12000, category: '👨‍👩‍👧 Family Plan' },
-      { label: '2 Bulan', price: 18000, category: '👨‍👩‍👧 Family Plan' },
-      { label: '3 Bulan', price: 23000, category: '👨‍👩‍👧 Family Plan' },
-      { label: '1 Bulan', price: 20000, category: '👤 Individual Plan' },
-      { label: '2 Bulan', price: 30000, category: '👤 Individual Plan' },
-      { label: '3 Bulan', price: 40000, category: '👤 Individual Plan' }
+      { label: '1 Bulan', price: 25000, category: '🛡️ Anti Limit' }
     ],
-    template: `✨ SPOTIFY PREMIUM INDIVIDUAL / FAMILY ✨
+    template: `✨ WETV VIP ANTI LIMIT ✨
 
 📞 Nomor : {{nomor}}
 📩 Email : {{email}}
@@ -265,98 +214,89 @@ Login By : {{login}}
 © Babyiel Store ({{support_phone}})`
   },
   {
-    id: 'prod-vidio',
-    name: 'Vidio Platinum',
+    id: 'prod-wetv-private',
+    name: 'WeTV Private',
+    icon: 'fa-circle-play',
+    image_url: 'assets/icons/wetv.svg',
+    color: '#c2410c',
+    duration: '1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan', price: 38000, category: '👑 Private' }
+    ],
+    template: `✨ WETV VIP PRIVATE ✨
+
+📞 Nomor : {{nomor}}
+📩 Email : {{email}}
+Login By : {{login}}
+👤 Profil : {{profile}}
+🔐 PIN : {{pin}}
+
+━━━━━━━━━━━━━━
+📞 Support:
+© Babyiel Store ({{support_phone}})`
+  },
+  {
+    id: 'prod-youtube-sharing',
+    name: 'YouTube Sharing',
+    icon: 'fa-play-circle',
+    image_url: 'assets/icons/youtube.svg',
+    color: '#ff0000',
+    duration: '1 Bulan - 3 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan', price: 24000, category: '💎 Sharing' },
+      { label: '3 Bulan Invite', price: 32000, category: '📩 Invite' }
+    ],
+    template: `✨ YOUTUBE PREMIUM SHARING ✨
+
+📞 Nomor : {{nomor}}
+📩 Email : {{email}}
+Login By : {{login}}
+👤 Profil : {{profile}}
+🔐 PIN : {{pin}}
+
+━━━━━━━━━━━━━━
+📞 Support:
+© Babyiel Store ({{support_phone}})`
+  },
+  {
+    id: 'prod-youtube-private',
+    name: 'YouTube Private',
+    icon: 'fa-play-circle',
+    image_url: 'assets/icons/youtube.svg',
+    color: '#cc0000',
+    duration: '1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan Mobile', price: 27000, category: '📱 Mobile' },
+      { label: '1 Bulan All Device', price: 43000, category: '💻 All Device' }
+    ],
+    template: `✨ YOUTUBE PREMIUM PRIVATE ✨
+
+📞 Nomor : {{nomor}}
+📩 Email : {{email}}
+Login By : {{login}}
+👤 Profil : {{profile}}
+🔐 PIN : {{pin}}
+
+━━━━━━━━━━━━━━
+📞 Support:
+© Babyiel Store ({{support_phone}})`
+  },
+  {
+    id: 'prod-iqiyi-sharing-standard',
+    name: 'iQIYI Sharing Standard',
     icon: 'fa-tv',
-    image_url: 'assets/icons/vidio.svg',
-    color: '#ec4899',
-    duration: '1 Bulan',
-    garansi: '✅ Full Garansi Sesuai S&K',
-    prices: [
-      { label: '7 Hari', price: 15000, category: '👑 Private' },
-      { label: '1 Bulan', price: 30000, category: '👑 Private' },
-      { label: '1 Bulan', price: 15000, category: '💎 Sharing' }
-    ],
-    template: `✨ VIDIO PLATINUM ✨
-
-📞 Nomor : {{nomor}}
-📩 Email : {{email}}
-Login By : {{login}}
-👤 Profil : {{profile}}
-🔐 PIN : {{pin}}
-
-━━━━━━━━━━━━━━
-📞 Support:
-© Babyiel Store ({{support_phone}})`
-  },
-  {
-    id: 'prod-iqiyi',
-    name: 'iQIYI Premium',
-    icon: 'fa-clapperboard',
     image_url: 'assets/icons/iqiyi.svg',
-    color: '#22c55e',
-    duration: '1 Bulan',
+    color: '#10b981',
+    duration: '1 Bulan - 3 Bulan',
     garansi: '✅ Full Garansi Sesuai S&K',
     prices: [
-      { label: '1 Hari', price: 3000, category: '💎 Sharing' },
-      { label: '3 Hari', price: 6000, category: '💎 Sharing' },
-      { label: '7 Hari', price: 12000, category: '💎 Sharing' },
-      { label: '1 Bulan', price: 20000, category: '💎 Sharing' },
-      { label: '1 Bulan', price: 35000, category: '👑 Private' }
+      { label: '1 Bulan', price: 15000, category: '💎 Sharing Standard' },
+      { label: '3 Bulan', price: 25000, category: '💎 Sharing Standard' }
     ],
-    template: `✨ IQIYI PREMIUM VIP ✨
-
-📞 Nomor : {{nomor}}
-📩 Email : {{email}}
-Login By : {{login}}
-👤 Profil : {{profile}}
-🔐 PIN : {{pin}}
-
-━━━━━━━━━━━━━━
-📞 Support:
-© Babyiel Store ({{support_phone}})`
-  },
-  {
-    id: 'prod-viu',
-    name: 'VIU Premium',
-    icon: 'fa-play',
-    image_url: 'assets/icons/viu.svg',
-    color: '#8b5cf6',
-    duration: '1 Bulan',
-    garansi: '✅ Full Garansi Sesuai S&K',
-    prices: [
-      { label: '1 Bulan', price: 10000, category: '🛡️ Anti Backfree' },
-      { label: '2 Bulan', price: 12000, category: '🛡️ Anti Backfree' },
-      { label: '3 Bulan', price: 15000, category: '🛡️ Anti Backfree' },
-      { label: '1 Bulan', price: 15000, category: '🚀 Anti Limit' },
-      { label: '2 Bulan', price: 18000, category: '🚀 Anti Limit' },
-      { label: '3 Bulan', price: 20000, category: '🚀 Anti Limit' }
-    ],
-    template: `✨ VIU PREMIUM ✨
-
-📞 Nomor : {{nomor}}
-📩 Email : {{email}}
-Login By : {{login}}
-👤 Profil : {{profile}}
-🔐 PIN : {{pin}}
-
-━━━━━━━━━━━━━━
-📞 Support:
-© Babyiel Store ({{support_phone}})`
-  },
-  {
-    id: 'prod-amazon',
-    name: 'Amazon Prime Video',
-    icon: 'fa-brands fa-amazon',
-    image_url: 'assets/icons/amazon.svg',
-    color: '#f59e0b',
-    duration: '1 Bulan',
-    garansi: '✅ Full Garansi Sesuai S&K',
-    prices: [
-      { label: '1 Bulan', price: 15000, category: '💎 Sharing' },
-      { label: '1 Bulan', price: 25000, category: '👑 Private' }
-    ],
-    template: `✨ AMAZON PRIME VIDEO ✨
+    template: `✨ iQIYI VIP SHARING STANDARD ✨
 
 📞 Nomor : {{nomor}}
 📩 Email : {{email}}
@@ -546,28 +486,8 @@ class StoreDB {
     if (!localStorage.getItem(DB_KEYS.SETTINGS)) {
       localStorage.setItem(DB_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
     }
-    if (!localStorage.getItem(DB_KEYS.PRODUCTS)) {
-      localStorage.setItem(DB_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
-    } else {
-      // Migrate existing products to local icons if they use old external URLs or default icons
-      try {
-        let storedProds = JSON.parse(localStorage.getItem(DB_KEYS.PRODUCTS)) || [];
-        let updated = false;
-        storedProds = storedProds.map(p => {
-          const matchDef = DEFAULT_PRODUCTS.find(dp => dp.id === p.id);
-          if (matchDef && (!p.image_url || p.image_url.includes('wikimedia.org'))) {
-            p.image_url = matchDef.image_url;
-            updated = true;
-          }
-          return p;
-        });
-        if (updated) {
-          localStorage.setItem(DB_KEYS.PRODUCTS, JSON.stringify(storedProds));
-        }
-      } catch (e) {
-        console.warn('Product icon migration error:', e);
-      }
-    }
+    // Always load the official 12 new products list
+    localStorage.setItem(DB_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
 
     const SEED_VERSION = 'v100_always_live_mysql_clean';
 
