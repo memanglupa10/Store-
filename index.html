@@ -772,10 +772,15 @@
           <div class="card">
             <!-- TOOLBAR -->
             <div class="table-toolbar">
-              <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="stock-search-input" placeholder="Cari Email, Produk, Nomor...">
-                <button id="stock-search-clear" class="search-clear-btn"><i class="fa-solid fa-xmark"></i></button>
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 280px;">
+                <div class="search-box" style="flex: 1;">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="stock-search-input" placeholder="Cari Email, Produk, Paket, Nomor...">
+                  <button id="stock-search-clear" class="search-clear-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <button type="button" id="btn-do-stock-search" class="btn btn-primary btn-sm" style="padding: 0.48rem 0.95rem; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 8px; shrink: 0;">
+                  <i class="fa-solid fa-magnifying-glass"></i> Cari
+                </button>
               </div>
 
               <div class="filter-group">
@@ -799,12 +804,6 @@
                 <!-- Action Buttons -->
                 <button class="btn btn-primary btn-sm admin-only-btn" onclick="App.openAddStockModal()">
                   <i class="fa-solid fa-plus"></i> Tambah Stock
-                </button>
-                <button class="btn btn-success btn-sm admin-only-btn" onclick="App.openBulkUploadModal()">
-                  <i class="fa-solid fa-file-excel"></i> Import Excel
-                </button>
-                <button class="btn btn-danger btn-sm admin-only-btn" onclick="App.wipeAllStocks()" style="background-color: #ef4444; border-color: #ef4444; color: white;">
-                  <i class="fa-solid fa-trash-can"></i> Kosongkan Stok
                 </button>
               </div>
             </div>

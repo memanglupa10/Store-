@@ -1674,13 +1674,27 @@ const App = {
     // Realtime Stock Search
     const searchInput = document.getElementById('stock-search-input');
     const searchClear = document.getElementById('stock-search-clear');
+    const searchBtn = document.getElementById('btn-do-stock-search');
+
+    const executeStockSearch = () => {
+      const q = searchInput ? searchInput.value : '';
+      this.stockFilters.search = q;
+      this.stockFilters.page = 1;
+      if (searchClear) searchClear.style.display = q ? 'block' : 'none';
+      this.renderStockTable();
+    };
+
     if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        this.stockFilters.search = e.target.value;
-        this.stockFilters.page = 1;
-        if (searchClear) searchClear.style.display = e.target.value ? 'block' : 'none';
-        this.renderStockTable();
+      searchInput.addEventListener('input', () => executeStockSearch());
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          executeStockSearch();
+        }
       });
+    }
+    if (searchBtn) {
+      searchBtn.addEventListener('click', () => executeStockSearch());
     }
     if (searchClear) {
       searchClear.addEventListener('click', () => {

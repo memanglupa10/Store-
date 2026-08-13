@@ -2849,6 +2849,7 @@ class StoreDB {
       const q = filters.search.toLowerCase().trim();
       stocks = stocks.filter(s =>
         (s.email && s.email.toLowerCase().includes(q)) ||
+        (s.package_name && s.package_name.toLowerCase().includes(q)) ||
         (s.nomor && s.nomor.toLowerCase().includes(q)) ||
         (s.profile && s.profile.toLowerCase().includes(q)) ||
         (s.product_name && s.product_name.toLowerCase().includes(q)) ||
@@ -2856,7 +2857,8 @@ class StoreDB {
         (s.assigned_to && s.assigned_to.toLowerCase().includes(q)) ||
         (s.sold_by && s.sold_by.toLowerCase().includes(q)) ||
         (s.buyer_name && s.buyer_name.toLowerCase().includes(q)) ||
-        (s.buyer_wa && s.buyer_wa.toLowerCase().includes(q))
+        (s.buyer_wa && s.buyer_wa.toLowerCase().includes(q)) ||
+        (s.notes && s.notes.toLowerCase().includes(q))
       );
     }
 
