@@ -28,6 +28,16 @@ const { asyncHandler } = require('../middleware/error');
 // Atomic Database Lock Mutex for Concurrent Payment Allocation
 const ATOMIC_LOCKS = new Set();
 
+router.get('/debug-headers', (req, res) => {
+  res.json({
+    url: req.url,
+    originalUrl: req.originalUrl,
+    baseUrl: req.baseUrl,
+    path: req.path,
+    headers: req.headers
+  });
+});
+
 
 // Atomic Stock Allocation Mutex Lock Helper
 async function lockAndAllocateStock(db, order) {
