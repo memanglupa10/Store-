@@ -592,7 +592,10 @@ const App = {
 
   closeCheckoutModal() {
     const modal = document.getElementById('modal-checkout-form');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.display = 'none';
+    }
 
     const submitBtn = document.getElementById('btn-submit-checkout') || document.querySelector('#checkout-form button[type="submit"]') || document.querySelector('#modal-checkout-form button[type="submit"]');
     if (submitBtn) {
@@ -1280,7 +1283,10 @@ const App = {
 
   closeTrackOrderModal() {
     const modal = document.getElementById('modal-track-order');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.display = 'none';
+    }
   },
 
   renderTrackOrderHistory() {
@@ -1406,7 +1412,10 @@ const App = {
 
   closeCatalogPackagesModal() {
     const modal = document.getElementById('modal-catalog-packages');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.display = 'none';
+    }
   },
 
   updateAdminHeader(auth) {
@@ -1550,6 +1559,16 @@ const App = {
     if (sidebarOverlay) {
       sidebarOverlay.addEventListener('click', () => this.closeMobileSidebar());
     }
+
+    // Universal Modal Backdrop Click to Close
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+          backdrop.classList.remove('active');
+          backdrop.style.display = 'none';
+        }
+      });
+    });
 
     // Quick Add Stock Form Submit (Modal)
     const addStockForm = document.getElementById('add-stock-form');
