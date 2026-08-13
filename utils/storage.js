@@ -22,6 +22,7 @@ if (!config.isVercel && !fs.existsSync(path.join(PUBLIC_DIR, 'data'))) {
 }
 
 const DEFAULT_PRODUCTS = [
+  // --- STREAMING / ENTERTAINMENT ---
   {
     id: 'prod-netflix',
     name: 'Netflix Premium',
@@ -104,6 +105,226 @@ const DEFAULT_PRODUCTS = [
     prices: [
       { label: '1 Bulan (Sharing Standard)', price: 15000, category: '💎 Sharing Standard' },
       { label: '3 Bulan (Sharing Standard)', price: 25000, category: '💎 Sharing Standard' }
+    ]
+  },
+
+  // --- EDITING ---
+  {
+    id: 'prod-canva',
+    name: 'Canva Pro',
+    icon: 'fa-palette',
+    image_url: 'assets/icons/canva.svg',
+    color: '#06b6d4',
+    duration: '1 Bulan - 1 Tahun',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    note: '✨ Designer +Rp2.000',
+    prices: [
+      { label: '1 Bulan', price: 10000, category: '💎 Member' },
+      { label: '2 Bulan', price: 14000, category: '💎 Member' },
+      { label: '3 Bulan', price: 17000, category: '💎 Member' },
+      { label: '4 Bulan', price: 20000, category: '💎 Member' },
+      { label: '6 Bulan', price: 25000, category: '💎 Member' },
+      { label: '1 Tahun', price: 35000, category: '💎 Member' }
+    ]
+  },
+  {
+    id: 'prod-capcut',
+    name: 'CapCut Pro',
+    icon: 'fa-scissors',
+    image_url: 'assets/icons/canva.svg',
+    color: '#0f172a',
+    duration: '7 Hari',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '7 Hari (Standard)', price: 20000, category: '👑 Private' },
+      { label: '7 Hari (Pro)', price: 25000, category: '👑 Private' }
+    ]
+  },
+  {
+    id: 'prod-picsart',
+    name: 'Picsart Gold',
+    icon: 'fa-paint-brush',
+    image_url: 'assets/icons/canva.svg',
+    color: '#ec4899',
+    duration: '1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan (Sharing)', price: 15000, category: '💎 Sharing' },
+      { label: '1 Bulan (Private)', price: 25000, category: '👑 Private' }
+    ]
+  },
+  {
+    id: 'prod-ibispaint',
+    name: 'ibis Paint X Pro',
+    icon: 'fa-pen-nib',
+    image_url: 'assets/icons/canva.svg',
+    color: '#3b82f6',
+    duration: '1 Tahun',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Tahun (Sharing)', price: 35000, category: '💎 Sharing' }
+    ]
+  },
+  {
+    id: 'prod-meitu',
+    name: 'Meitu VIP',
+    icon: 'fa-wand-magic-sparkles',
+    image_url: 'assets/icons/canva.svg',
+    color: '#f43f5e',
+    duration: '7 Hari',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '7 Hari', price: 17000, category: '👑 VIP' }
+    ]
+  },
+  {
+    id: 'prod-alightmotion',
+    name: 'Alight Motion Premium',
+    icon: 'fa-video',
+    image_url: 'assets/icons/alightmotion.svg',
+    color: '#10b981',
+    duration: '1 Bulan - 1 Tahun',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan (Sharing)', price: 12000, category: '💎 Sharing' },
+      { label: '1 Tahun (Sharing)', price: 25000, category: '💎 Sharing' },
+      { label: '1 Bulan (Private)', price: 30000, category: '👑 Private' },
+      { label: '1 Tahun (Private)', price: 45000, category: '👑 Private' }
+    ]
+  },
+  {
+    id: 'prod-beautyplus',
+    name: 'BeautyPlus Premium',
+    icon: 'fa-camera',
+    image_url: 'assets/icons/canva.svg',
+    color: '#fb7185',
+    duration: '1 Tahun',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Tahun (Sharing)', price: 35000, category: '💎 Sharing' }
+    ]
+  },
+
+  // --- LISTENING ---
+  {
+    id: 'prod-applemusic',
+    name: 'Apple Music',
+    icon: 'fa-music',
+    image_url: 'assets/icons/spotify.svg',
+    color: '#fa233b',
+    duration: '1 Bulan - 3 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan', price: 23000, category: '👑 Individual' },
+      { label: '2 Bulan', price: 30000, category: '👑 Individual' },
+      { label: '3 Bulan', price: 40000, category: '👑 Individual' }
+    ]
+  },
+  {
+    id: 'prod-spotify',
+    name: 'Spotify Premium',
+    icon: 'fa-spotify',
+    image_url: 'assets/icons/spotify.svg',
+    color: '#1db954',
+    duration: '1 Bulan - 2 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan (Sharing)', price: 25000, category: '💎 Sharing' },
+      { label: '2 Bulan (Sharing)', price: 40000, category: '💎 Sharing' },
+      { label: '1 Bulan (Family)', price: 29000, category: '👨‍👩‍👧 Family Plan' }
+    ]
+  },
+
+  // --- EDUCATION & AI ---
+  {
+    id: 'prod-scribd',
+    name: 'Scribd VIP',
+    icon: 'fa-book-open',
+    image_url: 'assets/icons/canva.svg',
+    color: '#1e3a8a',
+    duration: '1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan (Sharing)', price: 12000, category: '💎 Sharing' },
+      { label: '1 Bulan (Private)', price: 23000, category: '👑 Private' }
+    ]
+  },
+  {
+    id: 'prod-chatgpt',
+    name: 'ChatGPT Plus & AI',
+    icon: 'fa-robot',
+    image_url: 'assets/icons/chatgpt.svg',
+    color: '#10b981',
+    duration: '1 Bulan',
+    garansi: '✅ Full Garansi GPT-4o',
+    prices: [
+      { label: '1 Bulan (Sharing)', price: 38000, category: '💎 Sharing' },
+      { label: '1 Bulan (Invite Email Pribadi)', price: 45000, category: '📩 Invite Email' }
+    ]
+  },
+  {
+    id: 'prod-ms365',
+    name: 'Microsoft 365',
+    icon: 'fa-windows',
+    image_url: 'assets/icons/canva.svg',
+    color: '#0284c7',
+    duration: '1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan (via Invite)', price: 15000, category: '📩 Invite' }
+    ]
+  },
+  {
+    id: 'prod-camscanner',
+    name: 'CamScanner Premium',
+    icon: 'fa-file-contract',
+    image_url: 'assets/icons/canva.svg',
+    color: '#059669',
+    duration: '1 Tahun',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Tahun (Sharing)', price: 25000, category: '💎 Sharing' }
+    ]
+  },
+  {
+    id: 'prod-duolingo',
+    name: 'Duolingo Super',
+    icon: 'fa-graduation-cap',
+    image_url: 'assets/icons/canva.svg',
+    color: '#58cc02',
+    duration: '1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan (Sharing)', price: 17000, category: '💎 Sharing' }
+    ]
+  },
+  {
+    id: 'prod-gemini',
+    name: 'Gemini Advanced AI',
+    icon: 'fa-brain',
+    image_url: 'assets/icons/chatgpt.svg',
+    color: '#8b5cf6',
+    duration: '1 Bulan - 3 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan (Sharing Invite)', price: 20000, category: '📩 Invite' },
+      { label: '3 Bulan (Sharing Invite)', price: 32000, category: '📩 Invite' }
+    ]
+  },
+
+  // --- OTHER ---
+  {
+    id: 'prod-getcontact',
+    name: 'Getcontact Premium',
+    icon: 'fa-address-book',
+    image_url: 'assets/icons/getcontact.svg',
+    color: '#3b82f6',
+    duration: '1 Bulan',
+    garansi: '✅ Full Garansi Sesuai S&K',
+    prices: [
+      { label: '1 Bulan (Private)', price: 18000, category: '👑 Private' },
+      { label: '1 Bulan (Semi Private)', price: 10000, category: '👑 Semi Private' },
+      { label: 'Jasa Cek Nomor GTC (Per Nomor)', price: 1000, category: '⚡ Jasa Cek' }
     ]
   }
 ];
